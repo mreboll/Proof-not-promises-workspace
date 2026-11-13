@@ -1,0 +1,16 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+# Worktrees, builds y salidas del pipeline
+.work/
+out/
+# Caché de respuestas del LLM: NO se ignora a propósito, para que los dos podáis
+# compartirla y repetir la demo sin llamadas nuevas. Si pesa demasiado, descomenta:
+# .cache/
+harness/**/bin/
+harness/**/obj/

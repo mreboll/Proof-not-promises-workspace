@@ -1,0 +1,34 @@
+[
+  {
+    "path": "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": ["R-HIGH-04: namespace núcleo del generador (MessagePack.SourceGenerator.CodeAnalysis)"],
+    "justification": "Filtra diagnósticos cuya ubicación no pertenece a la compilación analizada; es exactamente lo que pide #2283.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": ["R-LOW-01: ruta tests/"],
+    "justification": "Tests de regresión del propio cambio.",
+    "touches_public_api": false
+  },
+  {
+    "path": "doc/analyzers/MsgPack004.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": ["R-LOW-02: documentación .md"],
+    "justification": "El agente documenta el nuevo comportamiento del analizador; el issue no lo pide.",
+    "touches_public_api": false
+  },
+  {
+    "path": "README.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": ["R-LOW-02: documentación .md"],
+    "justification": "Nota en el README que el issue no pide.",
+    "touches_public_api": false
+  }
+]

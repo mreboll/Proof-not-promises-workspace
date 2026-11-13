@@ -1,0 +1,19 @@
+{
+  "_comment": "Datos de EJEMPLO para que la Línea B avance sin .NET. La Línea A los sustituye por resultados reales.",
+  "change_test": {
+    "issue_id": "2283",
+    "change_type": "bugfix",
+    "test_name": "Issue2283_NoDiagnosticForTypeFromReferencedAssembly",
+    "test_code": "// generado a partir de issues/2283.md (sin ver el diff)",
+    "base": {"build_ok": true, "passed": 0, "failed": 1, "output_tail": "Expected no diagnostics, got MsgPack004", "duration_s": 41.2},
+    "pr": {"build_ok": true, "passed": 1, "failed": 0, "output_tail": "Passed!", "duration_s": 39.8}
+  },
+  "invariance": {
+    "cases": [
+      {"id": "simple-int-keys", "tag": "general", "base_hash": "a1", "base_hash_rerun": "a1", "pr_hash": "a1"},
+      {"id": "string-keys", "tag": "general", "base_hash": "b2", "base_hash_rerun": "b2", "pr_hash": "b2"},
+      {"id": "union-nested", "tag": "general", "base_hash": "c3", "base_hash_rerun": "c3", "pr_hash": "c3"},
+      {"id": "generic-from-referenced-assembly", "tag": "issue-2283", "base_hash": "d4", "base_hash_rerun": "d4", "pr_hash": "e5"}
+    ]
+  }
+}
