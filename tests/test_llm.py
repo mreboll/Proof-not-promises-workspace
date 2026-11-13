@@ -33,7 +33,7 @@ class ApiError(Exception):
 
 @pytest.fixture
 def settings(tmp_path):
-    return replace(load_settings(), cache_dir=tmp_path, gemini_api_key="test-key")
+    return replace(load_settings(), cache_dir=tmp_path, gemini_api_key="test-key", nvidia_for_all=False)
 
 
 @pytest.fixture(autouse=True)

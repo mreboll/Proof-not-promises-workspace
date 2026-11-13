@@ -47,6 +47,9 @@ class Settings:
     nvidia_api_key: str
     nvidia_model: str
     nvidia_base_url: str
+    nvidia_model_fast: str
+    # Mientras no haya créditos de Gemini: los roles "pro" y "flash" también van a Nemotron.
+    nvidia_for_all: bool
     runner: str  # "local" (dotnet en esta máquina) | "modal" (Modal Sandboxes)
 
     def ref(self, issue_id: str, side: str) -> str:
@@ -78,7 +81,9 @@ def load_settings() -> Settings:
         model_pro=os.environ.get("GEMINI_MODEL_PRO", "gemini-2.5-pro"),
         model_flash=os.environ.get("GEMINI_MODEL_FLASH", "gemini-2.5-flash"),
         nvidia_api_key=os.environ.get("NVIDIA_API_KEY", ""),
-        nvidia_model=os.environ.get("NVIDIA_MODEL", ""),
+        nvidia_model=os.environ.get("NVIDIA_MODEL", "nvidia/nemotron-3.5-super-vl-120b-a12b"),
         nvidia_base_url=os.environ.get("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1"),
+        nvidia_model_fast=os.environ.get("NVIDIA_MODEL_FAST", "nvidia/nemotron-3.5-lightning-30b-a3b"),
+        nvidia_for_all=os.environ.get("LEDGER_NVIDIA_FOR_ALL", "0").strip().lower() in {"1", "true", "yes"},
         runner=os.environ.get("LEDGER_RUNNER", "local"),
     )

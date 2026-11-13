@@ -23,14 +23,18 @@ ROLES = ("pro", "flash", "fiscal")
 def llm_ping(role: str = typer.Option("all", help="pro | flash | fiscal | all")) -> None:
     """Comprueba claves y modelos (Gemini y Nemotron) con salida estructurada, sin caché."""
     roles = ROLES if role == "all" else (role,)
+    settings = load_settings()
+    if settings.nvidia_for_all:
+        typer.secho("Aviso: LEDGER_NVIDIA_FOR_ALL=1, todos los roles van a Nemotron (modo temporal sin Gemini).", fg=typer.colors.YELLOW)
     failed = False
     for current in roles:
+        model = llm.model_for(current, settings)  # type: ignore[arg-type]
         try:
-            pong = llm.complete("Answer in JSON.", "Reply with the word pong.", _Pong, current, use_cache=False)  # type: ignore[arg-type]
-            typer.secho(f"OK   {current:<6} {pong.reply}", fg=typer.colors.GREEN)
+            pong = llm.complete("Answer in JSON.", "Reply with the word pong.", _Pong, current, settings=settings, use_cache=False)  # type: ignore[arg-type]
+            typer.secho(f"OK   {current:<6} {model}: {pong.reply}", fg=typer.colors.GREEN)
         except llm.LLMError as exc:
             failed = True
-            typer.secho(f"FAIL {current:<6} {exc}", fg=typer.colors.RED)
+            typer.secho(f"FAIL {current:<6} {model}: {exc}", fg=typer.colors.RED)
     if failed:
         raise typer.Exit(code=1)
 

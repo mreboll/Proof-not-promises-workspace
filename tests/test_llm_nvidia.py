@@ -33,7 +33,7 @@ def _client(chat: FakeChat) -> SimpleNamespace:
 
 @pytest.fixture
 def settings(tmp_path):
-    return replace(load_settings(), cache_dir=tmp_path, nvidia_api_key="k", nvidia_model="nvidia/test-nemotron")
+    return replace(load_settings(), cache_dir=tmp_path, nvidia_api_key="k", nvidia_model="nvidia/test-nemotron", nvidia_for_all=False)
 
 
 def test_clean_json_strips_think_block_and_fences():
@@ -60,6 +60,19 @@ def test_gives_up_after_failed_repair(settings):
     chat = FakeChat(["nope", "still nope"])
     with pytest.raises(llm.LLMError, match="tras reparar"):
         llm.complete("s", "u", Objections, "fiscal", client=_client(chat), settings=settings)
+
+
+def test_nvidia_for_all_routes_pro_and_flash_to_nemotron(settings):
+    nv = replace(settings, nvidia_for_all=True, nvidia_model_fast="nvidia/fast")
+    assert llm.model_for("pro", nv) == "nvidia/test-nemotron"
+    assert llm.model_for("flash", nv) == "nvidia/fast"
+    chat = FakeChat(['{"questions": []}'])
+    llm.complete("s", "u", Objections, "pro", client=_client(chat), settings=nv)
+    assert chat.requests[0]["model"] == "nvidia/test-nemotron"
+
+
+def test_default_routing_keeps_gemini_for_pro(settings):
+    assert llm.model_for("pro", settings) == settings.model_pro
 
 
 def test_missing_nvidia_model_gives_clear_error(settings):

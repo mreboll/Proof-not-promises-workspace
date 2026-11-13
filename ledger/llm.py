@@ -43,8 +43,17 @@ BACKOFF_BASE_S = 2.0
 def _route(role: Role, settings: Settings) -> tuple[str, Callable[[Settings], Any], Generate]:
     if role == "fiscal":
         return settings.nvidia_model, nvidia_client, nvidia_generate
+    if settings.nvidia_for_all:
+        # Modo temporal sin Gemini (LEDGER_NVIDIA_FOR_ALL=1). Rompe D7: Fiscal y Defensor comparten familia.
+        model = settings.nvidia_model if role == "pro" else settings.nvidia_model_fast
+        return model, nvidia_client, nvidia_generate
     model = settings.model_pro if role == "pro" else settings.model_flash
     return model, gemini_client, gemini_generate
+
+
+def model_for(role: Role, settings: Settings | None = None) -> str:
+    """Modelo que atenderá un rol con la configuración actual (para logs, CLI e informe)."""
+    return _route(role, settings or load_settings())[0]
 
 
 def _cache_key(model: str, system: str, user: str, schema_name: str) -> str:
