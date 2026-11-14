@@ -4,7 +4,7 @@ Las frases que se dicen van **en inglés** (jurado y reportes en inglés); las n
 Todas las cifras son reales: fuentes en `docs/numeros-evidencia.md`, `fixtures/` y `docs/lessons-log.md`.
 
 Qué tener abierto:
-- El informe HTML de #2283 (`python -m ledger.report.render fixtures/report_2283_dotnet.json`, el del crash desplazado).
+- El informe HTML de #2283: `demo/2283-dotnet.html` (el del crash desplazado; se regenera con `python -m ledger.report.demo`).
 - Una terminal con `python -m ledger.evidence.bench --issue 2283` ya ejecutado (o `fixtures/bench_2283.json`).
 
 ---

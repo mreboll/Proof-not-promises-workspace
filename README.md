@@ -71,7 +71,7 @@ python -m ledger.evidence.bench --issue 2283              # Modal (parallel) vs 
 | [Lessons log](docs/lessons-log.md) | Every real AI failure we hit, and the funnel layer that caught it |
 | [Architecture](docs/ARQUITECTURA.md) | The full design (Spanish) |
 | Bounty write-ups | [Gemini & Nemotron](docs/bounty-forms.md) · [Modal](docs/bounty-form-modal.md) |
-| Real reports | `fixtures/report_2283_dotnet.json` (local), `fixtures/report_2283_modal.json` (Modal) |
+| Real reports | [demo/index.html](demo/index.html) (HTML, open locally) · recorded runs: `fixtures/report_2283_dotnet.json` (local), `fixtures/report_2283_modal.json` (Modal) |
 
 ## Honest limits
 
