@@ -81,5 +81,11 @@ the demo repeatable, not the models.
 
 ## Team
 
-**A** — evidence engine (.NET runner, generation invariance, change tests, Modal);
-**B** — triage, cross-examination, verdicts and report. Internal team notes (Spanish): [docs/TEAM.md](docs/TEAM.md), [docs/PERSONA-A.md](docs/PERSONA-A.md), [docs/PERSONA-B.md](docs/PERSONA-B.md).
+| Name | Role |
+|---|---|
+| **Víctor Verdú García** | Scope and risk triage, cross-examination (Prosecutor, Defender, mutants), verdict matrix and sign-off report |
+| **Martín Reboll Gómez** | Evidence engine: .NET test runner, generation invariance, independent change tests, Modal sandboxes |
+| **Javier de Paz Figueras** | Concept Card, decision log and measured trade-offs |
+| **Marco García López** | Lessons log, demo video and live pitch |
+
+Internal team notes (Spanish): [docs/TEAM.md](docs/TEAM.md), [docs/PERSONA-A.md](docs/PERSONA-A.md), [docs/PERSONA-B.md](docs/PERSONA-B.md).
