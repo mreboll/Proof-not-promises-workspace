@@ -1,55 +1,81 @@
-# tieto-ledger: Risk-Scoped Evidence Ledger
+# Proof, not promises
 
-Junction 2026, reto de Tieto *Earned Trust in AI Code*. El diseño está en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md). Ojo: su "invarianza binaria" se convirtió en **invarianza de generación**; el motivo está en [docs/decision-log.md](docs/decision-log.md), D2.
+**A Risk-Scoped Evidence Ledger for AI-written code.** Junction 2026 · Tieto challenge *Earned Trust in AI Code*.
 
-## Puesta en marcha (los dos)
+An AI agent changes hundreds of files and a human signs the approval. Reading every line is infeasible; trusting
+the AI's own summary is negligent. We replace line-by-line review with a funnel where **no model approves anything
+by argument**: trust comes only from executable evidence, and when the evidence is missing the system **refuses to
+decide** and tells the human exactly what to look at.
+
+We ran it on the four real AI-written pull requests of the challenge (MessagePack-CSharp #2283, #2234, #2129, #2297).
+
+## What it found
+
+- **#2283 — the AI fix moved the crash instead of removing it.** The change test (written by a model that only saw
+  the issue) is red on base and green on the PR; generated code is identical outside the issue. A reviewer reading
+  that would approve. Then the Prosecutor (Nemotron) raised edge cases, the Defender (Gemini) answered with tests,
+  and those tests **failed on the PR**: for a generic type from another assembly with an invalid key, the generator
+  still crashes (`IndexOutOfRange` became `InvalidOperation`) and the resolver is still not generated. Verdict: RED,
+  with the exact failing test.
+- **#2234 — RED for two real reasons.** The one-sentence issue produced a test that also passes on base, and the
+  invariance check shows the fix changes behaviour **outside** the issue.
+- **#2297 — 237 files.** At most 14 need human eyes: static rules rank 223 files as low risk and the passing evidence
+  approves them unread. Generated code is identical everywhere after one **declared** normalization (the feature adds
+  an attribute to all generated code), shown in the report. The scope check flagged one unrequested change:
+  `TransformUtilities.cs` alters line breaks in generated code, which the issue never asks for.
+- **#2129 — the AI's own test was wrong.** The system did not approve; the independent invariance oracle showed the
+  feature works and pointed the human at the test.
+
+## How it works
+
+| Stage | Check | Models / tools |
+|---|---|---|
+| **T3 · Scope & risk** | Each file: in or out of the issue's scope × risk from static, auditable rules | Gemini flash + rules |
+| **T1 · Executable evidence** | **Change test** written from the issue alone (never the diff): red on base, green on PR. **Generation invariance**: 31 snippets through the source generator in two isolated processes, base run twice; outside the issue, generated code and diagnostics must hash identically | Gemini / Nemotron · .NET 8 · Modal |
+| **T2 · Cross-examination** | Up to 3 objections per high-risk file; each closes only with a test that passes on the PR **and fails against a mutant** | Nemotron (Prosecutor) vs Gemini (Defender) |
+
+All AI-written code (change tests, Defender tests, mutants) can run in **Modal Sandboxes with no network**:
+base, PR and mutant in parallel take 28 s vs 63 s sequential on a laptop, for $0.21 of compute during the whole hackathon.
+
+## Try it
+
+**In seconds, no API keys, no .NET** (uses the recorded evidence in `fixtures/`):
 
 ```bash
-# 1. Repo del reto, al lado de este (con rutas largas activadas en Windows)
-git clone -c core.longpaths=true https://github.com/te-industry-tech-office/junction26-messagepack-csharp.git ../junction26-messagepack-csharp
-
-# 2. Python
-py -3 -m venv .venv
-.venv/Scripts/python -m pip install -e ".[dev]"
-cp .env.example .env        # y pon tu GEMINI_API_KEY
-
-# 3. Comprobaciones
+python -m venv .venv && .venv/Scripts/python -m pip install -e ".[dev]"   # macOS/Linux: .venv/bin/python
+.venv/Scripts/python -m ledger run --issue 2283 --fixtures --fake-runner  # → out/report-2283.html
 .venv/Scripts/python -m pytest -q
-.venv/Scripts/python -m ledger llm-ping
-.venv/Scripts/python -m ledger run --issue 2283 --fixtures --fake-runner
 ```
 
-## Quién hace qué
+**For real** (needs .NET SDK 8.0.4xx, the challenge repo cloned next to this one, and keys in `.env` — see `.env.example`):
 
-| Persona | Guía | Carpetas propias |
-|---|---|---|
-| A: motor de evidencia (.NET) | [docs/PERSONA-A.md](docs/PERSONA-A.md) | `ledger/evidence/`, `harness/`, `fixtures/evidence_*.json` |
-| B: triaje, interrogatorio e informe | [docs/PERSONA-B.md](docs/PERSONA-B.md) | `ledger/triage/`, `ledger/crossexam/`, `ledger/verdict.py`, `ledger/report/`, `issues/`, `fixtures/triage_*.json` |
-| Los dos (avisar antes de tocar) | | `ledger/models.py`, `ledger/llm.py`, `ledger/config.py`, `ledger/pipeline.py` |
+```bash
+git clone -c core.longpaths=true https://github.com/te-industry-tech-office/junction26-messagepack-csharp.git ../junction26-messagepack-csharp
+python -m ledger run --issue 2283                        # full pipeline with dotnet on this machine
+LEDGER_RUNNER=modal python -m ledger run --issue 2283     # AI-written code in network-less Modal Sandboxes
+python -m ledger.evidence.regen --issue 2283              # regenerate the evidence, with provenance
+python -m ledger.evidence.bench --issue 2283              # Modal (parallel) vs local (sequential)
+```
 
-Ramas: `a/evidence` y `b/triage-report`. Hay que hacer merge a `main` como mínimo en la H5 y en la H8.
+## Read more
 
-## Hitos
-
-| Hora | Hito |
+| Document | What's in it |
 |---|---|
-| H5 | B hace el triaje real de #2283; A tiene el test del cambio rojo en base y verde en PR |
-| **H8** | `python -m ledger run --issue 2283` funciona de principio a fin con dotnet real |
-| H11 | Feature freeze: #2234 funcionando y números reales de #2297 |
-| H11–14 | Docs, vídeo de 2:00 y pitch de 3:00 |
+| [Concept Card](docs/concept-card.md) | Principles, decision matrix, measured trade-offs, limits |
+| [Measured numbers](docs/numeros-evidencia.md) | Every timing and result, with its source |
+| [Decision log](docs/decision-log.md) | Why static rules, isolated processes, issue-only tests, mutants, model diversity |
+| [Lessons log](docs/lessons-log.md) | Every real AI failure we hit, and the funnel layer that caught it |
+| [Architecture](docs/ARQUITECTURA.md) | The full design (Spanish) |
+| Bounty write-ups | [Gemini & Nemotron](docs/bounty-forms.md) · [Modal](docs/bounty-form-modal.md) |
+| Real reports | `fixtures/report_2283_dotnet.json` (local), `fixtures/report_2283_modal.json` (Modal) |
 
-Cada vez que la IA os falle, apuntad una línea en [docs/lessons-log.md](docs/lessons-log.md).
+## Honest limits
 
-## Tech Challenges (bounties)
+A badly written ticket gives weak evidence (#2234) — the system says so, it doesn't fix the ticket. It needs a
+differential oracle (here: generated code + diagnostics). LLMs aren't reproducible run to run; the disk cache makes
+the demo repeatable, not the models.
 
-Detalle, requisitos de entrega y responsables en [docs/TECH-CHALLENGES.md](docs/TECH-CHALLENGES.md).
+## Team
 
-| Prio | Bounty | Dueño | Cuándo |
-|---|---|---|---|
-| 1 | Gemini API (4.000 €) | A + B | Ya incluido (roles `pro` y `flash`) |
-| 2 | Modal ($2.000) | A | Tras el paso 2 de A (H5–H8); es también el plan B si .NET falla en Windows |
-| 3 | NVIDIA Nemotron (RTX 5080) | B | Con el Fiscal (H5–H8); rol `fiscal` ya cableado |
-| 4 | CRACI | B | En cuanto exista el repo en GitHub (1 h) |
-| 5 | Entire | Cualquiera | Solo después de la H11 |
-
-`python -m ledger llm-ping` comprueba Gemini **y** Nemotron.
+**A** — evidence engine (.NET runner, generation invariance, change tests, Modal);
+**B** — triage, cross-examination, verdicts and report. Internal team notes (Spanish): [docs/TEAM.md](docs/TEAM.md), [docs/PERSONA-A.md](docs/PERSONA-A.md), [docs/PERSONA-B.md](docs/PERSONA-B.md).
