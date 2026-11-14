@@ -4,8 +4,8 @@ El LLM no escribe el diff: devuelve {find, replace} sobre el código REAL del PR
 construimos aquí con difflib. Los diffs escritos por un LLM suelen tener contexto o números de línea
 mal y `git apply` los rechaza; así el parche siempre aplica sobre el blob del PR.
 
-Ojo para quien aplique el parche (A): se genera con finales de línea LF, los del blob de git. En un
-worktree de Windows con core.autocrlf=true, usar `git apply --ignore-whitespace`.
+Comprobado con un worktree real de #2283 (core.autocrlf=true): `DotnetTestRunner.run_against_mutant`
+escribe el parche con `write_text` (CRLF en Windows, igual que el worktree) y `git apply` lo aplica.
 """
 
 from __future__ import annotations

@@ -87,6 +87,18 @@ def parse_diff(text: str) -> tuple[FileDiff, ...]:
     return tuple(result)
 
 
+def read_file_at(settings: Settings, issue_id: str, side: str, path: str) -> str:
+    """Contenido de `path` en la base o en el PR, tal como está en el blob de git (LF, BOM incluido)."""
+    ref = settings.ref(issue_id, side)
+    try:
+        proc = subprocess.run(["git", "-C", str(settings.msgpack_repo), "show", f"{ref}:{path}"], capture_output=True, timeout=GIT_TIMEOUT_S, check=False)
+    except subprocess.TimeoutExpired as exc:
+        raise DiffError(f"git show {ref}:{path} superó {GIT_TIMEOUT_S}s") from exc
+    if proc.returncode != 0:
+        raise DiffError(f"git show {ref}:{path} falló: {proc.stderr.decode('utf-8', 'replace').strip()}")
+    return proc.stdout.decode("utf-8", "replace")
+
+
 def load_diff(settings: Settings, issue_id: str) -> tuple[FileDiff, ...]:
     """`git diff <base> <pr>` del issue, con detección de renombrados."""
     repo = settings.msgpack_repo

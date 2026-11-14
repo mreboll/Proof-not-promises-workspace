@@ -79,6 +79,11 @@ def _invariance_reasons(inv: InvarianceEvidence | None) -> list[str]:
     return reasons
 
 
+def evidence_lines(change_test: ChangeTestEvidence | None, invariance: InvarianceEvidence | None) -> list[str]:
+    """Resumen legible de la evidencia de la Etapa 2 (lo usan las razones del veredicto y el Fiscal)."""
+    return _change_test_reasons(change_test) + _invariance_reasons(invariance)
+
+
 def _verdict(triage: FileTriage, verdict: Verdict, row: str, why: str, extra: list[str], objections: tuple[Objection, ...] = ()) -> FragmentVerdict:
     return FragmentVerdict(path=triage.path, verdict=verdict, reasons=(f"{row}: {why}", *extra), objections=objections)
 
@@ -96,7 +101,7 @@ def decide(
             return _verdict(triage, Verdict.RED, "M1", "fuera del alcance del issue y riesgo alto", [*triage.rule_hits])
         return _verdict(triage, Verdict.YELLOW, "M2", f"fuera del alcance, riesgo {risk.value}: revisar la justificación", [f"justificación: {triage.justification}"])
 
-    evidence = _change_test_reasons(change_test) + _invariance_reasons(invariance)
+    evidence = evidence_lines(change_test, invariance)
     evidence_ok = change_test is not None and change_test.ok and invariance is not None and invariance.ok
     if not evidence_ok:
         return _verdict(triage, Verdict.RED, "M3", "la evidencia ejecutable falla o falta", evidence)

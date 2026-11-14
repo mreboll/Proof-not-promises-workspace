@@ -53,8 +53,10 @@ def stage3_and_verdicts(
     runner: TestRunner,
     settings: Settings,
 ) -> tuple[FragmentVerdict, ...]:
-    """Línea B: ledger/crossexam + ledger/verdict.py."""
-    raise NotImplementedError("Etapa 3 y veredictos pendientes (Línea B)")
+    """Línea B: ledger/crossexam + ledger/verdict.py, orquestado en ledger/crossexam/stage.py."""
+    from ledger.crossexam import stage as crossexam_stage  # import local: no toca la cabecera compartida
+
+    return crossexam_stage.judge_issue(issue_id, triage, change_test, invariance, runner, settings)
 
 
 def render_report(report: Report, out_dir: Path) -> Path:
