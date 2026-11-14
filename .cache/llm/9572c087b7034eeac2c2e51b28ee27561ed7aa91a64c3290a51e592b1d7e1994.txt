@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "When GetObjectInfo processes a closed generic value type from a referenced assembly and reaches a direct DeclaringSyntaxReferences[0] indexing site other than the two property-diagnostic sites edited in the diff (the issue cites lines 735, 1009, and 1101), does the analyzer or generator still throw IndexOutOfRangeException?",
+      "rationale": "The diff guards only two property-related diagnostic call sites and wraps reportDiagnostic. The issue author notes several GetObjectInfo paths still index DeclaringSyntaxReferences[0] directly. The change test exercises a property member (Item<int> Member) that hits the edited sites, so other member/kind paths that index [0] directly are untested and can still crash before the reportDiagnostic filter applies."
+    },
+    {
+      "question": "Does a closed generic value type from a referenced assembly with a keyed non-property member (a field or an indexer) crash or silently drop its diagnostic, given GetPropertyIdentifierLocation only handles PropertyDeclarationSyntax and the repro uses only a property?",
+      "rationale": "The change test and invariance cases use a property member. Fields and indexers use different declaration syntax; an indexer is an IPropertySymbol declared via IndexerDeclarationSyntax, so GetPropertyIdentifierLocation's as PropertyDeclarationSyntax returns null. Whether field/indexer processing still indexes DeclaringSyntaxReferences[0] directly at an unfixed site, or mishandles the location, is untested."
+    },
+    {
+      "question": "Does a nested closed generic value type from a referenced assembly (for example Outer<int>.Inner<string> used as a member) crash or produce an incorrect location, given the repro covers only a top-level closed generic struct (Item<int>)?",
+      "rationale": "Nested metadata types also have empty DeclaringSyntaxReferences, but the nested-type path in GetObjectInfo/CollectGeneric and the location helpers are not exercised by the top-level repro or the 21 general invariance cases, which use in-source types."
+    }
+  ]
+}

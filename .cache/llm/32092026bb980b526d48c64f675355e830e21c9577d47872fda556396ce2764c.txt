@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated enum formatter template, directly fulfilling the feature request to decorate generated code with this attribute."
+}

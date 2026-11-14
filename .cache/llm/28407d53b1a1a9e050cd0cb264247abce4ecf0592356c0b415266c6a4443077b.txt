@@ -1,0 +1,5 @@
+{
+  "find": "#if !NETSTANDARD2_0 && !NETFRAMEWORK\n[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\n#endif\npartial class <#= ResolverName.Name #> : MsgPack::IFormatterResolver",
+  "replace": "partial class <#= ResolverName.Name #> : MsgPack::IFormatterResolver",
+  "explanation": "Removes the ExcludeFromCodeCoverage attribute from the generated composite resolver class so it is absent even when NETSTANDARD2_0 is not defined."
+}

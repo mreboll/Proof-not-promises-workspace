@@ -94,11 +94,11 @@ def _plural(n: int, singular: str, plural: str | None = None) -> str:
 
 
 def funnel(report: Report) -> list[dict[str, str]]:
-    """Una línea por etapa del embudo (T3 → T1 → T2) para la tira de la cabecera."""
+    """Una línea por etapa del embudo (T1 → T2 → T3) para la tira de la cabecera."""
     triage = report.triage
     out = sum(t.scope is Scope.OUT for t in triage)
     high = sum(t.risk is Risk.HIGH for t in triage)
-    stage1 = {"id": "T3", "name": "Triage", "status": "done",
+    stage1 = {"id": "T1", "name": "Triage", "status": "done",
               "lines": [_plural(len(triage), "file"), f"{out} out of scope", f"{high} high risk"]}
 
     ct, inv = report.change_test, report.invariance
@@ -107,7 +107,7 @@ def funnel(report: Report) -> list[dict[str, str]]:
         "no invariance" if inv is None else ("invariance passed" if inv.ok else "invariance failed"),
     ]
     ev_ok = bool(ct and ct.ok and inv and inv.ok)
-    stage2 = {"id": "T1", "name": "Evidence", "status": "pass" if ev_ok else "fail", "lines": ev_lines}
+    stage2 = {"id": "T2", "name": "Evidence", "status": "pass" if ev_ok else "fail", "lines": ev_lines}
 
     objections = [o for v in report.verdicts for o in v.objections]
     valid = sum(o.valid for o in objections)
@@ -121,7 +121,7 @@ def funnel(report: Report) -> list[dict[str, str]]:
         refused = sum(v.reasons[0].startswith("M7") for v in report.verdicts if v.reasons)
         x_lines = ["no objections" if not refused else "not run"]
         status = "idle" if not refused else "fail"
-    stage3 = {"id": "T2", "name": "Cross-examination", "status": status, "lines": x_lines}
+    stage3 = {"id": "T3", "name": "Cross-examination", "status": status, "lines": x_lines}
     return [stage1, stage2, stage3]
 
 

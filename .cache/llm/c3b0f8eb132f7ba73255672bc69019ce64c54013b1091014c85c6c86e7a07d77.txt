@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The added test file verifies that the analyzer functions correctly when SuppressSourceGeneration is set to true, directly testing the behavior reported in issue #2234."
+}

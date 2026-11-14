@@ -1,0 +1,5 @@
+{
+  "find": "            this.Write(\"\\r\\n#if !NETSTANDARD2_0 && !NETFRAMEWORK\\r\\n[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\\r\\n#endif\\r\\npartial class \");",
+  "replace": "            this.Write(\"\\r\\n[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\\r\\npartial class \");",
+  "explanation": "Removes the preprocessor guard around ExcludeFromCodeCoverage on the generated resolver class so the attribute is unconditionally emitted even when targeting frameworks where it does not exist such as NETSTANDARD1_3."
+}

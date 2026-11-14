@@ -1,0 +1,5 @@
+{
+  "find": "#if !NETSTANDARD2_0 && !NETFRAMEWORK\n\t[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\n#endif\n\tinternal sealed class <#= Info.Formatter.Name #>",
+  "replace": "\tinternal sealed class <#= Info.Formatter.Name #>",
+  "explanation": "Removes the ExcludeFromCodeCoverage attribute from the generated enum formatter template so enum formatters no longer carry ExcludeFromCodeCoverage."
+}

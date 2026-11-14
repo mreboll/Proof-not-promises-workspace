@@ -18,7 +18,7 @@ Pantalla: el diff de #2297 en GitHub haciendo scroll (237 ficheros), luego un bo
 > So the real question is not 'is this code good?'. It is: what evidence lets a person sign without reading every line?"
 
 ### 0:30–1:10 · El embudo (≈100 palabras)
-Pantalla: `demo/2283-dotnet.html`, la tira del embudo T3 → T1 → T2; resaltar cada etapa al nombrarla.
+Pantalla: `demo/2283-dotnet.html`, la tira del embudo T1 → T2 → T3; resaltar cada etapa al nombrarla.
 
 > "Our answer is a funnel with one rule: no model approves anything by argument. Only executable proof counts.
 > First, triage. Static rules, no AI, decide how risky each file is. A model checks whether the issue actually asked for it.

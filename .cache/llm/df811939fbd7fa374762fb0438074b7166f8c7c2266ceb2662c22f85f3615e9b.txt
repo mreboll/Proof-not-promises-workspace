@@ -1,0 +1,5 @@
+{
+  "find": "    private void ReportIfLocatedInCompilation(Action<Diagnostic> report, Diagnostic diagnostic)\n    {\n        if (diagnostic.Location.IsInSource && this.compilation.ContainsSyntaxTree(diagnostic.Location.SourceTree))\n        {\n            report(diagnostic);\n        }\n    }",
+  "replace": "    private void ReportIfLocatedInCompilation(Action<Diagnostic> report, Diagnostic diagnostic)\n    {\n        if (this.compilation is not null)\n        {\n            report(diagnostic);\n        }\n    }",
+  "explanation": "Stops filtering out diagnostics whose locations are not in the current compilation's syntax trees, causing diagnostics on keyed fields or indexers in closed generic value types from referenced assemblies to be reported with invalid or external locations."
+}

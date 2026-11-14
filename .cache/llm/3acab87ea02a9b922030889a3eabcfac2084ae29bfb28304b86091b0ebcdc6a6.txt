@@ -1,0 +1,5 @@
+{
+  "find": "    private static Location? GetIdentifierLocation(INamedTypeSymbol type) => ((BaseTypeDeclarationSyntax?)type.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax())?.Identifier.GetLocation();",
+  "replace": "    private static Location? GetIdentifierLocation(INamedTypeSymbol type) => ((BaseTypeDeclarationSyntax)type.DeclaringSyntaxReferences[0].GetSyntax()).Identifier.GetLocation();",
+  "explanation": "Reintroduces direct DeclaringSyntaxReferences[0] indexing in GetIdentifierLocation so GetObjectInfo throws IndexOutOfRangeException when reporting type-level diagnostics on a metadata type from a referenced assembly."
+}

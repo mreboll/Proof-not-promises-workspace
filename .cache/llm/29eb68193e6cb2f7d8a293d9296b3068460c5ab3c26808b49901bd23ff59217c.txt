@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "Do the string-key formatter, enum/union formatter, and resolver templates under `src/MessagePack.SourceGenerator/Transforms/` emit `[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]` on their generated types?",
+      "rationale": "The diff only modifies `FormatterTemplate.cs`. The change test and invariance check cover standard formatter output, but the issue explicitly requests the attribute on string-key formatters, enum/union formatters, and resolvers; if those are emitted by separate templates, they remain unmodified and unverified."
+    },
+    {
+      "question": "When the MessagePack data type is a metadata symbol from a referenced assembly (no syntax tree in the compilation), does the generated formatter still contain the attribute?",
+      "rationale": "The change test likely uses types defined in the test project (syntax symbols). Metadata symbols can resolve members and accessibility differently and may traverse a distinct code path, so the 21-case invariance check does not demonstrate attribute emission for cross-assembly types."
+    },
+    {
+      "question": "Does the generated formatter compile and carry the attribute (or correctly omit it) for consumer projects targeting `NETSTANDARD2_0`, `NETSTANDARD2_1`, `NET6.0`, and `NET8.0`, given the `#if !NETSTANDARD2_0 && !NETFRAMEWORK` guard?",
+      "rationale": "The evidence runs under a single target framework. Because the attribute is conditionally compiled out for `NETSTANDARD2_0` and `NETFRAMEWORK`, the change test and invariance check do not verify the attribute's presence or absence, or compilation success, across the supported target-framework matrix."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change adds the requested ExcludeFromCodeCoverage attribute to the generated string key formatter code template as requested in the issue."
+}

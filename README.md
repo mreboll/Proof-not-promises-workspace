@@ -34,9 +34,9 @@ They are rebuilt from the recorded runs in `fixtures/` with `python -m ledger.re
 
 | Stage | Check | Models / tools |
 |---|---|---|
-| **T3 · Scope & risk** | Each file: in or out of the issue's scope × risk from static, auditable rules | Gemini flash + rules |
-| **T1 · Executable evidence** | **Change test** written from the issue alone (never the diff): red on base, green on PR. **Generation invariance**: 31 snippets through the source generator in two isolated processes, base run twice; outside the issue, generated code and diagnostics must hash identically | Gemini / Nemotron · .NET 8 · Modal |
-| **T2 · Cross-examination** | Up to 3 objections per high-risk file; each closes only with a test that passes on the PR **and fails against a mutant** | Nemotron (Prosecutor) vs Gemini (Defender) |
+| **T1 · Scope & risk** | Each file: in or out of the issue's scope × risk from static, auditable rules | Gemini flash + rules |
+| **T2 · Executable evidence** | **Change test** written from the issue alone (never the diff): red on base, green on PR. **Generation invariance**: 31 snippets through the source generator in two isolated processes, base run twice; outside the issue, generated code and diagnostics must hash identically | Gemini / Nemotron · .NET 8 · Modal |
+| **T3 · Cross-examination** | Up to 3 objections per high-risk file; each closes only with a test that passes on the PR **and fails against a mutant** | Nemotron (Prosecutor) vs Gemini (Defender) |
 | **Trust · Track record** | Trust is earned per area from signed changes and withdrawn after an escape (green goes back to a human). Every report lists a deterministic sample of green files for a human to spot-check | Rules + `trust/track_record.json`, written only by people |
 
 All AI-written code (change tests, Defender tests, mutants) can run in **Modal Sandboxes with no network**:

@@ -1,0 +1,5 @@
+{
+  "find": " using (TransformUtilities.EmitNestingTypesAndNamespaces(this.ResolverName, this.Write)) { \n            this.Write(\"\\r\\n#if !NETSTANDARD2_0 && !NETFRAMEWORK\\r\\n[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\\r\\n#endif\\r\\npartial class \");",
+  "replace": "            this.Write(\"\\r\\n#if !NETSTANDARD2_0 && !NETFRAMEWORK\\r\\n[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\\r\\n#endif\\r\\n\");\n using (TransformUtilities.EmitNestingTypesAndNamespaces(this.ResolverName, this.Write)) { \n            this.Write(\"partial class \");",
+  "explanation": "Emits the ExcludeFromCodeCoverage attribute before the nesting types and namespaces instead of directly on the generated resolver partial class, breaking attribution and compilation when the resolver is nested inside a namespace or type."
+}

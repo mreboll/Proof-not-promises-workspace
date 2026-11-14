@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Adding the ExcludeFromCodeCoverage attribute to the generated formatter template directly addresses the issue's request to exclude generated code from code coverage."
+}

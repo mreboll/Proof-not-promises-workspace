@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The issue requests adding the ExcludeFromCodeCoverage attribute to generated code, which is precisely what the diff adds to the resolver template."
+}

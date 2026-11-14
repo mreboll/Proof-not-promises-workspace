@@ -1,0 +1,1 @@
+{"scope":"IN","justification":"The added test file verifies the source generator and runtime behavior when SuppressSourceGeneration is set to true, directly testing the issue."}

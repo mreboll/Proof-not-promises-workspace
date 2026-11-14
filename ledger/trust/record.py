@@ -65,7 +65,7 @@ def change_from_report(report: Report, *, owner: str, date: str) -> ChangeEvent:
     from ledger.trust.policy import TRUST_CODE
 
     def evidence_approved(v: FragmentVerdict) -> bool:
-        # T1: la evidencia lo aprobó y una persona lo leyó por la confianza retirada. Cuenta como aprobado: si no,
+        # TR: la evidencia lo aprobó y una persona lo leyó por la confianza retirada. Cuenta como aprobado: si no,
         # un área retirada nunca podría volver a ganarse (sus verdes siempre salen T1).
         return v.verdict is Verdict.GREEN or bool(v.reasons and v.reasons[0].startswith(f"{TRUST_CODE}:"))
 

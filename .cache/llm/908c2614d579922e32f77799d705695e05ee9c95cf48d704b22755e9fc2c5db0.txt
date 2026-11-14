@@ -1,0 +1,5 @@
+{
+  "find": "    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) => (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();",
+  "replace": "    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) => (property.DeclaringSyntaxReferences[0].GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();",
+  "explanation": "Indexa directamente DeclaringSyntaxReferences[0] en GetPropertyIdentifierLocation, provocando IndexOutOfRangeException cuando una propiedad de un tipo definido en metadatos activa el diagnóstico BothStringAndIntKeyAreNull."
+}

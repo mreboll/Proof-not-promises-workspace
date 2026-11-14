@@ -47,7 +47,7 @@ approves. When it cannot prove something, it **refuses to decide** and says exac
    recompute it. Whatever the reader finds is recorded with `record-escape`.
 3. **Trust is per area and comes from track record** (`trust/track_record.json`, versioned in the repo). An area is the
    file's directory, three levels deep: a fixed rule, not a model's call. It starts on *probation*, is *earned* after 5
-   clean signed changes, and is *withdrawn* by one escape: green files there go back to a human (verdict T1) until 5
+   clean signed changes, and is *withdrawn* by one escape: green files there go back to a human (verdict TR) until 5
    clean changes are signed again.
 4. **Measure outcomes, not activity:** `python -m ledger.trust status` shows, per area, escapes per approved file and
    how each was found (spot-check, revert, incident, rerun), never "reviews done".
@@ -75,9 +75,9 @@ withdrawn, and that same green would now go to a human. No change is recorded as
 
 | Stage | What it does | Who / what |
 |---|---|---|
-| **T3 Scope & risk** | Each file: in or out of the issue's scope (LLM, judged against the literal issue) × risk by static rules | Gemini flash + rules |
-| **T1 Executable evidence** | (a) A **change test** written by an agent that sees only the issue, never the diff: must fail on base and pass on PR. (b) **Generation invariance**: a corpus of 31 snippets through the source generator in two isolated processes; outside the issue, generated code and diagnostics must hash identically (base run twice for determinism) | Gemini/Nemotron + .NET + Modal |
-| **T2 Cross-examination** | High-risk, in-scope files: up to 3 Prosecutor objections, each answered only by a Defender test validated against a mutant | Nemotron (Prosecutor) vs Gemini (Defender) |
+| **T1 Scope & risk** | Each file: in or out of the issue's scope (LLM, judged against the literal issue) × risk by static rules | Gemini flash + rules |
+| **T2 Executable evidence** | (a) A **change test** written by an agent that sees only the issue, never the diff: must fail on base and pass on PR. (b) **Generation invariance**: a corpus of 31 snippets through the source generator in two isolated processes; outside the issue, generated code and diagnostics must hash identically (base run twice for determinism) | Gemini/Nemotron + .NET + Modal |
+| **T3 Cross-examination** | High-risk, in-scope files: up to 3 Prosecutor objections, each answered only by a Defender test validated against a mutant | Nemotron (Prosecutor) vs Gemini (Defender) |
 
 ## Decision matrix
 

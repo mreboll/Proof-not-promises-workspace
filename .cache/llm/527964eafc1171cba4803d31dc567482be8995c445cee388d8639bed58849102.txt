@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "When the consumer compilation defines `NETSTANDARD1_3` (and neither `NETSTANDARD2_0` nor `NETFRAMEWORK`), does the generated resolver omit `ExcludeFromCodeCoverage` or otherwise avoid emitting an attribute type that does not exist in that framework, and does the generated code still compile?",
+      "rationale": "The guard `#if !NETSTANDARD2_0 && !NETFRAMEWORK` emits the attribute for every other framework, including .NET Standard 1.x where `System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage` is unavailable, potentially producing non-compiling consumer code. The change test and invariance check used modern frameworks and did not exercise this conditional path."
+    },
+    {
+      "question": "Do the other templates under `Transforms/` (object formatters, string-key formatters, enum/union formatters, other resolvers) also emit `ExcludeFromCodeCoverage` on their generated types?",
+      "rationale": "The issue requests the attribute on all generated code, but the diff only modifies `CompositeResolverTemplate.cs`. The change test and invariance evidence are specific to this file and do not verify the remaining templates, so most generated types may still lack the attribute."
+    },
+    {
+      "question": "When the generated resolver is nested inside another class or struct, is the `ExcludeFromCodeCoverage` attribute emitted in a syntactically valid location for both the resolver partial class and the nested `FormatterCache<T>`, and does the generated code compile?",
+      "rationale": "`EmitNestingTypesAndNamespaces` can place the generated `partial class` inside an enclosing type declaration. The evidence does not cover nested resolvers, where attribute placement or name binding for the nested static cache class could differ from the top-level case."
+    }
+  ]
+}

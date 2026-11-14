@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change adds the requested ExcludeFromCodeCoverage attribute to the generated code template in UnionTemplate.cs."
+}

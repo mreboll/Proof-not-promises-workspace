@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The diff modifies duplicate key handling and control flow in TypeCollector.cs, which is unrelated to the reported issue about the analyzer failing when SuppressSourceGeneration is set to true."
+}

@@ -1,0 +1,5 @@
+{
+  "find": "        if (diagnostic.Location.IsInSource && this.compilation.ContainsSyntaxTree(diagnostic.Location.SourceTree))",
+  "replace": "        if (diagnostic.Location.IsInSource || !this.compilation.ContainsSyntaxTree(diagnostic.Location.SourceTree))",
+  "explanation": "Reports diagnostics from referenced assemblies or external compilations instead of dropping them when their location is outside the current compilation."
+}

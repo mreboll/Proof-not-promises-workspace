@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "¿Sigue lanzando IndexOutOfRangeException GetObjectInfo cuando un tipo de valor genérico cerrado definido en un ensamblado referenciado activa una de las ramas de diagnóstico que aún indexan DeclaringSyntaxReferences[0] directamente (líneas 735, 1009 y 1101 del issue), por ejemplo un miembro sin [Key] o ambas claves nulas en ese tipo de metadatos?",
+      "rationale": "El diff solo reemplaza el acceso directo en dos sitios de diagnóstico y envuelve reportDiagnostic en ReportIfLocatedInCompilation, pero no elimina los accesos directos sin guardia dentro de GetObjectInfo señalados en el issue. La excepción ocurre al construir el diagnóstico, antes de que el filtro de ubicación pueda actuar. La prueba de cambio LedgerIssue2283 no cubre esas ramas alternativas de GetObjectInfo."
+    },
+    {
+      "question": "¿Lanza Diagnostic.Create una excepción (o produce una ubicación no válida) cuando GetPropertyIdentifierLocation devuelve null para una propiedad declarada en metadatos sin [Key] dentro de un tipo [MessagePackObject] del ensamblado en compilación?",
+      "rationale": "GetPropertyIdentifierLocation devuelve null para símbolos de metadatos. Ese null se pasa a Diagnostic.Create antes de invocar ReportIfLocatedInCompilation; si Diagnostic.Create no acepta null, el analizador falla con ArgumentNullException en lugar de descartar el diagnóstico. La prueba de cambio no cubre miembros de metadatos que carecen de clave."
+    },
+    {
+      "question": "¿Se produce IndexOutOfRangeException cuando un tipo [MessagePackObject] del ensamblado en compilación tiene un miembro de tipo genérico cerrado de referencia desde un ensamblado referenciado (por ejemplo List<Item<int>> o List<int>), en lugar de un tipo de valor genérico cerrado como Item<int>?",
+      "rationale": "CollectGeneric invoca GetObjectInfo para cualquier tipo genérico cerrado sobre un símbolo de metadatos, no solo para tipos de valor. El repro solo cubre Item<int> (tipo de valor) como miembro directo; no cubre tipos de referencia genéricos cerrados ni tipos genéricos cerrados usados como argumentos de otros tipos genéricos, que también carecen de sintaxis en la compilación actual."
+    }
+  ]
+}

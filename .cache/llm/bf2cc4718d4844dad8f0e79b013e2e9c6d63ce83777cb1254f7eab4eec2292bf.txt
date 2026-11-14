@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El cambio añade documentación en el archivo README.md sobre tipos genéricos de ensamblados referenciados, lo cual no es solicitado en el reporte del error."
+}

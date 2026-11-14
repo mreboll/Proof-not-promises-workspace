@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "When the source generator runs under a project targeting NETSTANDARD2_0 or NETFRAMEWORK, is ExcludeFromCodeCoverage omitted from the generated enum formatter, and is it present when targeting NETSTANDARD2_1, NET6.0, or NET8.0?",
+      "rationale": "The change test and invariance check execute under a single target framework and never toggle the preprocessor symbols, so they do not validate the #if !NETSTANDARD2_0 && !NETFRAMEWORK guard that gates the attribute."
+    },
+    {
+      "question": "For an enum defined in a referenced assembly (a metadata symbol without syntax), does the generated formatter still carry ExcludeFromCodeCoverage?",
+      "rationale": "The evidence appears to use enums declared in source; it does not cover metadata-only types, which are a supported source-generator input and may follow a different resolution path."
+    },
+    {
+      "question": "Do formatters produced by FormatterTemplate.tt, StringKeyFormatterTemplate.tt, UnionTemplate.tt, and resolver templates for classes, structs, records, and unions also carry ExcludeFromCodeCoverage?",
+      "rationale": "The evidence is limited to EnumTemplate.tt, while the issue requests the attribute on all generated code; no test verifies the other templates, so the change may be incomplete for non-enum generated types."
+    }
+  ]
+}

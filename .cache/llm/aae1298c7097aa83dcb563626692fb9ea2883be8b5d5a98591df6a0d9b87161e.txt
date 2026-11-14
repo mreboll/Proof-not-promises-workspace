@@ -1,0 +1,5 @@
+{
+  "find": "    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) => (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();",
+  "replace": "    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) => (property.DeclaringSyntaxReferences[0].GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();",
+  "explanation": "El mutante indexa directamente el primer elemento de DeclaringSyntaxReferences en GetPropertyIdentifierLocation, provocando IndexOutOfRangeException cuando la propiedad pertenece a un tipo declarado en metadatos de un ensamblado referenciado."
+}

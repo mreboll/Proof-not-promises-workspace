@@ -1,0 +1,1 @@
+{"scope":"IN","justification":"The diff adds the requested ExcludeFromCodeCoverage attribute to the generated enum formatter class in EnumTemplate.cs."}

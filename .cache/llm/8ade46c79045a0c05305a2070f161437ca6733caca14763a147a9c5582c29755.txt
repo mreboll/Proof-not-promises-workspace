@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "For a type defined in a referenced assembly (a metadata symbol without syntax), does the generated formatter class still include the [ExcludeFromCodeCoverage] attribute?",
+      "rationale": "The change test and the 21-case invariance check use in-source types only; metadata-symbol types can follow a different code-generation path and are not verified to receive the attribute."
+    },
+    {
+      "question": "Do generated types other than formatters—resolvers, enum formatters, union formatters, and string-key formatters—receive the [ExcludeFromCodeCoverage] attribute?",
+      "rationale": "The diff modifies only FormatterTemplate.tt; the change test and invariance check do not exercise the other Transform templates listed in the issue, so those generated types may lack the attribute."
+    },
+    {
+      "question": "For a nested type or a closed generic type, is the [ExcludeFromCodeCoverage] attribute emitted on the generated formatter while preserving the emitted nesting, namespace, and type-constraint output?",
+      "rationale": "The template calls EmitNestingTypesAndNamespaces, GetQualifiedName, and EmitTypeConstraints; nested and closed-generic cases can alter those emissions, and the change test/invariance check do not demonstrate the attribute survives those codegen paths."
+    }
+  ]
+}

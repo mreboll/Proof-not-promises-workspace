@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "This file adds unit tests to verify that generated code is decorated with the ExcludeFromCodeCoverage attribute as requested in the issue."
+}

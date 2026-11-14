@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The issue reports a bug where the analyzer fails when SuppressSourceGeneration is true, but does not request updates to the README documentation."
+}

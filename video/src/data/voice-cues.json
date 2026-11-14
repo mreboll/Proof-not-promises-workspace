@@ -1,0 +1,184 @@
+{
+ "intro": [
+  {
+   "from": 20,
+   "to": 101,
+   "text": "AI agents now generate more tokens than humans."
+  },
+  {
+   "from": 109,
+   "to": 153,
+   "text": "So who reviews all that code?"
+  }
+ ],
+ "friday": [
+  {
+   "from": 215,
+   "to": 300,
+   "text": "An AI agent just changed two hundred and thirty-seven files."
+  },
+  {
+   "from": 308,
+   "to": 410,
+   "text": "Another AI reviewed it: ninety-eight percent confident."
+  },
+  {
+   "from": 418,
+   "to": 472,
+   "text": "But the name on the approval is yours."
+  }
+ ],
+ "problems": [
+  {
+   "from": 550,
+   "to": 607,
+   "text": "Reading every line doesn't scale."
+  },
+  {
+   "from": 615,
+   "to": 655,
+   "text": "Confident isn't correct."
+  },
+  {
+   "from": 663,
+   "to": 737,
+   "text": "An AI grading an AI shares its blind spots."
+  },
+  {
+   "from": 745,
+   "to": 787,
+   "text": "And nobody owns the merge."
+  }
+ ],
+ "command": [
+  {
+   "from": 850,
+   "to": 885,
+   "text": "Our answer: one rule."
+  },
+  {
+   "from": 1003,
+   "to": 1097,
+   "text": "No model approves anything. Only executable evidence counts."
+  }
+ ],
+ "triage": [
+  {
+   "from": 1120,
+   "to": 1218,
+   "text": "First, static rules, not a model, rank the risk of every file."
+  },
+  {
+   "from": 1226,
+   "to": 1331,
+   "text": "Then a model that never sees the fix writes a test from the issue alone."
+  },
+  {
+   "from": 1339,
+   "to": 1414,
+   "text": "It must fail before, and pass after."
+  },
+  {
+   "from": 1422,
+   "to": 1552,
+   "text": "Outside the issue, the generated code must not change, across twenty-one cases."
+  }
+ ],
+ "crossExam": [
+  {
+   "from": 1630,
+   "to": 1721,
+   "text": "Then a Prosecutor, Nemotron, attacks every high-risk file."
+  },
+  {
+   "from": 1729,
+   "to": 1875,
+   "text": "The Defender, Gemini, can't argue: it must answer with a test that kills a broken mutant."
+  },
+  {
+   "from": 1913,
+   "to": 1969,
+   "text": "One by one, that took over an hour."
+  },
+  {
+   "from": 1977,
+   "to": 2123,
+   "text": "In parallel, every objection fans out to locked Modal sandboxes: seventeen minutes."
+  },
+  {
+   "from": 2206,
+   "to": 2326,
+   "text": "And most objections don't close. That's the point: you see which."
+  }
+ ],
+ "owner": [
+  {
+   "from": 2360,
+   "to": 2450,
+   "text": "What lands on your desk isn't two hundred files. It's twelve."
+  },
+  {
+   "from": 2458,
+   "to": 2595,
+   "text": "Where evidence is missing, it refuses to decide, and tells you exactly what to read."
+  }
+ ],
+ "finding": [
+  {
+   "from": 2660,
+   "to": 2739,
+   "text": "On another PR, the first evidence was all green."
+  },
+  {
+   "from": 2747,
+   "to": 2851,
+   "text": "Then cross-examination tests showed the AI fix only moved the crash."
+  },
+  {
+   "from": 2859,
+   "to": 2902,
+   "text": "Green, and still wrong."
+  },
+  {
+   "from": 2910,
+   "to": 2965,
+   "text": "In another run, our evidence missed it."
+  },
+  {
+   "from": 2973,
+   "to": 3061,
+   "text": "We logged it as an escape, and that area lost its trust."
+  }
+ ],
+ "product": [
+  {
+   "from": 3100,
+   "to": 3153,
+   "text": "The real report, traced to the issue."
+  }
+ ],
+ "sign": [
+  {
+   "from": 3190,
+   "to": 3290,
+   "text": "A sample, picked by hash, not by the AI, is read in full."
+  },
+  {
+   "from": 3298,
+   "to": 3399,
+   "text": "Then you sign what was checked, what wasn't, and the risk you accept."
+  }
+ ],
+ "close": [
+  {
+   "from": 3469,
+   "to": 3528,
+   "text": "AI reviews. Humans stay accountable."
+  },
+  {
+   "from": 3536,
+   "to": 3572,
+   "text": "Proof, not promises."
+  }
+ ]
+}

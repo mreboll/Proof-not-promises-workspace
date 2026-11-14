@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio añade pruebas unitarias para verificar que la presencia de estructuras genéricas cerradas en ensamblados referenciados no provoque errores en el generador y analizador, satisfaciendo el reporte de la falla."
+}

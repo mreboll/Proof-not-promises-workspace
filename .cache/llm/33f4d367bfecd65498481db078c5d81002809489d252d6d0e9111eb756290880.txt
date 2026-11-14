@@ -1,0 +1,5 @@
+{
+  "find": "            this.Write(\"\\r\\n#if !NETSTANDARD2_0 && !NETFRAMEWORK\\r\\n[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\\r\\n#endif\\r\\npartial class \");",
+  "replace": "            this.Write(\"\\r\\npartial class \");",
+  "explanation": "Removes the ExcludeFromCodeCoverage attribute from the generated composite resolver partial class."
+}

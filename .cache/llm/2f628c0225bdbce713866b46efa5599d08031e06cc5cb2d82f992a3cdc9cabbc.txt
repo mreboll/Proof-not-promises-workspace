@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "Does a generated object formatter produced by a template other than CompositeResolverTemplate.tt contain the [ExcludeFromCodeCoverage] attribute?",
+      "rationale": "The change test only covers CompositeResolverTemplate.tt, and the invariance check shows the other general cases are unchanged, so the evidence does not demonstrate that non-composite generated types are instrumented."
+    },
+    {
+      "question": "When the generated composite resolver is compiled with NETSTANDARD2_0 defined, is the ExcludeFromCodeCoverage attribute absent, and when it is not defined, is the attribute present?",
+      "rationale": "The change test likely inspects raw generated text for a single build configuration; it does not verify that the preprocessor guard correctly includes or excludes the attribute under different target-framework compilation symbols."
+    },
+    {
+      "question": "When the composite resolver is declared as a nested type, is the attribute emitted on the resolver class declaration and are the #if directives correctly balanced with the emitted namespace/nesting blocks?",
+      "rationale": "The template emits nesting types and namespaces via TransformUtilities.EmitNestingTypesAndNamespaces; the change test and invariance cases likely use top-level resolvers and do not cover nested declarations where attribute placement could break syntax."
+    }
+  ]
+}

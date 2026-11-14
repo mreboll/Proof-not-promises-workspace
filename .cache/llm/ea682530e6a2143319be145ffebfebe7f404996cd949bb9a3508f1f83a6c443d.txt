@@ -1,0 +1,5 @@
+{
+  "find": "            this.Write(\"\\r\\n#if !NETSTANDARD2_0 && !NETFRAMEWORK\\r\\n\\t[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\\r\\n#endif\\r\\n\\tinternal sealed class \");",
+  "replace": "            this.Write(\"\\r\\n\\t[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\\r\\n\\tinternal sealed class \");",
+  "explanation": "Removes the preprocessor guard so the generated enum formatter always includes [ExcludeFromCodeCoverage], breaking compilation/support on netstandard2.0 and netframework."
+}

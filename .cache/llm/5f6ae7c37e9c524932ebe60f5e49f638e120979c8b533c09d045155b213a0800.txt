@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The added unit tests in GenericsFormatterTests.cs specifically reproduce and verify the fix for issue #2283 involving closed generic value types from metadata references."
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The changes in `TypeCollector.cs` replace direct array indexing on `DeclaringSyntaxReferences[0]` with safe access methods and add location checks to prevent the `IndexOutOfRangeException` when analyzing referenced assembly metadata symbols described in the issue."
+}

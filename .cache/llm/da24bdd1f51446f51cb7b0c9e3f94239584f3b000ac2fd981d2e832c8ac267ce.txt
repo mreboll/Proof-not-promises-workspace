@@ -1,0 +1,5 @@
+{
+  "find": "    private void ReportIfLocatedInCompilation(Action<Diagnostic> report, Diagnostic diagnostic)\n    {\n        if (diagnostic.Location.IsInSource && this.compilation.ContainsSyntaxTree(diagnostic.Location.SourceTree))\n        {\n            report(diagnostic);\n        }\n    }",
+  "replace": "    private void ReportIfLocatedInCompilation(Action<Diagnostic> report, Diagnostic diagnostic)\n    {\n        report(diagnostic);\n    }",
+  "explanation": "El mutante elimina la comprobación de ubicación en el código fuente de la compilación, provocando que los diagnósticos creados con Location.None cuando GetPropertyIdentifierLocation devuelve null se reporten con una ubicación no válida."
+}

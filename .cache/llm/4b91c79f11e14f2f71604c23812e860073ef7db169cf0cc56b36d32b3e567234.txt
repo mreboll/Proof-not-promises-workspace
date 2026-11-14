@@ -1,0 +1,1 @@
+{"scope":"OUT","justification":"The issue reports a bug causing generator and analyzer crashes on closed generic structs from referenced assemblies, but does not ask for updates to README.md."}

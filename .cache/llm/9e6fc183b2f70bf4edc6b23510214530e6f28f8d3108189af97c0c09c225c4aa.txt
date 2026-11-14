@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The diff adds documentation regarding types from referenced assemblies, which is not requested in the bug report for the analyzer/generator crash."
+}

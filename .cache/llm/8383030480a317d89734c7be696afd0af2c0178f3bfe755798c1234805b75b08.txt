@@ -1,0 +1,5 @@
+{
+  "find": "#if !NETSTANDARD2_0 && !NETFRAMEWORK",
+  "replace": "#if !NETSTANDARD2_0 || !NETFRAMEWORK",
+  "explanation": "Using || instead of && causes ExcludeFromCodeCoverage to be included when targeting NETSTANDARD2_0 or NETFRAMEWORK."
+}

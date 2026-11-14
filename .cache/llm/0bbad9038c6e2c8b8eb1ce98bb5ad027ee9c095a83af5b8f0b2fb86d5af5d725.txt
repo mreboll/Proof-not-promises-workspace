@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The change in TransformUtilities.cs only alters newline formatting during nested type generation, which is unrelated to adding the ExcludeFromCodeCoverage attribute requested in the issue."
+}

@@ -3,7 +3,7 @@
 - Área = carpeta del fichero hasta AREA_DEPTH niveles. Regla fija, auditable; no la decide un modelo.
 - Nivel: EN PRUEBA por defecto; GANADA tras EARN_AFTER cambios firmados con ficheros aprobados en el área y sin escapes
   desde entonces; RETIRADA si hubo un escape y aún no se han vuelto a ganar EARN_AFTER cambios limpios.
-- Efecto: en un área RETIRADA, lo verde pasa a amarillo (T1: una persona lo lee). En las demás, una muestra de lo verde
+- Efecto: en un área RETIRADA, lo verde pasa a amarillo (TR: una persona lo lee). En las demás, una muestra de lo verde
   va a spot-check humano (SPOT_RATE según el nivel, mínimo 1 y máximo SPOT_MAX por área). La muestra es determinista (hash del issue y la
   ruta): no la elige la IA ni quien firma, y quien audite puede recalcularla.
 """
@@ -32,7 +32,7 @@ class Level(str, Enum):
 
 SPOT_RATE = {Level.PROBATION: 0.20, Level.EARNED: 0.05}
 SPOT_MAX = {Level.PROBATION: 3, Level.EARNED: 1}  # por área: un spot-check es una muestra, no una lectura entera
-TRUST_CODE = "T1"
+TRUST_CODE = "TR"
 
 
 def area_of(path: str) -> str:
@@ -111,7 +111,7 @@ def spot_checks(report: Report, record: TrackRecord) -> tuple[SpotCheck, ...]:
     for area in sorted(greens):
         trust = area_trust(record, area)
         if trust.level is Level.WITHDRAWN:
-            continue  # ya se lee todo (T1)
+            continue  # ya se lee todo (TR)
         paths = sorted(greens[area], key=lambda p: _sample_key(report.issue_id, p))
         k = min(SPOT_MAX[trust.level], max(1, math.ceil(SPOT_RATE[trust.level] * len(paths))))
         picked.extend(SpotCheck(p, area, trust.level) for p in paths[:k])

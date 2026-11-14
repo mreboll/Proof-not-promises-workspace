@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio en TypeCollector.cs corrige la excepción IndexOutOfRangeException al acceder de forma segura a DeclaringSyntaxReferences para tipos procedentes de ensamblados referenciados."
+}

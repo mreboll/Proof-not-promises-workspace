@@ -1,0 +1,1 @@
+{"scope":"IN","justification":"The change adds the ExcludeFromCodeCoverage attribute to generated formatter classes, directly addressing the feature requested in the issue."}

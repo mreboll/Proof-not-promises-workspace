@@ -77,7 +77,7 @@ def test_withdrawn_area_sends_green_files_to_a_human():
     out = apply_trust(report, add(TrackRecord(), ESCAPE))
 
     a, b = out.verdicts
-    assert a.verdict is Verdict.YELLOW and a.reasons[0].startswith("T1:") and "missed bug" in a.reasons[0]
+    assert a.verdict is Verdict.YELLOW and a.reasons[0].startswith("TR:") and "missed bug" in a.reasons[0]
     assert a.reasons[1:] == ("M4: x",)  # la razón de la matriz se conserva detrás
     assert b.verdict is Verdict.GREEN
 

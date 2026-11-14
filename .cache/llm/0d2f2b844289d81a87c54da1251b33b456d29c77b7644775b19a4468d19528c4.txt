@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "When the target framework is netstandard2.0 or netframework, does the generated enum formatter class still include [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]?",
+      "rationale": "The diff guards the attribute with #if !NETSTANDARD2_0 && !NETFRAMEWORK, so that branch omits the attribute. The change test (LedgerIssue2297Tests) and the 21-case invariance check run on a single modern TFM, so the excluded branch is untested; this also contradicts the issue's request for the attribute on all generated code with no setting."
+    },
+    {
+      "question": "Does the generated formatter class for a [MessagePackObject] struct or record carry [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]?",
+      "rationale": "The diff only touches EnumTemplate.cs. The change test and invariance evidence cover enum generation only, so MessagePackObject formatters for structs/records are unverified, even though the issue asks for all formatters to be decorated."
+    },
+    {
+      "question": "Does the generated union formatter class or resolver class carry [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]?",
+      "rationale": "Union formatter and resolver templates are not modified by the diff and are not exercised by the enum-focused change test or invariance check, yet the issue explicitly lists union formatters and resolvers as code that should carry the attribute."
+    }
+  ]
+}

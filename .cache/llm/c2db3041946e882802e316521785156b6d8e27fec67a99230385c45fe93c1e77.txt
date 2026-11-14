@@ -1,0 +1,1 @@
+{"scope":"OUT","justification":"El cambio modifica documentación en doc/analyzers/MsgPack004.md, lo cual no es solicitado en el reporte de error sobre la excepción IndexOutOfRangeException."}
