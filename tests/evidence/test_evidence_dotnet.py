@@ -134,6 +134,53 @@ def test_mutant_runs_in_patched_disposable_worktree(settings, fake_dotnet):
     assert result.red_for_real
 
 
+CODE_PATCH = "--- a/Code.cs\n+++ b/Code.cs\n@@ -1,5 +1,5 @@\n class C\n {\n-    int a = 1;\n+    int a = 0;\n     int b = 2;\n }\n"
+
+
+def _commit_code_file(repo: Path, eol: str) -> None:
+    import subprocess
+
+    def git(*args: str) -> str:
+        return subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True, text=True).stdout.strip()
+
+    (repo / ".gitattributes").write_text(f"*.cs text eol={eol}\n", encoding="utf-8")
+    (repo / "Code.cs").write_bytes(b"class C\n{\n    int a = 1;\n    int b = 2;\n}\n")
+    git("add", ".")
+    git("commit", "-q", "-m", f"code {eol}")
+    git("update-ref", "refs/remotes/origin/ju26-issue-2283", git("rev-parse", "HEAD"))
+
+
+def _run_mutant_capturing_code(settings, monkeypatch, patch: str) -> tuple[object, list[bytes]]:
+    seen: list[bytes] = []
+    inner = FakeDotnet()
+
+    def capture(cmd, cwd, **kw):
+        seen.append((cwd / "Code.cs").read_bytes())
+        return inner(cmd, cwd, **kw)
+
+    monkeypatch.setattr(dotnet, "run", capture)
+    return DotnetTestRunner(settings, "2283").run_against_mutant("pr", patch, "class T {}", "T"), seen
+
+
+@pytest.mark.parametrize(
+    ("checkout_eol", "patch"),
+    [
+        ("crlf", CODE_PATCH),
+        ("lf", CODE_PATCH.replace("\n", "\r\n")),
+        ("crlf", CODE_PATCH.replace("     int b = 2;", "         int b = 2;")),
+    ],
+    ids=["lf-patch-on-crlf-checkout", "crlf-patch-on-lf-checkout", "llm-context-indent-drift"],
+)
+def test_mutant_patch_applies_regardless_of_line_endings(settings, fake_repo, monkeypatch, checkout_eol, patch):
+    _commit_code_file(fake_repo["repo"], checkout_eol)
+
+    result, seen = _run_mutant_capturing_code(settings, monkeypatch, patch)
+
+    assert result.build_ok, result.output_tail
+    assert (b"\r\n" in seen[0]) is (checkout_eol == "crlf")  # el checkout tenía de verdad ese final de línea
+    assert b"int a = 0;" in seen[0]
+
+
 def test_mutant_patch_that_does_not_apply_is_not_run(settings, fake_dotnet):
     result = DotnetTestRunner(settings, "2283").run_against_mutant("pr", "garbage patch", "class T {}", "T")
 
