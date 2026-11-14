@@ -1,0 +1,6 @@
+<Project>
+  <!-- El probe declara sus versiones; no usa la gestión central de paquetes del repo. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

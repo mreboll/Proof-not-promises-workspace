@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Se compila DENTRO de cada worktree (<worktree>/.ledger-probe/GeneratorProbe): las rutas
+       relativas apuntan al generador de ESE worktree, así base y PR cargan cada uno el suyo. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Misma versión que MicrosoftCodeAnalysisVersion en Directory.Packages.props del repo. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MessagePack.SourceGenerator\MessagePack.SourceGenerator.csproj" />
+    <ProjectReference Include="..\..\src\MessagePack\MessagePack.csproj" SetTargetFramework="TargetFramework=net8.0" />
+  </ItemGroup>
+
+</Project>
