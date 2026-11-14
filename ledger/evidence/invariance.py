@@ -128,7 +128,7 @@ def build_evidence(
             normalization=norm.description if norm else "",
         )
 
-    return InvarianceEvidence(cases=tuple(to_case(c) for c in cases))
+    return InvarianceEvidence(cases=tuple(to_case(c) for c in cases), issue_id=issue_id or "")
 
 
 # --------------------------------------------------------------------------- ejecución real (dotnet)

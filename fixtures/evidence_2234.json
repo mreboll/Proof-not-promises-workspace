@@ -276,6 +276,7 @@
         "normalization": ""
       }
     ],
+    "issue_id": "2234",
     "deterministic": true,
     "unexpected_diffs": [
       "general-duplicate-int-keys-not-suppressed"

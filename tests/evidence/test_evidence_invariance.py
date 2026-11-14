@@ -145,6 +145,19 @@ def test_normalization_also_applies_to_other_issues_cases():
     assert foreign_case.pr_hash == foreign_case.base_hash and foreign_case.normalization != ""
 
 
+def test_evidence_records_issue_so_other_issues_cases_must_not_change():
+    """Con issue_id relleno, un caso de OTRO issue que cambia es una diferencia inesperada (contrato de models.py)."""
+    base = {"own": "a", "foreign": "b", "g": "c"}
+    pr = {"own": "A", "foreign": "B", "g": "c"}
+    cases = (CorpusCase("own", "issue-2283"), CorpusCase("foreign", "issue-2129"), CorpusCase("g", "general"))
+
+    ev = build_evidence(cases, base, dict(base), pr, issue_id="2283")
+
+    assert ev.issue_id == "2283"
+    assert ev.unexpected_diffs == ("foreign",)
+    assert not ev.ok
+
+
 def test_missing_probe_output_raises():
     with pytest.raises(InvarianceError, match="int-keys"):
         build_evidence((G1,), {}, {}, {})
