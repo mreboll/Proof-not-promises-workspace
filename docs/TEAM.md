@@ -53,3 +53,5 @@ Detalle, requisitos de entrega y responsables en [docs/TECH-CHALLENGES.md](TECH-
 | 5 | Entire | Cualquiera | Solo después de la H11 |
 
 `python -m ledger llm-ping` comprueba Gemini **y** Nemotron.
+
+Traspaso de la Línea B (estado final y pendientes): [HANDOFF-B.md](HANDOFF-B.md).
