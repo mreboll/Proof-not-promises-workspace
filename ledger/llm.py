@@ -186,9 +186,28 @@ def complete(
             lambda fix: _with_retry(generate, active_client, model, system, f"{user}\n\n{fix}", schema, provider=provider),
         )
 
-    cache_file.parent.mkdir(parents=True, exist_ok=True)
-    # Atómico: con la Etapa 3 en paralelo, otro hilo podría leer el fichero a medio escribir.
-    tmp = cache_file.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
-    tmp.write_text(text, encoding="utf-8")
-    os.replace(tmp, cache_file)
+    _atomic_write(cache_file, text)
     return result
+
+
+REPLACE_ATTEMPTS = 5
+
+
+def _atomic_write(path: Path, text: str) -> None:
+    """Con la Etapa 3 en paralelo, otro hilo podría leer el fichero a medio escribir: se escribe un temporal y se
+    renombra. En Windows el renombrado falla si otro hilo tiene el destino abierto en ese instante: se reintenta, y si
+    sigue bloqueado pero el fichero ya existe, otro hilo guardó la respuesta a ese mismo prompt y basta con ella."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
+    tmp.write_text(text, encoding="utf-8")
+    for attempt in range(1, REPLACE_ATTEMPTS + 1):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            if attempt == REPLACE_ATTEMPTS:
+                if path.exists():
+                    tmp.unlink(missing_ok=True)
+                    return
+                raise
+            time.sleep(0.05 * attempt)
