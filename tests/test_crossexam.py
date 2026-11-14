@@ -7,7 +7,7 @@ import pytest
 from ledger.crossexam.defensor import DefenseTest, write_test
 from ledger.crossexam.fiscal import MAX_OBJECTIONS, FiscalObjection, Objections, raise_objections
 from ledger.crossexam.loop import MAX_ROUNDS, cross_examine, test_class_name
-from ledger.crossexam.mutant_gen import MutantEdit, MutantError, build_patch, make_mutant
+from ledger.crossexam.mutant_gen import MAX_MUTANT_ATTEMPTS, MutantEdit, MutantError, build_patch, make_mutant
 from ledger.fakes import GREEN, RED, FakeTestRunner
 from ledger.triage.diff import FileDiff, Hunk
 
@@ -90,6 +90,14 @@ def test_defensor_uses_pro_role_and_only_returns_a_test():
     assert "Ledger_2283_Obj1" in out.test_code
 
 
+def test_defensor_gets_the_roslyn_api_sheet_from_the_change_test_agent():
+    from ledger.crossexam.defensor import ROSLYN_GUIDE, SYSTEM
+
+    assert "GetAnalyzerDiagnosticsAsync" in ROSLYN_GUIDE and "RunGeneratorsAndUpdateCompilation" in ROSLYN_GUIDE
+    assert "LedgerIssue" not in ROSLYN_GUIDE  # la regla de nombres del agente de A no aplica al Defensor
+    assert ROSLYN_GUIDE in SYSTEM
+
+
 def test_defensor_prompt_carries_feedback_from_previous_round():
     fake = FakeComplete()
     write_test(ISSUE, FD, "q", class_name="C", style_example="", feedback="falló en el PR: CS0103", complete=fake)
@@ -118,10 +126,26 @@ def test_make_mutant_retries_once_with_the_error_then_succeeds():
     assert len(fake.roles(MutantEdit)) == 2 and "not found" in fake.calls[1]["user"]
 
 
-def test_make_mutant_gives_up_after_two_bad_edits():
+def test_make_mutant_gives_up_after_three_bad_edits():
     fake = FakeComplete(edits=[MutantEdit(find="nope", replace="x", explanation="")])
     patch, reason = make_mutant(FD, "q", SOURCE, complete=fake)
     assert patch == "" and "not found" in reason
+    assert len(fake.roles(MutantEdit)) == MAX_MUTANT_ATTEMPTS == 3
+
+
+def test_ambiguous_find_error_shows_each_occurrence_with_context():
+    source = "class C\n{\n    void A() { Foo(); }\n    void B() { Foo(); }\n}\n"
+    with pytest.raises(MutantError) as err:
+        build_patch(PATH, source, "Foo();", "Bar();")
+    message = str(err.value)
+    assert "2 times" in message and "void A()" in message and "void B()" in message
+
+
+def test_ambiguous_find_is_fixed_on_a_later_attempt():
+    source = "class C\n{\n    void A() { Foo(); }\n    void B() { Foo(); }\n}\n"
+    fake = FakeComplete(edits=[MutantEdit(find="Foo();", replace="Bar();"), MutantEdit(find="void B() { Foo(); }", replace="void B() { Bar(); }", explanation="ok")])
+    patch, _ = make_mutant(FD, "q", source, complete=fake)
+    assert "+    void B() { Bar(); }" in patch and "void A() { Foo(); }" in patch
 
 
 def test_mutant_generator_sees_code_but_not_the_defense_test():

@@ -20,6 +20,8 @@ from ledger.config import Settings
 from ledger.triage.diff import FileDiff
 from ledger.triage.scope import Complete
 
+MAX_MUTANT_ATTEMPTS = 3  # en la H8 real de A, `find` ambiguo (2 apariciones en TypeCollector.cs) agotaba los 2 intentos
+MAX_OCCURRENCES_SHOWN = 3
 WINDOW_LINES = 40
 MAX_SOURCE_CHARS = 12000
 _HUNK_TARGET = re.compile(r"\+(\d+)(?:,(\d+))?")
@@ -51,7 +53,10 @@ def build_patch(path: str, source: str, find: str, replace: str) -> str:
     if count == 0:
         raise MutantError("the `find` text was not found in the source; copy it verbatim from the code")
     if count > 1:
-        raise MutantError(f"the `find` text appears {count} times; it must be unique, add surrounding lines")
+        raise MutantError(
+            f"the `find` text appears {count} times; it must be unique. "
+            f"Extend it with surrounding lines copied from ONE of these occurrences:\n{_occurrences(source, find)}"
+        )
     if find == replace:
         raise MutantError("the edit does not change anything")
     mutated = source.replace(find, replace, 1)
@@ -60,6 +65,18 @@ def build_patch(path: str, source: str, find: str, replace: str) -> str:
     for line in lines:
         out.append(line if line.endswith("\n") else line + "\n\\ No newline at end of file\n")
     return "".join(out)
+
+
+def _occurrences(source: str, find: str, context: int = 2) -> str:
+    """Cada aparición de `find` con `context` líneas alrededor, para que el LLM amplíe su `find`."""
+    lines = source.splitlines()
+    blocks, start = [], 0
+    while len(blocks) < MAX_OCCURRENCES_SHOWN and (pos := source.find(find, start)) != -1:
+        line = source.count("\n", 0, pos)
+        snippet = "\n".join(lines[max(0, line - context) : line + context + 1])
+        blocks.append(f"--- occurrence {len(blocks) + 1} (line {line + 1}):\n{snippet}")
+        start = pos + 1
+    return "\n".join(blocks)
 
 
 def code_excerpt(fd: FileDiff, source: str) -> str:
@@ -87,7 +104,7 @@ def make_mutant(fd: FileDiff, question: str, source: str, *, complete: Complete 
     """Devuelve (parche, explicación). Si no hay mutante válido tras un reintento: ("", motivo)."""
     base_user = f"<objection>\n{question}\n</objection>\n\nFile: {fd.path}\n<code>\n{code_excerpt(fd, source)}\n</code>"
     error = ""
-    for _ in range(2):
+    for _ in range(MAX_MUTANT_ATTEMPTS):
         user = base_user + (f"\n\nYour previous edit was rejected: {error}" if error else "")
         try:
             edit: MutantEdit = complete(SYSTEM, user, MutantEdit, "pro", settings=settings)
