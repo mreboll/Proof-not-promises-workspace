@@ -53,6 +53,40 @@ def test_2297_normalization_removes_only_exclude_from_coverage_lines():
     assert canonical_hash("public void Other() {}", norm) == canonical_hash("public void Other() {}")
 
 
+GENERATED_2297_REAL = (
+    "namespace Formatters\n"
+    "{\n"
+    "#if !NETSTANDARD2_0 && !NETFRAMEWORK\n"
+    "\t[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\n"
+    "#endif\n"
+    "\tinternal sealed class F {}\n"
+    "}\n"
+    "#if !NETSTANDARD2_0 && !NETFRAMEWORK\n"
+    "[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]\n"
+    "#endif\n"
+    "partial class R {}\n"
+)
+GENERATED_BASE_REAL = "namespace Formatters\n{\n\tinternal sealed class F {}\n}\npartial class R {}\n"
+
+
+def test_2297_normalization_removes_the_real_conditional_block():
+    """El PR emite el atributo dentro de `#if !NETSTANDARD2_0 && !NETFRAMEWORK ... #endif` (3 líneas)."""
+    norm = normalization_for("2297")
+    assert canonical_hash(GENERATED_2297_REAL, norm) == canonical_hash(GENERATED_BASE_REAL)
+
+
+def test_2297_normalization_keeps_unrelated_conditionals():
+    norm = normalization_for("2297")
+    text = "#if !NETSTANDARD2_0 && !NETFRAMEWORK\n\tusing System.Buffers;\n#endif\nclass X {}\n"
+    assert canonical_hash(text, norm) == canonical_hash(text)
+
+
+def test_2297_normalization_does_not_hide_other_changes():
+    norm = normalization_for("2297")
+    pr_with_extra_change = GENERATED_2297_REAL.replace("class F {}", "class F {\n}")
+    assert canonical_hash(pr_with_extra_change, norm) != canonical_hash(GENERATED_BASE_REAL)
+
+
 def test_other_issues_have_no_normalization():
     assert normalization_for("2283") is None
 

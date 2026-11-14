@@ -76,6 +76,14 @@
         "normalization": ""
       },
       {
+        "id": "general-generic-with-constraints",
+        "tag": "general",
+        "base_hash": "416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b",
+        "base_hash_rerun": "416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b",
+        "pr_hash": "416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b",
+        "normalization": ""
+      },
+      {
         "id": "general-ignore-member",
         "tag": "general",
         "base_hash": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
@@ -241,6 +249,14 @@
         "base_hash": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
         "base_hash_rerun": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
         "pr_hash": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2297-generated-code-excluded-from-coverage",
+        "tag": "issue-2297",
+        "base_hash": "636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717",
+        "base_hash_rerun": "636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717",
+        "pr_hash": "636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717",
         "normalization": ""
       }
     ],
