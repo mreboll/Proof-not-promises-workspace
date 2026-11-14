@@ -56,7 +56,7 @@ def judge_issue(
         if t in targets:
             fd = diffs.get(t.path)
             if setup_error or fd is None:
-                note = f"interrogatorio no ejecutado: {setup_error or 'el fichero no está en el diff'}"
+                note = f"cross-examination not run: {setup_error or 'the file is not in the diff'}"
             else:
                 try:
                     objections = cross_examine(
@@ -65,7 +65,7 @@ def judge_issue(
                         evidence_summary=summary, complete=complete, settings=settings,
                     )
                 except (llm.LLMError, ValueError) as exc:
-                    note = f"interrogatorio no ejecutado: {_short(exc)}"
+                    note = f"cross-examination not run: {_short(exc)}"
         verdict = decide(t, change_test, invariance, objections)
         if note:
             verdict = verdict.model_copy(update={"reasons": (*verdict.reasons, note)})

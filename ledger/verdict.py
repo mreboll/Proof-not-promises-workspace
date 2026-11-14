@@ -33,49 +33,49 @@ from ledger.models import (
     Verdict,
 )
 
-REFUSE = "el sistema se niega a decidir"
+REFUSE = "the system refuses to decide"
 
 
 def _run(result: TestRunResult | None) -> str:
     if result is None:
-        return "no ejecutado"
+        return "not run"
     if not result.build_ok:
-        return "no compila"
+        return "does not compile"
     if result.green:
-        return f"verde ({result.passed} ok)"
+        return f"green ({result.passed} passed)"
     if result.red_for_real:
-        return f"rojo ({result.failed} fallan)"
-    return "sin tests ejecutados"
+        return f"red ({result.failed} failed)"
+    return "no tests run"
 
 
 def _change_test_reasons(ct: ChangeTestEvidence | None) -> list[str]:
     if ct is None:
-        return ["falta el test del cambio"]
-    summary = f"test del cambio `{ct.test_name}`: base {_run(ct.base)}, PR {_run(ct.pr)}"
+        return ["change test missing"]
+    summary = f"change test `{ct.test_name}`: base {_run(ct.base)}, PR {_run(ct.pr)}"
     if ct.ok:
         return [summary]
     problems = []
     if ct.change_type is ChangeType.BUGFIX and not (ct.base and ct.base.red_for_real):
-        problems.append("no reproduce el bug en base")
+        problems.append("does not reproduce the bug on base")
     if not ct.pr.green:
-        problems.append("no pasa en el PR")
+        problems.append("does not pass on the PR")
     return [f"{summary} → {', '.join(problems)}"]
 
 
 def _invariance_reasons(inv: InvarianceEvidence | None) -> list[str]:
     if inv is None:
-        return ["falta la evidencia de invarianza"]
+        return ["invariance evidence missing"]
     if not inv.cases:
-        return ["invarianza sin casos"]
+        return ["invariance has no cases"]
     reasons = []
     if not inv.deterministic:
         unstable = [c.id for c in inv.cases if c.base_hash != c.base_hash_rerun]
-        reasons.append(f"la base no es determinista (casos: {', '.join(unstable)})")
+        reasons.append(f"base is not deterministic (cases: {', '.join(unstable)})")
     if inv.unexpected_diffs:
-        reasons.append(f"diferencias fuera del alcance del issue en: {', '.join(inv.unexpected_diffs)}")
+        reasons.append(f"output changes outside the issue's scope in: {', '.join(inv.unexpected_diffs)}")
     if not reasons:
         general = sum(c.tag == "general" for c in inv.cases)
-        reasons.append(f"invarianza: determinista, {general} casos generales idénticos")
+        reasons.append(f"invariance: deterministic, {general} general cases identical")
     return reasons
 
 
@@ -86,8 +86,8 @@ def defensor_test_fails_on_pr(o: Objection) -> bool:
 
 def _unresolved_reason(o: Objection) -> str:
     if defensor_test_fails_on_pr(o):
-        return f"objeción «{o.question}»: el test del Defensor falla en el PR → posible defecto en el PR, revisa la salida del test"
-    return f"objeción sin test válido: «{o.question}»"
+        return f"objection “{o.question}”: the Defender's test fails on the PR → possible defect in the PR, check the test output"
+    return f"objection without a valid test: “{o.question}”"
 
 
 def evidence_lines(change_test: ChangeTestEvidence | None, invariance: InvarianceEvidence | None) -> list[str]:
@@ -109,29 +109,29 @@ def decide(
 
     if scope is Scope.OUT:
         if risk is Risk.HIGH:
-            return _verdict(triage, Verdict.RED, "M1", "fuera del alcance del issue y riesgo alto", [*triage.rule_hits])
-        return _verdict(triage, Verdict.YELLOW, "M2", f"fuera del alcance, riesgo {risk.value}: revisar la justificación", [f"justificación: {triage.justification}"])
+            return _verdict(triage, Verdict.RED, "M1", "out of the issue's scope and high risk", [*triage.rule_hits])
+        return _verdict(triage, Verdict.YELLOW, "M2", f"out of scope, {risk.value} risk: review the justification", [f"justification: {triage.justification}"])
 
     evidence = evidence_lines(change_test, invariance)
     evidence_ok = change_test is not None and change_test.ok and invariance is not None and invariance.ok
     if not evidence_ok:
         if change_test is not None and not change_test.ok and invariance is not None and invariance.ok:
             # Caso #2129: sigue ROJO (sin prueba no se aprueba), pero el oráculo diferencial orienta al humano.
-            evidence.append("la evidencia diferencial no muestra regresiones; revisa el test generado antes que el código")
-        return _verdict(triage, Verdict.RED, "M3", "la evidencia ejecutable falla o falta", evidence)
+            evidence.append("the differential evidence shows no regressions; check the generated test before the code")
+        return _verdict(triage, Verdict.RED, "M3", "executable evidence fails or is missing", evidence)
 
     if risk is not Risk.HIGH:
-        return _verdict(triage, Verdict.GREEN, "M4", f"en alcance, riesgo {risk.value}, evidencia superada", evidence)
+        return _verdict(triage, Verdict.GREEN, "M4", f"in scope, {risk.value} risk, evidence passed", evidence)
 
     if objections is None:
-        return _verdict(triage, Verdict.RED, "M7", f"riesgo alto sin interrogatorio: {REFUSE}", evidence)
+        return _verdict(triage, Verdict.RED, "M7", f"high risk without cross-examination: {REFUSE}", evidence)
 
     unresolved = [o for o in objections if not o.valid]
     if unresolved:
         questions = [_unresolved_reason(o) for o in unresolved]
-        return _verdict(triage, Verdict.RED, "M7", f"{len(unresolved)} objeción(es) sin resolver: {REFUSE}", questions + evidence, objections)
+        return _verdict(triage, Verdict.RED, "M7", f"{len(unresolved)} unresolved objection(s): {REFUSE}", questions + evidence, objections)
 
-    crossexam = [f"{len(objections)} objeción(es) del Fiscal cubiertas por tests que fallan contra el mutante"] if objections else ["el Fiscal no planteó objeciones"]
+    crossexam = [f"{len(objections)} Prosecutor objection(s) covered by tests that fail against their mutant"] if objections else ["the Prosecutor raised no objections"]
     if triage.touches_public_api:
-        return _verdict(triage, Verdict.YELLOW, "M6", "comportamiento probado; toca API public: validar solo el diseño de la firma", crossexam + evidence, objections)
-    return _verdict(triage, Verdict.GREEN, "M5", "riesgo alto superado en el interrogatorio", crossexam + evidence, objections)
+        return _verdict(triage, Verdict.YELLOW, "M6", "behaviour proven; touches public API: review only the signature design", crossexam + evidence, objections)
+    return _verdict(triage, Verdict.GREEN, "M5", "high risk passed the cross-examination", crossexam + evidence, objections)

@@ -78,12 +78,12 @@ def test_header_has_issue_type_branch_and_commits(html):
 
 def test_counters_and_overall_decision(html):
     assert 'data-count="GREEN">2<' in html and 'data-count="YELLOW">1<' in html and 'data-count="RED">0<' in html
-    assert "Revisión focalizada" in html
+    assert "Focused review" in html
 
 
 @pytest.mark.parametrize(
     ("verdicts", "expected"),
-    [((Verdict.GREEN,), "Aprobable con evidencia"), ((Verdict.GREEN, Verdict.YELLOW), "Revisión focalizada"), ((Verdict.YELLOW, Verdict.RED), "Auditoría manual obligatoria"), ((), "Sin veredictos")],
+    [((Verdict.GREEN,), "Approvable on evidence"), ((Verdict.GREEN, Verdict.YELLOW), "Focused review"), ((Verdict.YELLOW, Verdict.RED), "Manual audit required"), ((), "No verdicts")],
 )
 def test_overall_decision_is_the_worst_verdict(verdicts, expected):
     assert overall_decision(tuple(FragmentVerdict(path=f"f{i}", verdict=v) for i, v in enumerate(verdicts)))[0] == expected
@@ -106,7 +106,7 @@ def test_evidence_section_shows_change_test_and_hashes(html):
 
 def test_crossexam_transcript(html):
     assert "¿Y si el struct genérico viene anidado?" in html and "Ledger_2283_Objection1" in html
-    assert "+++ b/x" in html and "objeción cubierta: test válido" in html
+    assert "+++ b/x" in html and "objection covered: valid test" in html
 
 
 def test_code_is_escaped(html):
@@ -118,8 +118,8 @@ def test_models_per_role_are_named(html):
 
 
 def test_signature_block(html):
-    assert "REGISTRO DE APROBACIÓN Y RENDICIÓN DE CUENTAS" in html
-    assert "Afirmaciones auto-verificadas (Verde): 2/3" in html and "Revisadas manualmente (Amarillo/Rojo): 1/3" in html
+    assert "APPROVAL AND ACCOUNTABILITY RECORD" in html
+    assert "Auto-verified claims (Green): 2/3" in html and "Reviewed manually (Yellow/Red): 1/3" in html
 
 
 def test_is_self_contained(html):
@@ -133,16 +133,16 @@ def _card(html: str, title: str) -> str:
 def test_feature_red_in_base_is_explained_not_painted_as_a_failure():
     r = make_report()
     feature = r.model_copy(update={"change_type": ChangeType.FEATURE, "change_test": r.change_test.model_copy(update={"change_type": ChangeType.FEATURE})})
-    card = _card(render_html(feature, models=MODELS, issue_title="#2297"), "Test del cambio")
-    assert "rojo en base: el test mide algo nuevo" in card
-    assert 'class="pill red">rojo' not in card
+    card = _card(render_html(feature, models=MODELS, issue_title="#2297"), "Change test")
+    assert "red on base: the test measures something new" in card
+    assert 'class="pill red">red' not in card
 
 
 def test_bugfix_test_green_in_base_says_it_does_not_reproduce_the_bug():
     r = make_report()
     weak = r.model_copy(update={"change_test": r.change_test.model_copy(update={"base": GREEN})})
-    card = _card(render_html(weak, models=MODELS, issue_title="#2234"), "Test del cambio")
-    assert "pasa también en la base: no reproduce el bug" in card
+    card = _card(render_html(weak, models=MODELS, issue_title="#2234"), "Change test")
+    assert "also passes on base: it does not reproduce the bug" in card
 
 
 def test_declared_normalization_is_visible_without_expanding():
@@ -150,15 +150,15 @@ def test_declared_normalization_is_visible_without_expanding():
     norm = "removed [ExcludeFromCodeCoverage] lines (feature #2297)"
     cases = tuple(c.model_copy(update={"normalization": norm}) if c.tag == "general" else c for c in r.invariance.cases)
     html = render_html(r.model_copy(update={"invariance": InvarianceEvidence(cases=cases)}), models=MODELS, issue_title="#2297")
-    card = _card(html, "Invarianza de generación")
-    assert "Normalización declarada" in card and norm in card and "1 caso" in card
+    card = _card(html, "Generation invariance")
+    assert "Declared normalization" in card and norm in card and "1 case" in card
 
 
 def test_unexpected_diff_says_the_pr_does_more_than_the_issue_asks():
     r = make_report()
     cases = (*r.invariance.cases, InvarianceCase(id="general-duplicate-int-keys-not-suppressed", tag="general", base_hash="a", base_hash_rerun="a", pr_hash="b"))
-    card = _card(render_html(r.model_copy(update={"invariance": InvarianceEvidence(cases=cases)}), models=MODELS, issue_title="#2234"), "Invarianza de generación")
-    assert "general-duplicate-int-keys-not-suppressed" in card and "más de lo que pide el issue" in card
+    card = _card(render_html(r.model_copy(update={"invariance": InvarianceEvidence(cases=cases)}), models=MODELS, issue_title="#2234"), "Generation invariance")
+    assert "general-duplicate-int-keys-not-suppressed" in card and "more than the issue asks for" in card
 
 
 def test_rerender_from_a_json_report(tmp_path, monkeypatch):
@@ -177,17 +177,17 @@ def test_defensor_test_failing_on_pr_is_shown_as_possible_defect_with_output_ope
     r = make_report()
     verdicts = tuple(v.model_copy(update={"objections": (defect,)}) if v.objections else v for v in r.verdicts)
     html = render_html(r.model_copy(update={"verdicts": verdicts}), models=MODELS, issue_title="#2283")
-    card = html.split("Fiscal 1:</strong>")[1].split('<div class="card')[0]
-    assert "falla en el PR: posible defecto" in card
-    assert "<details open><summary>Salida del test en el PR</summary>" in card and RED.output_tail in card
+    card = html.split("Prosecutor 1:</strong>")[1].split('<div class="card')[0]
+    assert "fails on the PR: possible defect" in card
+    assert "<details open><summary>Test output on the PR</summary>" in card and RED.output_tail in card
 
 
 def test_funnel_strip_summarises_each_stage(html):
     funnel = html.split('id="funnel"')[1].split("</section>")[0]
     assert "T3" in funnel and "T1" in funnel and "T2" in funnel
-    assert "3 ficheros" in funnel and "1 fuera de alcance" in funnel and "1 de riesgo alto" in funnel
-    assert "test del cambio superado" in funnel and "invarianza superada" in funnel
-    assert "1 objeción" in funnel and "1 cerrada con test válido" in funnel
+    assert "3 files" in funnel and "1 out of scope" in funnel and "1 high risk" in funnel
+    assert "change test passed" in funnel and "invariance passed" in funnel
+    assert "1 objection" in funnel and "1 closed with a valid test" in funnel
 
 
 def test_funnel_counts_possible_defects():
@@ -195,19 +195,19 @@ def test_funnel_counts_possible_defects():
     r = make_report()
     verdicts = tuple(v.model_copy(update={"objections": (defect,)}) if v.objections else v for v in r.verdicts)
     funnel = render_html(r.model_copy(update={"verdicts": verdicts}), models=MODELS, issue_title="#2283").split('id="funnel"')[1].split("</section>")[0]
-    assert "1 posible defecto en el PR" in funnel
+    assert "1 possible defect in the PR" in funnel
 
 
 def test_green_files_are_folded_after_the_ones_that_need_attention(html):
     table = html.split('id="files"')[1].split("</section>")[0]
     attention, folded = table.split("<details")[0], table.split("<details")[1]
     assert "README.md" in attention and "TypeCollector.cs" not in attention
-    assert "2 ficheros en verde" in folded and "TypeCollector.cs" in folded
+    assert "2 green files" in folded and "TypeCollector.cs" in folded
 
 
 def test_report_without_verdicts_still_renders():
     html = render_html(make_report(verdicts=()), models=MODELS, issue_title="#2283")
-    assert "Sin veredictos" in html and "README.md" in html
+    assert "No verdicts" in html and "README.md" in html
 
 
 def test_write_report_writes_html_and_json(tmp_path):

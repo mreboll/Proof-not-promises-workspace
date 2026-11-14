@@ -16,11 +16,11 @@ from ledger.models import ChangeTestEvidence, ChangeType, FragmentVerdict, Repor
 
 TEMPLATES = Path(__file__).parent / "templates"
 ROLES = {
-    "flash": "Triaje de alcance IN/OUT por fichero",
-    "pro": "Test independiente del cambio, Defensor y mutantes",
-    "fiscal": "Fiscal: objeciones del interrogatorio",
+    "flash": "Per-file IN/OUT scope triage",
+    "pro": "Independent change test, Defender and mutants",
+    "fiscal": "Prosecutor: cross-examination objections",
 }
-VERDICT_LABEL = {Verdict.GREEN: "Verde", Verdict.YELLOW: "Amarillo", Verdict.RED: "Rojo"}
+VERDICT_LABEL = {Verdict.GREEN: "Green", Verdict.YELLOW: "Yellow", Verdict.RED: "Red"}
 
 _env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html", "j2"]), trim_blocks=True, lstrip_blocks=True)
 
@@ -29,24 +29,24 @@ def overall_decision(verdicts: tuple[FragmentVerdict, ...]) -> tuple[str, str, s
     """(título, explicación, clase CSS) según el peor veredicto."""
     kinds = {v.verdict for v in verdicts}
     if not kinds:
-        return "Sin veredictos", "La Etapa 3 no se ha ejecutado: el informe solo muestra el triaje y la evidencia.", "none"
+        return "No verdicts", "Stage 3 has not run: this report only shows the triage and the evidence.", "none"
     if Verdict.RED in kinds:
-        return "Auditoría manual obligatoria", "Hay fragmentos en rojo: revisa a mano esas líneas antes de aprobar.", "red"
+        return "Manual audit required", "Some fragments are red: review those lines by hand before approving.", "red"
     if Verdict.YELLOW in kinds:
-        return "Revisión focalizada", "La evidencia cubre el comportamiento; solo hay que revisar los fragmentos en amarillo.", "yellow"
-    return "Aprobable con evidencia", "Todos los fragmentos están respaldados por pruebas ejecutables. No hace falta leer el código.", "green"
+        return "Focused review", "The evidence covers the behaviour; only the yellow fragments need a review.", "yellow"
+    return "Approvable on evidence", "Every fragment is backed by executable tests. There is no need to read the code.", "green"
 
 
 def run_label(result: TestRunResult | None) -> str:
     if result is None:
-        return "no ejecutado"
+        return "not run"
     if not result.build_ok:
-        return "no compila"
+        return "does not compile"
     if result.green:
-        return f"verde · {result.passed} ok"
+        return f"green · {result.passed} passed"
     if result.red_for_real:
-        return f"rojo · {result.failed} fallan"
-    return "sin tests"
+        return f"red · {result.failed} failed"
+    return "no tests"
 
 
 def run_class(result: TestRunResult | None) -> str:
@@ -62,18 +62,18 @@ def base_view(ct: ChangeTestEvidence | None) -> tuple[str, str, str]:
     evidencia extra (A lo ejecuta desde 6211a32); rojo allí es bueno: el test mide algo que antes no existía.
     """
     if ct is None or ct.base is None:
-        return "no ejecutado", "muted", ""
+        return "not run", "muted", ""
     base = ct.base
     if ct.change_type is ChangeType.FEATURE:
         if base.red_for_real:
-            return "rojo en base: el test mide algo nuevo", "none", ""
+            return "red on base: the test measures something new", "none", ""
         if base.green:
-            return "verde en base", "muted", "El test pasa también sin la feature: no demuestra que mida algo nuevo (el veredicto solo depende del PR)."
+            return "green on base", "muted", "The test also passes without the feature: it does not show that it measures something new (the verdict depends only on the PR)."
         return run_label(base), "muted", ""
     if base.green:
-        return run_label(base), "yellow", "El test pasa también en la base: no reproduce el bug, así que no cuenta como evidencia."
+        return run_label(base), "yellow", "The test also passes on base: it does not reproduce the bug, so it does not count as evidence."
     if not base.build_ok:
-        return run_label(base), "muted", "No compila en la base: un fallo de compilación no cuenta como reproducir el bug."
+        return run_label(base), "muted", "It does not compile on base: a build failure does not count as reproducing the bug."
     return run_label(base), run_class(base), ""
 
 
@@ -92,30 +92,30 @@ def funnel(report: Report) -> list[dict[str, str]]:
     triage = report.triage
     out = sum(t.scope is Scope.OUT for t in triage)
     high = sum(t.risk is Risk.HIGH for t in triage)
-    stage1 = {"id": "T3", "name": "Triaje", "status": "done",
-              "lines": [_plural(len(triage), "fichero"), f"{out} fuera de alcance", f"{high} de riesgo alto"]}
+    stage1 = {"id": "T3", "name": "Triage", "status": "done",
+              "lines": [_plural(len(triage), "file"), f"{out} out of scope", f"{high} high risk"]}
 
     ct, inv = report.change_test, report.invariance
     ev_lines = [
-        "sin test del cambio" if ct is None else ("test del cambio superado" if ct.ok else "test del cambio no superado"),
-        "sin invarianza" if inv is None else ("invarianza superada" if inv.ok else "invarianza no superada"),
+        "no change test" if ct is None else ("change test passed" if ct.ok else "change test failed"),
+        "no invariance" if inv is None else ("invariance passed" if inv.ok else "invariance failed"),
     ]
     ev_ok = bool(ct and ct.ok and inv and inv.ok)
-    stage2 = {"id": "T1", "name": "Evidencia", "status": "pass" if ev_ok else "fail", "lines": ev_lines}
+    stage2 = {"id": "T1", "name": "Evidence", "status": "pass" if ev_ok else "fail", "lines": ev_lines}
 
     objections = [o for v in report.verdicts for o in v.objections]
     valid = sum(o.valid for o in objections)
     defects = sum((not o.valid) and o.pr_result is not None and o.pr_result.red_for_real for o in objections)
     if objections:
-        x_lines = [_plural(len(objections), "objeción", "objeciones"), _plural(valid, "cerrada", "cerradas") + " con test válido"]
+        x_lines = [_plural(len(objections), "objection"), f"{valid} closed with a valid test"]
         if defects:
-            x_lines.append(_plural(defects, "posible defecto", "posibles defectos") + " en el PR")
+            x_lines.append(_plural(defects, "possible defect") + " in the PR")
         status = "pass" if valid == len(objections) else "fail"
     else:
         refused = sum(v.reasons[0].startswith("M7") for v in report.verdicts if v.reasons)
-        x_lines = ["sin objeciones" if not refused else "no ejecutado"]
+        x_lines = ["no objections" if not refused else "not run"]
         status = "idle" if not refused else "fail"
-    stage3 = {"id": "T2", "name": "Interrogatorio", "status": status, "lines": x_lines}
+    stage3 = {"id": "T2", "name": "Cross-examination", "status": status, "lines": x_lines}
     return [stage1, stage2, stage3]
 
 

@@ -40,30 +40,30 @@ class Rule:
 
 
 RULES: tuple[Rule, ...] = (
-    Rule("R-LOW-01", Risk.LOW, "ruta tests/", path_regex=r"^tests/"),
-    Rule("R-LOW-02", Risk.LOW, "documentación .md", path_regex=r"\.md$"),
-    Rule("R-LOW-03", Risk.LOW, "proyecto .csproj", path_regex=r"\.csproj$"),
+    Rule("R-LOW-01", Risk.LOW, "tests/ path", path_regex=r"^tests/"),
+    Rule("R-LOW-02", Risk.LOW, "Markdown documentation (.md)", path_regex=r"\.md$"),
+    Rule("R-LOW-03", Risk.LOW, "project file (.csproj)", path_regex=r"\.csproj$"),
     Rule("R-LOW-04", Risk.LOW, ".editorconfig", path_regex=r"(^|/)\.editorconfig$"),
-    Rule("R-LOW-05", Risk.LOW, "snapshot de código generado (Resources/**.g.cs)", path_regex=SNAPSHOT_PATH),
-    Rule("R-MED-01", Risk.MED, "código de producción en src/ (lógica private/internal)", path_regex=r"^src/.*\.(cs|tt)$"),
+    Rule("R-LOW-05", Risk.LOW, "generated-code snapshot (Resources/**.g.cs)", path_regex=SNAPSHOT_PATH),
+    Rule("R-MED-01", Risk.MED, "production code in src/ (private/internal logic)", path_regex=r"^src/.*\.(cs|tt)$"),
     Rule(
         "R-HIGH-01",
         Risk.HIGH,
-        "firma public añadida o quitada (contrato de API)",
+        "public signature added or removed (API contract)",
         path_regex=_SRC_CS,
         line_regex=r"^\s*(?:\[[^\]]*\]\s*)*public\b",
         public_api=True,
     ),
-    Rule("R-HIGH-02", Risk.HIGH, "memoria: Span<T>, unsafe o stackalloc", path_regex=_SRC_CS, line_regex=r"(?:ReadOnly)?Span<|\bunsafe\b|\bstackalloc\b"),
+    Rule("R-HIGH-02", Risk.HIGH, "memory: Span<T>, unsafe or stackalloc", path_regex=_SRC_CS, line_regex=r"(?:ReadOnly)?Span<|\bunsafe\b|\bstackalloc\b"),
     Rule(
         "R-HIGH-03",
         Risk.HIGH,
-        "namespace núcleo del generador (CodeAnalysis/Transforms)",
+        "core generator namespace (CodeAnalysis/Transforms)",
         path_regex=r"^src/MessagePack\.SourceGenerator/(CodeAnalysis|Transforms)/",
     ),
 )
 
-DEFAULT_RULE = Rule("R-DEFAULT", Risk.MED, "ninguna regla específica: MED por prudencia")
+DEFAULT_RULE = Rule("R-DEFAULT", Risk.MED, "no specific rule: MED as a precaution")
 
 _ORDER = {Risk.LOW: 0, Risk.MED: 1, Risk.HIGH: 2}
 _COMMENT = re.compile(r"^\s*(//|/\*|\*)")
