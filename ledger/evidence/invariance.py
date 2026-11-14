@@ -49,12 +49,34 @@ class Normalization:
     apply: Callable[[str], str]
 
 
+_COVERAGE_GUARD_IF = "#if !NETSTANDARD2_0 && !NETFRAMEWORK"
+_COVERAGE_GUARD_END = "#endif"
+
+
 def _drop_exclude_from_coverage(text: str) -> str:
-    return "".join(line for line in text.splitlines(keepends=True) if line.strip() != EXCLUDE_FROM_COVERAGE)
+    """Quita el atributo de #2297 tal y como lo emite el PR: dentro de
+    `#if !NETSTANDARD2_0 && !NETFRAMEWORK` / `#endif` (el bloque entero) o como línea suelta.
+    Cualquier otro `#if` o cambio queda intacto."""
+    lines = text.splitlines(keepends=True)
+    kept: list[str] = []
+    i = 0
+    while i < len(lines):
+        window = [line.strip() for line in lines[i : i + 3]]
+        if window == [_COVERAGE_GUARD_IF, EXCLUDE_FROM_COVERAGE, _COVERAGE_GUARD_END]:
+            i += 3
+            continue
+        if window[0] != EXCLUDE_FROM_COVERAGE:
+            kept.append(lines[i])
+        i += 1
+    return "".join(kept)
 
 
 _NORMALIZATIONS: dict[str, Normalization] = {
-    "2297": Normalization(f"removed lines equal to {EXCLUDE_FROM_COVERAGE} (feature #2297)", _drop_exclude_from_coverage),
+    "2297": Normalization(
+        f"removed {EXCLUDE_FROM_COVERAGE} lines and their `{_COVERAGE_GUARD_IF}`/`{_COVERAGE_GUARD_END}` "
+        "guard blocks (feature #2297)",
+        _drop_exclude_from_coverage,
+    ),
 }
 
 
