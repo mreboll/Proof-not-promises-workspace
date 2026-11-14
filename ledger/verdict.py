@@ -104,6 +104,9 @@ def decide(
     evidence = evidence_lines(change_test, invariance)
     evidence_ok = change_test is not None and change_test.ok and invariance is not None and invariance.ok
     if not evidence_ok:
+        if change_test is not None and not change_test.ok and invariance is not None and invariance.ok:
+            # Caso #2129: sigue ROJO (sin prueba no se aprueba), pero el oráculo diferencial orienta al humano.
+            evidence.append("la evidencia diferencial no muestra regresiones; revisa el test generado antes que el código")
         return _verdict(triage, Verdict.RED, "M3", "la evidencia ejecutable falla o falta", evidence)
 
     if risk is not Risk.HIGH:

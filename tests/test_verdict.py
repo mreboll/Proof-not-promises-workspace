@@ -130,6 +130,18 @@ def test_unexpected_diff_names_the_case():
     assert any("int-keys" in r for r in v.reasons)
 
 
+def test_failed_change_test_with_clean_invariance_points_the_human_at_the_test():
+    """Caso #2129: el test generado falla en el PR pero la invarianza no ve regresiones → sigue ROJO, con pista."""
+    v = decide(tri(Scope.IN, Risk.MED), BAD_TEST, GOOD_INV)
+    assert (v.verdict, row(v)) == (Verdict.RED, "M3")
+    assert any("no muestra regresiones" in r and "revisa el test generado" in r for r in v.reasons)
+
+
+def test_no_test_hint_when_the_invariance_also_fails():
+    v = decide(tri(Scope.IN, Risk.MED), BAD_TEST, BAD_INV)
+    assert not any("revisa el test generado" in r for r in v.reasons)
+
+
 def test_feature_only_needs_green_on_pr():
     feature = ChangeTestEvidence(issue_id="2297", change_type=ChangeType.FEATURE, test_name="T", test_code="...", base=None, pr=GREEN)
     assert decide(tri(Scope.IN, Risk.MED), feature, GOOD_INV).verdict is Verdict.GREEN
