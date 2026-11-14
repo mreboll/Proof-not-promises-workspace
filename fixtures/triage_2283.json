@@ -6,7 +6,7 @@
     "rule_hits": [
       "R-LOW-02: documentación .md"
     ],
-    "justification": "El cambio añade documentación al README sobre tipos genéricos desde ensamblados referenciados, pero el issue no solicita documentación; es un informe de error y la corrección no requiere añadir notas al README.",
+    "justification": "El cambio añade documentación en el README que no fue solicitada en el problema, el cual solo reporta un error de ejecución en el generador y analizador.",
     "touches_public_api": false
   },
   {
@@ -16,7 +16,7 @@
     "rule_hits": [
       "R-LOW-02: documentación .md"
     ],
-    "justification": "El cambio solo añade documentación sobre el alcance del analizador y no aborda la excepción IndexOutOfRangeException que es el problema descrito en la incidencia.",
+    "justification": "El cambio añade documentación explicativa para un analizador, lo cual no fue solicitado en el reporte del fallo sobre la excepción IndexOutOfRangeException.",
     "touches_public_api": false
   },
   {
@@ -27,7 +27,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio sustituye la indexación directa DeclaringSyntaxReferences[0] por FirstOrDefault y agrega ReportIfLocatedInCompilation para evitar IndexOutOfRangeException y reportes inválidos en tipos metadata, solucionando el fallo descrito.",
+    "justification": "El cambio soluciona la excepción IndexOutOfRangeException reportada en el issue al evitar el acceso indexado directo a DeclaringSyntaxReferences[0] en tipos provenientes de ensamblados referenciados sin sintaxis fuente.",
     "touches_public_api": false
   },
   {
@@ -37,7 +37,7 @@
     "rule_hits": [
       "R-LOW-01: ruta tests/"
     ],
-    "justification": "La prueba agrega casos de prueba que verifican que el generador y el analizador manejen tipos genéricos cerrados de un ensamblado referenciado sin bloquearse, abordando el problema #2283.",
+    "justification": "Agrega pruebas unitarias que reproducen y verifican específicamente el fallo reportado cuando se utiliza una estructura genérica cerrada proveniente de un ensamblado referenciado.",
     "touches_public_api": false
   }
 ]

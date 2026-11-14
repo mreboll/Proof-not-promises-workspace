@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a las clases generadas en la plantilla del resolver, cumpliendo directamente con la solicitud del issue."
+}

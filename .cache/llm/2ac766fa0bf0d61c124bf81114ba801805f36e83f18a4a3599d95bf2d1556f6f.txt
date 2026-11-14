@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio añade directamente el atributo `ExcludeFromCodeCoverage` a la plantilla de generación de código, cumpliendo con la solicitud explícita del issue."
+}

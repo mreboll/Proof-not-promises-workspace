@@ -1,0 +1,43 @@
+[
+  {
+    "path": "README.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: documentación .md"
+    ],
+    "justification": "El cambio agrega documentación en el README sobre la opción SuppressSourceGeneration, lo cual no fue solicitado en el reporte de error del issue.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs",
+    "scope": "OUT",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: código de producción en src/ (lógica private/internal)",
+      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+    ],
+    "justification": "Los cambios en TypeCollector.cs controlan el manejo de claves duplicadas y mixtas, lo cual no tiene relación con el problema reportado de que el analizador no funciona cuando SuppressSourceGeneration es true.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExecutionTests/SuppressedSourceGenerationTests.cs",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: ruta tests/"
+    ],
+    "justification": "El archivo agrega pruebas sobre la omisión de la generación de código y la serialización dinámica, pero no prueba ni verifica el comportamiento del analizador reportado en el problema.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.Tests/SuppressSourceGenerationAnalyzerTests.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: ruta tests/"
+    ],
+    "justification": "El archivo agrega pruebas unitarias para verificar que el analizador reporte diagnósticos correctamente cuando SuppressSourceGeneration es verdadero, cumpliendo directamente con el problema reportado.",
+    "touches_public_api": false
+  }
+]

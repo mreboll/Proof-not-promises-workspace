@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio soluciona la excepción IndexOutOfRangeException reportada en el issue al evitar el acceso indexado directo a DeclaringSyntaxReferences[0] en tipos provenientes de ensamblados referenciados sin sintaxis fuente."
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El cambio añade documentación en el README que no fue solicitada en el problema, el cual solo reporta un error de ejecución en el generador y analizador."
+}

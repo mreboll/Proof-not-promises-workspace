@@ -118,14 +118,42 @@ def write_report(report: Report, out_dir: Path, *, models: dict[str, str], issue
     return target
 
 
-def render_report(report: Report, out_dir: Path) -> Path:
-    """Punto de entrada del pipeline: resuelve los modelos de cada rol y el título real del issue."""
+def _context(issue_id: str) -> tuple[dict[str, str], str]:
+    """Modelos de cada rol según la configuración ACTUAL (.env) y título real del issue."""
     from ledger import llm
     from ledger.config import load_settings
 
     settings = load_settings()
     models = {role: llm.model_for(role, settings) for role in ROLES}  # type: ignore[arg-type]
-    issue_file = settings.issues_dir / f"{report.issue_id}.md"
+    issue_file = settings.issues_dir / f"{issue_id}.md"
     first_line = issue_file.read_text(encoding="utf-8").splitlines()[0] if issue_file.exists() else ""
-    issue_title = first_line.removeprefix("# ").strip() or f"#{report.issue_id}"  # "# #2283: ..." → "#2283: ..."
+    issue_title = first_line.removeprefix("# ").strip() or f"#{issue_id}"  # "# #2283: ..." → "#2283: ..."
+    return models, issue_title
+
+
+def render_report(report: Report, out_dir: Path) -> Path:
+    """Punto de entrada del pipeline: resuelve los modelos de cada rol y el título real del issue."""
+    models, issue_title = _context(report.issue_id)
     return write_report(report, out_dir, models=models, issue_title=issue_title)
+
+
+def main(argv: list[str]) -> Path:
+    """Re-renderiza el HTML desde el JSON de un informe (p. ej. el de una ejecución con dotnet real):
+
+        python -m ledger.report.render out/report-2283.json
+
+    Ojo: los modelos se toman del .env actual. Si la ejecución usó otros (p. ej. LEDGER_NVIDIA_FOR_ALL=1),
+    ejecútalo con la misma configuración para que la tabla de modelos diga la verdad.
+    """
+    source = Path(argv[0])
+    report = Report.model_validate_json(source.read_text(encoding="utf-8"))
+    models, issue_title = _context(report.issue_id)
+    target = write_report(report, source.parent, models=models, issue_title=issue_title)
+    print(target)
+    return target
+
+
+if __name__ == "__main__":
+    import sys
+
+    main(sys.argv[1:])

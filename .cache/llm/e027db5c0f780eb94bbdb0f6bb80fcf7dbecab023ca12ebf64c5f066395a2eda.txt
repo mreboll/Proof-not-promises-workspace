@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a las clases de formateadores generadas, respondiendo directamente a la solicitud de la incidencia."
+}

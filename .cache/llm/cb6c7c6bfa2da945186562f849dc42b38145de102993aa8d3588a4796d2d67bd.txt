@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la clase generada en EnumTemplate, lo cual responde directamente a la solicitud de decorar el código generado con dicho atributo."
+}

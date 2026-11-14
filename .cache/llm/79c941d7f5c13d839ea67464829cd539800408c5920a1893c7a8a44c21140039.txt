@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio añade el atributo ExcludeFromCodeCoverage a las clases generadas en la plantilla CompositeResolverTemplate.tt, cumpliendo directamente con lo solicitado en la incidencia."
+}

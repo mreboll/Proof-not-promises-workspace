@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la plantilla del formateador generado, cumpliendo directamente con la solicitud del problema de decorar el código generado con dicho atributo."
+}

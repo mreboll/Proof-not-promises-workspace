@@ -161,6 +161,17 @@ def test_unexpected_diff_says_the_pr_does_more_than_the_issue_asks():
     assert "general-duplicate-int-keys-not-suppressed" in card and "más de lo que pide el issue" in card
 
 
+def test_rerender_from_a_json_report(tmp_path, monkeypatch):
+    """`python -m ledger.report.render out/report-2283.json`: HTML desde el JSON de una ejecución con dotnet real."""
+    from ledger.report import render
+
+    src = tmp_path / "in" / "report-2283.json"
+    src.parent.mkdir()
+    src.write_text(make_report().model_dump_json(), encoding="utf-8")
+    monkeypatch.setattr(render, "write_report", lambda report, out_dir, **kw: out_dir / f"report-{report.issue_id}.html")
+    assert render.main([str(src)]) == src.parent / "report-2283.html"
+
+
 def test_report_without_verdicts_still_renders():
     html = render_html(make_report(verdicts=()), models=MODELS, issue_title="#2283")
     assert "Sin veredictos" in html and "README.md" in html

@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El archivo agrega pruebas unitarias para verificar que el código generado por el generador de código contenga el atributo ExcludeFromCodeCoverage solicitado en la incidencia."
+}

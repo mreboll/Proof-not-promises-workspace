@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El problema no solicita actualizar la documentación ni añadir notas en el archivo README sobre el nuevo atributo."
+}

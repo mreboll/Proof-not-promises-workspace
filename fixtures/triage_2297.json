@@ -6,7 +6,7 @@
     "rule_hits": [
       "R-LOW-02: documentación .md"
     ],
-    "justification": "El cambio solo añade una nota en el README sobre la decoración del atributo, pero no agrega el atributo ExcludeFromCodeCoverage al código generado, que es lo que solicita la incidencia.",
+    "justification": "El problema no solicita actualizar la documentación ni añadir notas en el archivo README sobre el nuevo atributo.",
     "touches_public_api": false
   },
   {
@@ -17,7 +17,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a los tipos generados en CompositeResolverTemplate.cs, cumpliendo la solicitud del issue #2297 de decorar el código generado con ese atributo.",
+    "justification": "El cambio añade el atributo `ExcludeFromCodeCoverage` al código generado en la plantilla `CompositeResolverTemplate`, cumpliendo directamente con la solicitud del issue.",
     "touches_public_api": false
   },
   {
@@ -28,7 +28,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El problema solicita añadir el atributo ExcludeFromCodeCoverage al código generado; el diff agrega ese atributo a los tipos generados en CompositeResolverTemplate.tt, satisfaciendo directamente la petición.",
+    "justification": "El cambio añade el atributo ExcludeFromCodeCoverage a las clases generadas en la plantilla CompositeResolverTemplate.tt, cumpliendo directamente con lo solicitado en la incidencia.",
     "touches_public_api": false
   },
   {
@@ -39,7 +39,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio en EnumTemplate.cs agrega el atributo ExcludeFromCodeCoverage al código generado, cumpliendo la solicitud del issue de decorar el código generado con ese atributo.",
+    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la clase generada en EnumTemplate, lo cual responde directamente a la solicitud de decorar el código generado con dicho atributo.",
     "touches_public_api": false
   },
   {
@@ -50,7 +50,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El issue solicita agregar el atributo ExcludeFromCodeCoverage al código generado, y el diff agrega exactamente ese atributo a la clase formatter generada en EnumTemplate.tt, satisfaciendo la petición.",
+    "justification": "El cambio añade el atributo ExcludeFromCodeCoverage a la clase generada en la plantilla de enums, respondiendo directamente a la solicitud del issue.",
     "touches_public_api": false
   },
   {
@@ -61,7 +61,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a las clases de generador de formatos, que es parte del código generado solicitado en el issue.",
+    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a las clases de formateadores generadas, respondiendo directamente a la solicitud de la incidencia.",
     "touches_public_api": false
   },
   {
@@ -72,7 +72,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El diff agrega el atributo ExcludeFromCodeCoverage a las clases generadas, satisfaciendo la solicitud del issue de decorar el código generado con ese atributo.",
+    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la plantilla del formateador generado, cumpliendo directamente con la solicitud del problema de decorar el código generado con dicho atributo.",
     "touches_public_api": false
   },
   {
@@ -83,7 +83,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El issue #2297 solicita agregar el atributo ExcludeFromCodeCoverage a todo el código generado, y el diff lo añade condicionalmente al template del resolutor, cumpliendo la petición.",
+    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a las clases generadas en la plantilla del resolver, cumpliendo directamente con la petición del issue.",
     "touches_public_api": false
   },
   {
@@ -94,7 +94,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El diff agrega el atributo ExcludeFromCodeCoverage a las clases de resolutor generadas, lo cual satisface la solicitud del issue de decorar el código generado con ese atributo.",
+    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a las clases generadas en la plantilla del resolver, cumpliendo directamente con la solicitud del issue.",
     "touches_public_api": false
   },
   {
@@ -105,7 +105,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la clase generada, satisfaciendo la solicitud del issue de decorar el código generado con ese atributo.",
+    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la clase generada por la plantilla StringKeyFormatterTemplate, cumpliendo directamente con lo solicitado en el problema.",
     "touches_public_api": false
   },
   {
@@ -116,7 +116,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El issue solicita añadir ExcludeFromCodeCoverage a todo el código generado, y el diff lo implementa en la plantilla StringKeyFormatterTemplate.tt.",
+    "justification": "El cambio añade directamente el atributo `ExcludeFromCodeCoverage` a la plantilla de generación de código, cumpliendo con la solicitud explícita del issue.",
     "touches_public_api": false
   },
   {
@@ -127,7 +127,7 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio solo ajusta el formato de las llaves en TransformUtilities.cs y no agrega el atributo ExcludeFromCodeCoverage al código generado que solicita el issue #2297.",
+    "justification": "El cambio consiste en un ajuste de formato de salto de línea en la generación de código y no añade el atributo ExcludeFromCodeCoverage solicitado en la incidencia.",
     "touches_public_api": false
   },
   {
@@ -138,28 +138,28 @@
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El diff agrega el atributo ExcludeFromCodeCoverage al código generado de la unión, cumpliendo la solicitud de la issue de decorar el código generado con ese atributo.",
+    "justification": "El cambio agrega el atributo `ExcludeFromCodeCoverage` a la plantilla de código generado para uniones, cumpliendo directamente con la solicitud de la incidencia.",
     "touches_public_api": false
   },
   {
     "path": "src/MessagePack.SourceGenerator/Transforms/UnionTemplate.tt",
-    "scope": "OUT",
+    "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
       "R-MED-01: código de producción en src/ (lógica private/internal)",
       "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
     ],
-    "justification": "El issue solicita añadir ExcludeFromCodeCoverage a todo el código generado, no solo a un archivo; el cambio afecta solo a UnionTemplate.tt, por lo que no satisface la petición completa.",
+    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la plantilla de código generado para uniones, cumpliendo directamente con la solicitud del problema.",
     "touches_public_api": false
   },
   {
     "path": "tests/MessagePack.SourceGenerator.Tests/CodeCoverageExclusionTests.cs",
-    "scope": "OUT",
+    "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
       "R-LOW-01: ruta tests/"
     ],
-    "justification": "El diff solo agrega un archivo de prueba que verifica la presencia del atributo, pero no añade el atributo ExcludeFromCodeCoverage a los tipos generados, por lo que no satisface la solicitud del issue.",
+    "justification": "El archivo agrega pruebas unitarias para verificar que el código generado por el generador de código contenga el atributo ExcludeFromCodeCoverage solicitado en la incidencia.",
     "touches_public_api": false
   },
   {
