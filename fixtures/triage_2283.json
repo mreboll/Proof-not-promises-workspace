@@ -4,9 +4,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El cambio añade documentación en el README que no fue solicitada en el problema, el cual solo reporta un error de ejecución en el generador y analizador.",
+    "justification": "The issue reports a bug causing an IndexOutOfRangeException crash in the generator and analyzer, but does not request any documentation or README updates.",
     "touches_public_api": false
   },
   {
@@ -14,9 +14,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El cambio añade documentación explicativa para un analizador, lo cual no fue solicitado en el reporte del fallo sobre la excepción IndexOutOfRangeException.",
+    "justification": "The issue describes a generator and analyzer crash caused by an IndexOutOfRangeException, and does not request any documentation updates.",
     "touches_public_api": false
   },
   {
@@ -24,10 +24,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio soluciona la excepción IndexOutOfRangeException reportada en el issue al evitar el acceso indexado directo a DeclaringSyntaxReferences[0] en tipos provenientes de ensamblados referenciados sin sintaxis fuente.",
+    "justification": "The changes prevent the IndexOutOfRangeException when accessing DeclaringSyntaxReferences on types/members from referenced assemblies and properly handle reporting diagnostics for symbols not declared in the current compilation.",
     "touches_public_api": false
   },
   {
@@ -35,9 +35,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "Agrega pruebas unitarias que reproducen y verifican específicamente el fallo reportado cuando se utiliza una estructura genérica cerrada proveniente de un ensamblado referenciado.",
+    "justification": "This file adds tests that specifically reproduce and verify the fix for closed generic structs from referenced assemblies crashing the generator and analyzer as reported in issue #2283.",
     "touches_public_api": false
   }
 ]

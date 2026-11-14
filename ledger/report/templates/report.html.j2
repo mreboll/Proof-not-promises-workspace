@@ -49,14 +49,14 @@ li { margin: 2px 0; }
 .hash { font-size: 12px; }
 .table-wrap { overflow-x: auto; }
 
-/* Cabecera */
+/* Header */
 .masthead { padding: 0 4px; }
 .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px 20px; margin: 0;
         padding: 14px 0 0; border-top: 1px solid var(--rule-2); }
 .meta dt { font: 600 11px/1.4 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
 .meta dd { margin: 2px 0 0; overflow-wrap: anywhere; font-size: 14px; }
 
-/* Decisión */
+/* Decision */
 .decision { display: grid; grid-template-columns: auto 1fr; gap: 20px 28px; align-items: center; border-top: 5px solid var(--idle); }
 .decision.green { border-top-color: var(--green); } .decision.yellow { border-top-color: var(--amber); } .decision.red { border-top-color: var(--red); }
 .stamp { width: 112px; height: 112px; border-radius: 50%; border: 3px double currentColor; display: grid; place-items: center;
@@ -72,7 +72,7 @@ li { margin: 2px 0; }
 .tile.GREEN .n { color: var(--green); } .tile.YELLOW .n { color: var(--amber); } .tile.RED .n { color: var(--red); }
 .tile .lbl { font-size: 13px; color: var(--ink-2); }
 
-/* Embudo */
+/* Funnel */
 .funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 0; overflow: hidden; }
 .stage { padding: 20px 22px; position: relative; }
 .stage + .stage { border-left: 1px solid var(--rule); }
@@ -85,7 +85,7 @@ li { margin: 2px 0; }
 .stage.pass .dot { background: var(--green); } .stage.fail .dot { background: var(--red); } .stage.done .dot { background: var(--accent); }
 .stage ul { list-style: none; padding: 0; margin: 0; font-size: 13.5px; color: var(--ink-2); }
 
-/* Pastillas y tarjetas */
+/* Pills and cards */
 .pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font: 600 12px/1.5 var(--sans); white-space: nowrap; vertical-align: 1px; }
 .pill.GREEN, .pill.green { background: var(--green-bg); color: var(--green); }
 .pill.YELLOW, .pill.yellow { background: var(--amber-bg); color: var(--amber); }
@@ -99,12 +99,12 @@ li { margin: 2px 0; }
 .note { border-left: 3px solid var(--amber); padding: 6px 12px; background: var(--amber-bg); border-radius: 0 8px 8px 0; font-size: 13px; margin: 10px 0 0; }
 .note.red { border-left-color: var(--red); background: var(--red-bg); }
 
-/* Interrogatorio como transcripción */
+/* Cross-examination as a transcript */
 .turn .speaker { font: 700 11px/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
 .turn .q { font: 500 16px/1.5 var(--serif); margin: 2px 0 6px; }
 .turn .answer { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule-2); }
 
-/* Firma */
+/* Sign-off */
 .sign { white-space: pre-wrap; background: var(--code); border: 1px dashed var(--rule-2); border-radius: 10px; padding: 18px; font: 13px/1.8 var(--mono); }
 
 @media (max-width: 720px) {
@@ -140,6 +140,8 @@ li { margin: 2px 0; }
     <div><dt>Files in the diff</dt><dd>{{ r.triage | length }}</dd></div>
   </dl>
 </header>
+
+{% if notice %}<p class="note" role="note">{{ notice }}</p>{% endif %}
 
 <section class="decision {{ decision_class }}" aria-label="System decision">
   <div class="stamp" aria-hidden="true">{{ {'green': 'Approvable', 'yellow': 'Review', 'red': 'Audit', 'none': 'Pending'}[decision_class] }}</div>

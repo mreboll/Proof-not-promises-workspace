@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The issue does not ask for documentation updates, so modifying doc/analyzers/index.md is out of scope."
+}

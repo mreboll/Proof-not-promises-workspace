@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated union formatter class, directly fulfilling the issue's request to decorate generated code with that attribute."
+}

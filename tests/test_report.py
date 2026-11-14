@@ -205,6 +205,69 @@ def test_green_files_are_folded_after_the_ones_that_need_attention(html):
     assert "2 green files" in folded and "TypeCollector.cs" in folded
 
 
+def test_rerender_can_recompute_verdicts_from_the_recorded_inputs(tmp_path, monkeypatch):
+    """--recompute: aplica la matriz actual (pura) a triaje + evidencia + objeciones grabados en el JSON."""
+    from ledger.report import render
+
+    stale = make_report().model_copy(update={"verdicts": tuple(v.model_copy(update={"reasons": ("viejo",)}) for v in make_report().verdicts)})
+    src = tmp_path / "report-2283.json"
+    src.write_text(stale.model_dump_json(), encoding="utf-8")
+    seen = {}
+    monkeypatch.setattr(render, "write_report", lambda report, out_dir, **kw: seen.setdefault("r", report) and out_dir / "x.html")
+    render.main([str(src), "--recompute"])
+    reasons = {v.path: v.reasons[0] for v in seen["r"].verdicts}
+    assert reasons["README.md"].startswith("M2") and reasons["src/G/CodeAnalysis/TypeCollector.cs"].startswith("M5")
+    assert [o.question for v in seen["r"].verdicts for o in v.objections] == [OBJ.question]
+
+
+def test_translate_llm_text_translates_only_model_written_fields():
+    from ledger.report.render import Translation, translate_llm_text
+
+    calls = []
+
+    def fake(system, user, schema, role, **kw):
+        calls.append(role)
+        items = json.loads(user.split("<items>")[1].split("</items>")[0])
+        return Translation(items=[f"EN:{s}" for s in items])
+
+    r = translate_llm_text(make_report(), complete=fake)
+    assert calls == ["flash"]
+    assert {t.justification for t in r.triage} == {"EN:El issue no pide documentación.", "EN:Arregla el crash.", "EN:Test del issue."}
+    obj = next(o for v in r.verdicts for o in v.objections)
+    assert obj.question == f"EN:{OBJ.question}" and obj.rationale == f"EN:{OBJ.rationale}"
+    assert obj.test_code == OBJ.test_code and r.triage[0].rule_hits == make_report().triage[0].rule_hits
+
+
+def test_translate_keeps_originals_if_the_model_returns_the_wrong_count():
+    from ledger.report.render import Translation, translate_llm_text
+
+    r = translate_llm_text(make_report(), complete=lambda *a, **k: Translation(items=["solo uno"]))
+    assert r == make_report()
+
+
+def test_notice_is_shown_at_the_top():
+    html = render_html(make_report(), models=MODELS, issue_title="#2283", notice="LLM outputs translated from Spanish")
+    assert html.index("LLM outputs translated from Spanish") < html.index('id="must-read"')
+
+
+def test_write_report_passes_the_notice_to_the_html(tmp_path):
+    path = write_report(make_report(), tmp_path, models=MODELS, issue_title="#2283", notice="LLM outputs translated")
+    assert "LLM outputs translated" in path.read_text(encoding="utf-8")
+
+
+def test_recompute_refreshes_rule_descriptions_by_id_and_keeps_the_quote():
+    from ledger.report.render import recompute_verdicts
+
+    r = make_report()
+    old = r.triage[0].model_copy(update={"rule_hits": ("R-LOW-02: documentación .md", "R-HIGH-01: firma public añadida o quitada (contrato de API) → +`public int X;`", "R-XYZ: desconocida")})
+    out = recompute_verdicts(r.model_copy(update={"triage": (old, *r.triage[1:])}))
+    assert out.triage[0].rule_hits == (
+        "R-LOW-02: Markdown documentation (.md)",
+        "R-HIGH-01: public signature added or removed (API contract) → +`public int X;`",
+        "R-XYZ: desconocida",
+    )
+
+
 def test_report_without_verdicts_still_renders():
     html = render_html(make_report(verdicts=()), models=MODELS, issue_title="#2283")
     assert "No verdicts" in html and "README.md" in html

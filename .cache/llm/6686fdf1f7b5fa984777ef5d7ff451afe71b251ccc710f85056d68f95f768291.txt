@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The added property tracks user-declared partial formatters marked with `[GeneratedMessagePackFormatter]`, which directly implements the requested feature."
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "This file adds an external type without MessagePack attributes in a separate test library to test generating a formatter for a type in a referenced assembly, as requested by the issue."
+}

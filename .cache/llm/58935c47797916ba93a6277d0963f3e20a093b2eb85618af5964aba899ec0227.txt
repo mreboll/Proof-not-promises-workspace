@@ -1,0 +1,1 @@
+{"scope":"OUT","justification":"The test checks runtime serialization and that source generation is suppressed, rather than verifying analyzer behavior or diagnostics when SuppressSourceGeneration is true."}

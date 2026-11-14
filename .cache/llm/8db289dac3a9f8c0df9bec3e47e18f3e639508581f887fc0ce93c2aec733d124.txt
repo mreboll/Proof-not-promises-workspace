@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change adds a project reference to an external types project without MessagePack references to enable testing formatters generated for types in referenced assemblies as requested in the issue."
+}

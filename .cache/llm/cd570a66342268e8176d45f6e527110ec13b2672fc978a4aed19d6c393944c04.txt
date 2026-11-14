@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Registering the new diagnostic rules (MsgPack019 through MsgPack022) in AnalyzerReleases.Unshipped.md is required when adding analyzer diagnostics for the requested GeneratedMessagePackFormatter and surrogate type feature."
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The changes add the requested ExcludeFromCodeCoverage attribute to the resolver classes emitted by the source generator template."
+}

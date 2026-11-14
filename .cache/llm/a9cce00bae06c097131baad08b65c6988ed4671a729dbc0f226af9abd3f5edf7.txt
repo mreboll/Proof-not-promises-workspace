@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The issue describes a generator and analyzer crash caused by an IndexOutOfRangeException, and does not request any documentation updates."
+}

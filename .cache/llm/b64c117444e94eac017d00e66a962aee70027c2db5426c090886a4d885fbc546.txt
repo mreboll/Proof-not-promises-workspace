@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Excluding the new external types test files from this test project prevents compilation failures caused by missing assembly references when adding tests that verify the new feature."
+}

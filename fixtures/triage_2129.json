@@ -4,9 +4,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El issue no solicita documentación ni actualizaciones al README para esta funcionalidad.",
+    "justification": "The issue requests a feature for source-generating formatters for types in referenced assemblies, but does not ask for documentation or README updates.",
     "touches_public_api": false
   },
   {
@@ -14,9 +14,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El archivo corresponde a la documentación de una regla de analizador, lo cual representa documentación no solicitada en la descripción de la propuesta del issue.",
+    "justification": "The issue requests the `[GeneratedMessagePackFormatter]` feature itself, and does not request documentation files or analyzer docs.",
     "touches_public_api": false
   },
   {
@@ -24,9 +24,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El cambio consiste en documentación para una nueva regla del analizador, la cual no fue solicitada en la descripción del problema.",
+    "justification": "The issue requests adding the GeneratedMessagePackFormatter feature, but does not request documentation or analyzer documentation files.",
     "touches_public_api": false
   },
   {
@@ -34,9 +34,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El archivo agrega documentación sobre una nueva regla de analizador, lo cual no fue solicitado en la descripción de la incidencia.",
+    "justification": "The issue requests the ability to source-generate formatters for types in referenced assemblies, but does not request documentation or analyzer doc files like MsgPack021.md.",
     "touches_public_api": false
   },
   {
@@ -44,9 +44,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El cambio agrega documentación para un analizador en formato markdown, lo cual no fue solicitado en la descripción del problema.",
+    "justification": "The change adds documentation for an analyzer rule, which is not requested in the issue.",
     "touches_public_api": false
   },
   {
@@ -54,9 +54,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El cambio actualiza la documentación de analizadores (un archivo de documentación), algo que no fue solicitado en la descripción del problema.",
+    "justification": "The issue does not ask for documentation updates, so modifying doc/analyzers/index.md is out of scope.",
     "touches_public_api": false
   },
   {
@@ -64,10 +64,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-01: firma public añadida o quitada (contrato de API) → +`public class GeneratedMessagePackFormatterAttribute : Attribute`"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-01: public signature added or removed (API contract) → +`public class GeneratedMessagePackFormatterAttribute : Attribute`"
     ],
-    "justification": "El cambio define el nuevo atributo `GeneratedMessagePackFormatterAttribute` con la propiedad `SurrogateType`, el cual fue explícitamente solicitado y acordado en la discusión de la incidencia para generar formateadores de tipos en ensamblados externos.",
+    "justification": "The diff defines GeneratedMessagePackFormatterAttribute with a SurrogateType property, which is directly requested and agreed upon in the issue discussion to allow source-generating formatters for external types.",
     "touches_public_api": true
   },
   {
@@ -75,9 +75,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "Registra las nuevas reglas de diagnóstico del analizador necesarias para validar el uso del nuevo atributo de formateadores generados y tipos sustitutos solicitado en la discusión del issue.",
+    "justification": "Registering the new diagnostic rules (MsgPack019 through MsgPack022) in AnalyzerReleases.Unshipped.md is required when adding analyzer diagnostics for the requested GeneratedMessagePackFormatter and surrogate type feature.",
     "touches_public_api": false
   },
   {
@@ -85,10 +85,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-01: firma public añadida o quitada (contrato de API) → +`public const string GeneratedFormatterMustBePartialId = \"MsgPack019\";`"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-01: public signature added or removed (API contract) → +`public const string GeneratedFormatterMustBePartialId = \"MsgPack019\";`"
     ],
-    "justification": "El cambio agrega diagnósticos para validar el uso del nuevo atributo [GeneratedMessagePackFormatter] y tipos surrogados acordados en la discusión del problema.",
+    "justification": "The added diagnostic descriptors define validation rules for the requested [GeneratedMessagePackFormatter] attribute and surrogate type usage discussed in the issue.",
     "touches_public_api": true
   },
   {
@@ -96,10 +96,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "Implementa el recolector de modelos de serialización para clases parciales con el atributo `[GeneratedMessagePackFormatter]` solicitado en la incidencia, admitiendo tanto modo sin contrato como tipos subrogados.",
+    "justification": "The file implements GeneratedFormatterCollector to analyze types marked with [GeneratedMessagePackFormatter] using contractless mode or surrogate types as agreed upon in the issue discussion.",
     "touches_public_api": false
   },
   {
@@ -107,11 +107,11 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-01: firma public añadida o quitada (contrato de API) → +`public sealed record GeneratedFormatterRequest(INamedTypeSymbol Formatter, IName`",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-01: public signature added or removed (API contract) → +`public sealed record GeneratedFormatterRequest(INamedTypeSymbol Formatter, IName`",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "Introduce el tipo de datos necesario en el generador de código para representar la solicitud de un formateador generado mediante el atributo solicitado en la propuesta y discusión del issue.",
+    "justification": "This file adds the data structure to represent a requested generated formatter and its optional surrogate type for the source generator, as requested in the issue.",
     "touches_public_api": true
   },
   {
@@ -119,11 +119,11 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-01: firma public añadida o quitada (contrato de API) → +`public bool IsUserDeclaredFormatter { get; init; }`",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-01: public signature added or removed (API contract) → +`public bool IsUserDeclaredFormatter { get; init; }`",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "Agrega la propiedad `IsUserDeclaredFormatter` para rastrear las clases de formateador parciales marcadas con `[GeneratedMessagePackFormatter]`, lo cual es necesario para la funcionalidad solicitada en el issue.",
+    "justification": "The added property tracks user-declared partial formatters marked with `[GeneratedMessagePackFormatter]`, which directly implements the requested feature.",
     "touches_public_api": true
   },
   {
@@ -131,9 +131,9 @@
     "scope": "IN",
     "risk": "MED",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)"
+      "R-MED-01: production code in src/ (private/internal logic)"
     ],
-    "justification": "El cambio evita que las clases marcadas con [GeneratedMessagePackFormatter] se interpreten como formateadores escritos a mano, lo cual es necesario para soportar la generación de formateadores solicitada en la incidencia.",
+    "justification": "It excludes types marked with [GeneratedMessagePackFormatter] from being detected as hand-written formatters in the source generator, supporting the feature requested in the issue.",
     "touches_public_api": false
   },
   {
@@ -141,9 +141,9 @@
     "scope": "IN",
     "risk": "MED",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)"
+      "R-MED-01: production code in src/ (private/internal logic)"
     ],
-    "justification": "El cambio implementa en el generador de código fuente la detección y procesamiento de clases decoradas con el atributo [GeneratedMessagePackFormatter] solicitado en el issue.",
+    "justification": "The changes integrate the requested `[GeneratedMessagePackFormatter]` attribute into the source generator's pipeline and diagnostic reporting.",
     "touches_public_api": false
   },
   {
@@ -151,10 +151,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "Modifica la plantilla de generación para permitir que la clase generada sea parcial cuando es declarada por el usuario, tal como se solicita en la propuesta del issue.",
+    "justification": "The change updates FormatterTemplate to generate a partial class when the formatter is user-declared, directly supporting the issue's request for source-generating partial class formatters.",
     "touches_public_api": false
   },
   {
@@ -162,10 +162,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio en la plantilla permite que la clase del formateador generado sea parcial si es declarada por el usuario, cumpliendo con la propuesta de usar clases parciales para generar formateadores de tipos externos.",
+    "justification": "The change updates the formatter template to emit a partial class when the formatter is user-declared, which is necessary to implement the requested `[GeneratedMessagePackFormatter]` feature on partial classes.",
     "touches_public_api": false
   },
   {
@@ -173,10 +173,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio adapta la plantilla del formateador para emitir una clase parcial cuando el formateador es declarado por el usuario, lo cual forma parte del soporte solicitado para clases parciales con [GeneratedMessagePackFormatter].",
+    "justification": "This modification updates the string-key formatter template to emit a partial class when the formatter is declared by the user, directly implementing the requested user-declared formatter feature.",
     "touches_public_api": false
   },
   {
@@ -184,10 +184,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "Modifica la plantilla de generación de formateadores para emitir una clase parcial cuando el formateador es declarado por el usuario, lo cual es necesario para permitir la implementación de formateadores autogenerados solicitada en el issue.",
+    "justification": "The change updates the string key formatter template to generate a partial class when the formatter is user-declared, implementing part of the requested partial class formatter feature.",
     "touches_public_api": false
   },
   {
@@ -195,9 +195,9 @@
     "scope": "IN",
     "risk": "MED",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)"
+      "R-MED-01: production code in src/ (private/internal logic)"
     ],
-    "justification": "Define las constantes necesarias para identificar el atributo `GeneratedMessagePackFormatter` y su propiedad `SurrogateType`, requeridos por la característica solicitada en el issue.",
+    "justification": "The added constants define names for the GeneratedMessagePackFormatterAttribute and its SurrogateType property requested and agreed upon in the issue discussion.",
     "touches_public_api": false
   },
   {
@@ -205,9 +205,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "El archivo añade pruebas que verifican la funcionalidad solicitada en el issue, utilizando el atributo [GeneratedMessagePackFormatter] y tipos sustitutos (SurrogateType) para generar formateadores de tipos externos.",
+    "justification": "This file adds test cases that verify the requested [GeneratedMessagePackFormatter] attribute and surrogate type feature for external types.",
     "touches_public_api": false
   },
   {
@@ -215,9 +215,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "El archivo añade pruebas que verifican la serialización, deserialización y registro en el resolver de formateadores generados para tipos externos, tal como solicita la incidencia.",
+    "justification": "This file adds execution tests that verify the requested feature of generating formatters for external types using contractless mode and surrogate types.",
     "touches_public_api": false
   },
   {
@@ -225,10 +225,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-03: proyecto .csproj"
+      "R-LOW-01: tests/ path",
+      "R-LOW-03: project file (.csproj)"
     ],
-    "justification": "El cambio agrega una referencia de proyecto en el proyecto de pruebas para verificar la generación de formateadores de tipos externos no vinculados a MessagePack, tal como solicita el problema.",
+    "justification": "The change adds a project reference to an external types project without MessagePack references to enable testing formatters generated for types in referenced assemblies as requested in the issue.",
     "touches_public_api": false
   },
   {
@@ -236,9 +236,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "Define un tipo en un ensamblado externo sin atributos de serialización que sirve para probar y verificar la generación de formateadores para tipos referenciados solicitada en el issue.",
+    "justification": "This file adds an external type without MessagePack attributes in a separate test library to test generating a formatter for a type in a referenced assembly, as requested by the issue.",
     "touches_public_api": false
   },
   {
@@ -246,9 +246,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "Define un tipo externo sin atributos de serialización que sirve como caso de prueba para verificar la generación de formateadores de tipos en ensamblados referenciados.",
+    "justification": "This file defines an external type without MessagePack annotations in a separate assembly, which is needed to test generating formatters for types in referenced assemblies as requested in the issue.",
     "touches_public_api": false
   },
   {
@@ -256,9 +256,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "Define un tipo externo sin atributos de serialización dentro de una biblioteca de pruebas para verificar la generación de formateadores de tipos externos propuesta en la incidencia.",
+    "justification": "This file adds an external type without serialization attributes to serve as a test case for generating formatters for types in referenced assemblies via surrogate types as discussed in the issue.",
     "touches_public_api": false
   },
   {
@@ -266,10 +266,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-03: proyecto .csproj"
+      "R-LOW-01: tests/ path",
+      "R-LOW-03: project file (.csproj)"
     ],
-    "justification": "El archivo crea un proyecto de prueba que modela la biblioteca externa sin dependencias para verificar la generación de formateadores solicitada en el issue.",
+    "justification": "This project sets up a dependency-free external assembly specifically to test generating formatters for external types as requested in the issue.",
     "touches_public_api": false
   },
   {
@@ -277,10 +277,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-03: proyecto .csproj"
+      "R-LOW-01: tests/ path",
+      "R-LOW-03: project file (.csproj)"
     ],
-    "justification": "Es necesario excluir las pruebas del nuevo formateador para tipos externos en este proyecto para evitar errores de compilación por falta de referencias.",
+    "justification": "Excluding the new external types test files from this test project prevents compilation failures caused by missing assembly references when adding tests that verify the new feature.",
     "touches_public_api": false
   },
   {
@@ -288,9 +288,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "El archivo agrega pruebas unitarias para la funcionalidad solicitada de generar formateadores de MessagePack mediante el atributo [GeneratedMessagePackFormatter] y tipos subrogados (surrogates).",
+    "justification": "This file adds tests verifying the behavior and diagnostics of the requested `[GeneratedMessagePackFormatter]` attribute and surrogate types feature.",
     "touches_public_api": false
   }
 ]

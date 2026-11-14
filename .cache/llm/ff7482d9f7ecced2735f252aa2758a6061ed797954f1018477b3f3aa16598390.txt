@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "This file adds execution tests that verify the requested feature of generating formatters for external types using contractless mode and surrogate types."
+}

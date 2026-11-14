@@ -4,9 +4,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El cambio agrega documentación en el README sobre la opción SuppressSourceGeneration, lo cual no fue solicitado en el reporte de error del issue.",
+    "justification": "The issue reports a bug where the analyzer does not work when SuppressSourceGeneration is true, but does not request documentation or README updates.",
     "touches_public_api": false
   },
   {
@@ -14,10 +14,10 @@
     "scope": "OUT",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "Los cambios en TypeCollector.cs controlan el manejo de claves duplicadas y mixtas, lo cual no tiene relación con el problema reportado de que el analizador no funciona cuando SuppressSourceGeneration es true.",
+    "justification": "The changes in TypeCollector.cs handle duplicate keys and mixed string/int keys, which is unrelated to the issue of the analyzer not working when SuppressSourceGeneration is set to true.",
     "touches_public_api": false
   },
   {
@@ -25,9 +25,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "El archivo agrega pruebas sobre la omisión de la generación de código y la serialización dinámica, pero no prueba ni verifica el comportamiento del analizador reportado en el problema.",
+    "justification": "The test checks runtime serialization and that source generation is suppressed, rather than verifying analyzer behavior or diagnostics when SuppressSourceGeneration is true.",
     "touches_public_api": false
   },
   {
@@ -35,9 +35,9 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "El archivo agrega pruebas unitarias para verificar que el analizador reporte diagnósticos correctamente cuando SuppressSourceGeneration es verdadero, cumpliendo directamente con el problema reportado.",
+    "justification": "This new test file directly tests and verifies analyzer functionality when SuppressSourceGeneration is set to true, as reported in the issue.",
     "touches_public_api": false
   }
 ]

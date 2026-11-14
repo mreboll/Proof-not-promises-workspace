@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The changes integrate the requested `[GeneratedMessagePackFormatter]` attribute into the source generator's pipeline and diagnostic reporting."
+}

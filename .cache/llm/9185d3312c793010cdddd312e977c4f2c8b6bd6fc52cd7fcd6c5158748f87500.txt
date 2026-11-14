@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The issue requests adding the ExcludeFromCodeCoverage attribute to generated code, but does not ask for updates to the README documentation."
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change updates the string key formatter template to generate a partial class when the formatter is user-declared, implementing part of the requested partial class formatter feature."
+}

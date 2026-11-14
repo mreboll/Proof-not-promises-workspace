@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change updates the formatter template to emit a partial class when the formatter is user-declared, which is necessary to implement the requested `[GeneratedMessagePackFormatter]` feature on partial classes."
+}

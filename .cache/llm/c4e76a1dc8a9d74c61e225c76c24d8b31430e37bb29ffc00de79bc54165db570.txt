@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The diff defines GeneratedMessagePackFormatterAttribute with a SurrogateType property, which is directly requested and agreed upon in the issue discussion to allow source-generating formatters for external types."
+}

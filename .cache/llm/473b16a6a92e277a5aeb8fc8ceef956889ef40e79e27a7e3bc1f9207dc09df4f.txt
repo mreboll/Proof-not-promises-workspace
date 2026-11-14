@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The diff adds the ExcludeFromCodeCoverage attribute to the generated string-key formatter template, directly implementing the requested feature."
+}

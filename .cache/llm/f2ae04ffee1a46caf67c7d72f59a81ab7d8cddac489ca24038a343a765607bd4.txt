@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The added diagnostic descriptors define validation rules for the requested [GeneratedMessagePackFormatter] attribute and surrogate type usage discussed in the issue."
+}

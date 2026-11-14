@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The added constants define names for the GeneratedMessagePackFormatterAttribute and its SurrogateType property requested and agreed upon in the issue discussion."
+}
