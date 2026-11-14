@@ -60,7 +60,7 @@ def load_issue_text(settings: Settings, issue_id: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _diff_text(fd: FileDiff) -> str:
+def diff_excerpt(fd: FileDiff) -> str:
     if fd.binary:
         return "(binary file: no textual diff)"
     text = "".join(h.text for h in fd.hunks)
@@ -74,7 +74,7 @@ def _user_prompt(issue_text: str, fd: FileDiff) -> str:
     return (
         f"<issue>\n{issue_text}\n</issue>\n\n"
         f"File: {fd.path}{renamed}\nStatus: {fd.status}, +{len(fd.added)} -{len(fd.removed)} lines\n\n"
-        f"<diff>\n{_diff_text(fd)}\n</diff>"
+        f"<diff>\n{diff_excerpt(fd)}\n</diff>"
     )
 
 
