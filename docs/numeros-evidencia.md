@@ -30,10 +30,19 @@ Fiscal `nvidia/nemotron-3.5-super-vl-120b-a12b`; Defensor y mutantes `gemini-4-h
 |---|---|---|
 | Primera compilación del repo (frío) | ~2 min | imagen: 5,5 min **una vez** (8 worktrees precompilados) |
 | Un `dotnet test` del test generado (incremental) | 10–25 s | 20–30 s por sandbox |
-| Base + PR + mutante | 54 s en secuencia | **29 s en paralelo** (3 sandboxes sin red) |
+| Base + PR + mutante (`python -m ledger.evidence.bench --issue 2283`) | 54–63 s en secuencia | **28–29 s en paralelo** (3 sandboxes sin red) |
 | Invarianza (31 casos, base ×2 + PR) | 35–70 s | (en local) |
 | Test del cambio con el LLM (incluye 2 ejecuciones dotnet) | 0,8–5,5 min | — |
-| Pipeline completo #2283 con Etapa 3 | 18–22 min | _pendiente: el primer intento se quedó parado (causa no confirmada, ver lessons-log)_ |
+| Pipeline completo #2283 con Etapa 3 | 18–22 min | **11 min** (`LEDGER_RUNNER=modal`; un primer intento se quedó parado, ver lessons-log) |
+
+## Pipeline completo en Modal (#2283)
+
+`LEDGER_RUNNER=modal`, mismos modelos. Todo el código escrito por IA (test del cambio, tests del Defensor y
+mutantes) se ejecuta en sandboxes sin red. Test del cambio rojo en base y verde en PR; invarianza ok;
+Etapa 3 con **2 de 3 objeciones validadas** contra su mutante y la tercera rechazada por la antitrampa (el test
+pasaba también contra el mutante). Las preguntas del Fiscal no coinciden con las de la ejecución local:
+los LLM no repiten respuestas y los prompts cambiaron a inglés. Informe: `fixtures/report_2283_modal.json`;
+comparativa: `fixtures/bench_2283.json`.
 
 ## Coste
 

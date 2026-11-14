@@ -1,0 +1,76 @@
+{
+  "issue_id": "2283",
+  "expected": {
+    "base": "red",
+    "pr": "green",
+    "mutant": "red"
+  },
+  "modes": {
+    "modal": {
+      "wall_s": 27.6,
+      "as_expected": true,
+      "results": {
+        "base": {
+          "build_ok": true,
+          "passed": 0,
+          "failed": 1,
+          "output_tail": "0 passed, 1 failed (of 1)\nLedgerIssue2283.ClosedGenericValueTypeFromReferencedAssemblyDoesNotCrashGeneratorOrAnalyzer: Assert.Empty() Failure: Collection was not empty\nCollection: [Microsoft.CodeAnalysis.GeneratorRunResult]",
+          "duration_s": 21.72849730006419,
+          "green": false,
+          "red_for_real": true
+        },
+        "pr": {
+          "build_ok": true,
+          "passed": 1,
+          "failed": 0,
+          "output_tail": "1 passed, 0 failed (of 1)",
+          "duration_s": 20.89234760007821,
+          "green": true,
+          "red_for_real": false
+        },
+        "mutant": {
+          "build_ok": true,
+          "passed": 0,
+          "failed": 1,
+          "output_tail": "0 passed, 1 failed (of 1)\nLedgerIssue2283.ClosedGenericValueTypeFromReferencedAssemblyDoesNotCrashGeneratorOrAnalyzer: Assert.Empty() Failure: Collection was not empty\nCollection: [Microsoft.CodeAnalysis.GeneratorRunResult]",
+          "duration_s": 27.343054899945855,
+          "green": false,
+          "red_for_real": true
+        }
+      }
+    },
+    "local": {
+      "wall_s": 62.7,
+      "as_expected": true,
+      "results": {
+        "base": {
+          "build_ok": true,
+          "passed": 0,
+          "failed": 1,
+          "output_tail": "0 passed, 1 failed (of 1)\nLedgerIssue2283.ClosedGenericValueTypeFromReferencedAssemblyDoesNotCrashGeneratorOrAnalyzer: Assert.Empty() Failure: Collection was not empty\nCollection: [Microsoft.CodeAnalysis.GeneratorRunResult]",
+          "duration_s": 20.47109830006957,
+          "green": false,
+          "red_for_real": true
+        },
+        "pr": {
+          "build_ok": true,
+          "passed": 1,
+          "failed": 0,
+          "output_tail": "1 passed, 0 failed (of 1)",
+          "duration_s": 13.887549899984151,
+          "green": true,
+          "red_for_real": false
+        },
+        "mutant": {
+          "build_ok": true,
+          "passed": 0,
+          "failed": 1,
+          "output_tail": "0 passed, 1 failed (of 1)\nLedgerIssue2283.ClosedGenericValueTypeFromReferencedAssemblyDoesNotCrashGeneratorOrAnalyzer: Assert.Empty() Failure: Collection was not empty\nCollection: [Microsoft.CodeAnalysis.GeneratorRunResult]",
+          "duration_s": 24.618168600136414,
+          "green": false,
+          "red_for_real": true
+        }
+      }
+    }
+  }
+}
