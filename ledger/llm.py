@@ -14,7 +14,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import threading
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, Literal, TypeVar, overload
 
@@ -61,6 +65,40 @@ def _cache_key(model: str, system: str, user: str, schema_name: str) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+# Peticiones simultáneas por proveedor (la Etapa 3 en paralelo lanza decenas de tareas). Configurable:
+# LEDGER_MAX_CONCURRENT_GEMINI / LEDGER_MAX_CONCURRENT_NVIDIA. Subir el de Gemini solo si no aparecen 429.
+DEFAULT_CONCURRENCY = {"gemini": 8, "nvidia": 8}
+_limits: dict[str, threading.BoundedSemaphore] = {}
+_limits_lock = threading.Lock()
+
+
+def _semaphore(provider: str) -> threading.BoundedSemaphore:
+    with _limits_lock:
+        if provider not in _limits:
+            size = int(os.environ.get(f"LEDGER_MAX_CONCURRENT_{provider.upper()}", DEFAULT_CONCURRENCY[provider]))
+            _limits[provider] = threading.BoundedSemaphore(max(1, size))
+        return _limits[provider]
+
+
+@contextmanager
+def _limit(provider: str | None) -> Iterator[None]:
+    if provider is None:
+        yield
+        return
+    with _semaphore(provider):
+        yield
+
+
+def _reset_limits() -> None:
+    """Para tests: vuelve a leer los topes del entorno."""
+    with _limits_lock:
+        _limits.clear()
+
+
+def _provider(make_client: Callable[[Settings], Any]) -> str:
+    return "nvidia" if make_client is nvidia_client else "gemini"
+
+
 MAX_TIMEOUT_ATTEMPTS = 2
 
 
@@ -77,10 +115,14 @@ def _status_code(exc: Exception) -> int | None:
     return None
 
 
-def _with_retry(generate: Generate, client: Any, model: str, system: str, user: str, schema: type[BaseModel] | None) -> str:
+def _with_retry(
+    generate: Generate, client: Any, model: str, system: str, user: str, schema: type[BaseModel] | None,
+    *, provider: str | None = None,
+) -> str:
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
-            return generate(client, model, system, user, schema)
+            with _limit(provider):  # el hueco se ocupa solo durante la petición, no durante el backoff
+                return generate(client, model, system, user, schema)
         except LLMError:
             raise
         except Exception as exc:
@@ -135,11 +177,13 @@ def complete(
         return schema.model_validate_json(text) if schema else text
 
     active_client = client or make_client(settings)
-    text = _with_retry(generate, active_client, model, system, user, schema)
+    provider = _provider(make_client)
+    text = _with_retry(generate, active_client, model, system, user, schema, provider=provider)
     result: Any = text
     if schema:
         result, text = _parse_or_repair(
-            text, schema, lambda fix: _with_retry(generate, active_client, model, system, f"{user}\n\n{fix}", schema)
+            text, schema,
+            lambda fix: _with_retry(generate, active_client, model, system, f"{user}\n\n{fix}", schema, provider=provider),
         )
 
     cache_file.parent.mkdir(parents=True, exist_ok=True)

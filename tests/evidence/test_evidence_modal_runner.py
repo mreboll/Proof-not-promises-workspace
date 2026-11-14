@@ -201,6 +201,34 @@ def test_mutant_outside_product_source_never_reaches_a_sandbox(settings):
     assert factory.created == []
 
 
+def test_sandboxes_are_capped_and_the_real_peak_is_measured(settings, monkeypatch):
+    """Tope configurable (LEDGER_MODAL_MAX_SANDBOXES) y pico real de sandboxes activos, para el formulario de Modal."""
+    import threading
+    import time
+
+    from ledger.evidence import modal_runner
+
+    class SlowSandbox(FakeSandbox):
+        def exec(self, *args, **kw):
+            if "dotnet test" in args[-1]:
+                time.sleep(0.15)
+            return super().exec(*args, **kw)
+
+    monkeypatch.setenv("LEDGER_MODAL_MAX_SANDBOXES", "2")
+    modal_runner.reset_sandbox_stats()
+    runner = ModalTestRunner(settings, "2283", sandbox_factory=lambda **kw: SlowSandbox())
+
+    threads = [threading.Thread(target=runner.run_tests, args=("pr", "class LedgerT {}", "LedgerT")) for _ in range(6)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    stats = modal_runner.sandbox_stats()
+    assert stats == {"peak": 2, "total": 6, "limit": 2}
+    modal_runner.reset_sandbox_stats()
+
+
 def test_unknown_issue_never_reaches_a_sandbox(settings):
     sandbox = FakeSandbox()
     factory = FakeFactory(sandbox)

@@ -10,10 +10,13 @@ API comprobada contra modal 1.6.4: `Sandbox.create`, `sandbox.exec`, `sandbox.fi
 
 from __future__ import annotations
 
+import os
+import threading
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from ledger.config import ISSUES, Settings
 from ledger.evidence.dotnet import (
@@ -48,6 +51,52 @@ _ENV = {
 WARMUP_FILTER = "FullyQualifiedName~GenericsFormatterTests.NullableFormatter"
 
 SandboxFactory = Callable[..., Any]
+
+# Sandboxes vivos a la vez (LEDGER_MODAL_MAX_SANDBOXES; el plan Starter admite 100 contenedores) y el pico real,
+# que es el dato honesto para el formulario: el tope casi nunca se llena.
+DEFAULT_MAX_SANDBOXES = 60
+_slots_lock = threading.Lock()
+_slots: threading.BoundedSemaphore | None = None
+_slots_limit = 0
+_stats = {"active": 0, "peak": 0, "total": 0}
+
+
+def _sandbox_slots() -> tuple[threading.BoundedSemaphore, int]:
+    global _slots, _slots_limit
+    with _slots_lock:
+        if _slots is None:
+            _slots_limit = max(1, int(os.environ.get("LEDGER_MODAL_MAX_SANDBOXES", DEFAULT_MAX_SANDBOXES)))
+            _slots = threading.BoundedSemaphore(_slots_limit)
+        return _slots, _slots_limit
+
+
+@contextmanager
+def _sandbox_slot() -> Iterator[None]:
+    slots, _ = _sandbox_slots()
+    with slots:
+        with _slots_lock:
+            _stats["active"] += 1
+            _stats["total"] += 1
+            _stats["peak"] = max(_stats["peak"], _stats["active"])
+        try:
+            yield
+        finally:
+            with _slots_lock:
+                _stats["active"] -= 1
+
+
+def sandbox_stats() -> dict[str, int]:
+    _, limit = _sandbox_slots()
+    with _slots_lock:
+        return {"peak": _stats["peak"], "total": _stats["total"], "limit": limit}
+
+
+def reset_sandbox_stats() -> None:
+    """Pone a cero la medida y vuelve a leer el tope del entorno (antes de medir una ejecución)."""
+    global _slots
+    with _slots_lock:
+        _slots = None
+        _stats.update(active=0, peak=0, total=0)
 
 
 def worktree_dir(issue_id: str, side: Side) -> str:
@@ -92,6 +141,9 @@ def _default_factory(settings: Settings) -> SandboxFactory:
 
 @dataclass(frozen=True)
 class ModalTestRunner:
+    # Cada ejecución tiene su propio sandbox: la Etapa 3 puede lanzar muchas a la vez (ledger.crossexam.concurrency).
+    parallel_safe: ClassVar[bool] = True
+
     settings: Settings
     issue_id: str
     sandbox_factory: SandboxFactory | None = field(default=None, compare=False)
@@ -111,16 +163,17 @@ class ModalTestRunner:
         if mutant_patch is not None and (problem := mutant_patch_problem(mutant_patch)):
             return _failed(problem)
         factory = self.sandbox_factory or _default_factory(self.settings)
-        started = time.monotonic()
-        sandbox = None
-        try:
-            sandbox = factory(block_network=True, cpu=4.0)
-            return _run_in_sandbox(sandbox, worktree_dir(self.issue_id, side), test_code, test_name, mutant_patch, started)
-        except Exception as exc:  # noqa: BLE001 - un fallo de infraestructura es "no hay evidencia", nunca un verde
-            return _failed(f"Modal falló: {type(exc).__name__}: {exc}", time.monotonic() - started)
-        finally:
-            if sandbox is not None:
-                sandbox.terminate()
+        with _sandbox_slot():
+            started = time.monotonic()
+            sandbox = None
+            try:
+                sandbox = factory(block_network=True, cpu=4.0)
+                return _run_in_sandbox(sandbox, worktree_dir(self.issue_id, side), test_code, test_name, mutant_patch, started)
+            except Exception as exc:  # noqa: BLE001 - un fallo de infraestructura es "no hay evidencia", nunca un verde
+                return _failed(f"Modal falló: {type(exc).__name__}: {exc}", time.monotonic() - started)
+            finally:
+                if sandbox is not None:
+                    sandbox.terminate()
 
 
 def _run_in_sandbox(sandbox: Any, wt: str, test_code: str, test_name: str, mutant_patch: str | None, started: float) -> TestRunResult:

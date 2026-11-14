@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from ledger import llm
 from ledger.config import Settings
+from ledger.crossexam.concurrency import file_workers, ordered_map, parallel_enabled
 from ledger.crossexam.loop import cross_examine
 from ledger.fakes import FakeTestRunner
 from ledger.models import ChangeTestEvidence, FileTriage, FragmentVerdict, InvarianceEvidence, Risk, Scope, TestRunner
@@ -54,8 +55,8 @@ def judge_issue(
             setup_error = _short(exc)
 
     summary = "\n".join(evidence_lines(change_test, invariance))
-    verdicts = []
-    for t in triage:
+
+    def judge_one(t: FileTriage) -> FragmentVerdict:
         objections, note = None, ""
         if t in targets:
             fd = diffs.get(t.path)
@@ -73,5 +74,8 @@ def judge_issue(
         verdict = decide(t, change_test, invariance, objections)
         if note:
             verdict = verdict.model_copy(update={"reasons": (*verdict.reasons, note)})
-        verdicts.append(verdict)
-    return tuple(verdicts)
+        return verdict
+
+    # Con Modal, los ficheros se interrogan a la vez (cada ejecución en su sandbox); en local, en secuencia.
+    workers = file_workers() if parallel_enabled(runner) else 1
+    return tuple(ordered_map(judge_one, triage, workers))

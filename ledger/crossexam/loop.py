@@ -9,14 +9,16 @@ Por objeción:
 
 from __future__ import annotations
 
-from typing import Callable
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Callable
 
 from ledger import llm
 from ledger.config import Settings
+from ledger.crossexam.concurrency import ordered_map, parallel_enabled
 from ledger.crossexam.defensor import write_test
 from ledger.crossexam.fiscal import raise_objections
 from ledger.crossexam.mutant_gen import make_mutant
-from ledger.models import Objection, TestRunner
+from ledger.models import Objection, TestRunner, TestRunResult
 from ledger.triage.diff import FileDiff
 from ledger.triage.scope import Complete
 
@@ -41,6 +43,17 @@ def _safe_read(read_source: ReadSource, path: str) -> str:
         return ""
 
 
+def _run_pr_and_maybe_mutant(runner: TestRunner, patch: str, code: str, name: str) -> tuple[TestRunResult, TestRunResult | None]:
+    """En secuencia: solo el PR (el mutante se ejecuta después, si el PR sale verde).
+    Con un runner paralelo y mutante: los dos A LA VEZ (ejecución especulativa, ~25 s menos por ronda en Modal)."""
+    if not (patch and parallel_enabled(runner)):
+        return runner.run_tests("pr", code, name), None
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        pr = pool.submit(runner.run_tests, "pr", code, name)
+        mutant = pool.submit(runner.run_against_mutant, "pr", patch, code, name)
+        return pr.result(), mutant.result()
+
+
 def _defend(
     issue_text: str, fd: FileDiff, question: str, name: str, patch: str, mutant_why: str, runner: TestRunner,
     style: str, complete: Complete, settings: Settings | None, base: Objection,
@@ -57,14 +70,15 @@ def _defend(
         if f"class {name}" not in code:
             feedback = f"The test class must be named exactly `{name}`; it was not found in your code."
             continue
-        pr = runner.run_tests("pr", code, name)
+        pr, speculative_mutant = _run_pr_and_maybe_mutant(runner, patch, code, name)
         obj = obj.model_copy(update={"pr_result": pr})
         if not pr.green:
+            # El mutante especulativo (si lo hubo) se descarta: misma semántica que en secuencia.
             feedback = f"Your test did not pass on the pull request (build_ok={pr.build_ok}, failed={pr.failed}). Output:\n{pr.output_tail}"
             continue
         if not patch:
             break  # sin mutante no se puede validar: la objeción queda sin cerrar
-        mutant = runner.run_against_mutant("pr", patch, code, name)
+        mutant = speculative_mutant or runner.run_against_mutant("pr", patch, code, name)
         obj = obj.model_copy(update={"mutant_result": mutant})
         if mutant.red_for_real:
             break
@@ -92,13 +106,16 @@ def cross_examine(
         return ()
     source = _safe_read(read_source, fd.path)
     style = _safe_read(read_source, STYLE_EXAMPLE_PATH)[:STYLE_EXAMPLE_CHARS]
-    results = []
-    for n, fiscal in enumerate(objections, start=1):
+
+    def examine(numbered: tuple[int, Any]) -> Objection:
+        n, fiscal = numbered
         patch, mutant_why = make_mutant(fd, fiscal.question, source, complete=complete, settings=settings)
         base = Objection(question=fiscal.question, rationale=fiscal.rationale, test_name=test_class_name(issue_id, n), mutant_patch=patch)
         if not patch:
             # Sin mutante no hay forma de validar ningún test: no se gasta Defensor ni dotnet, y queda sin cerrar.
-            results.append(base.model_copy(update={"rationale": f"{fiscal.rationale} [{mutant_why}]".strip()}))
-            continue
-        results.append(_defend(issue_text, fd, fiscal.question, test_class_name(issue_id, n), patch, mutant_why, runner, style, complete, settings, base))
-    return tuple(results)
+            return base.model_copy(update={"rationale": f"{fiscal.rationale} [{mutant_why}]".strip()})
+        return _defend(issue_text, fd, fiscal.question, test_class_name(issue_id, n), patch, mutant_why, runner, style, complete, settings, base)
+
+    # Las objeciones son independientes: con Modal van a la vez; las rondas de cada una siguen en secuencia.
+    workers = len(objections) if parallel_enabled(runner) else 1
+    return tuple(ordered_map(examine, list(enumerate(objections, start=1)), workers))
