@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ledger.config import Settings
-from ledger.evidence._proc import DEFAULT_TIMEOUT_S, git, run
+from ledger.evidence._proc import DEFAULT_TIMEOUT_S, ProcResult, git, run
 from ledger.evidence.trx import build_result
 from ledger.evidence.workspace import disposable_worktree, ensure_worktree
 from ledger.models import Side, TestRunResult
@@ -64,8 +64,8 @@ class DotnetTestRunner:
         with disposable_worktree(self.settings, self.issue_id, side) as worktree:
             patch_file = worktree / RESULTS_DIR / "mutant.patch"
             patch_file.parent.mkdir(parents=True, exist_ok=True)
-            patch_file.write_text(_ensure_trailing_newline(mutant_patch), encoding="utf-8")
-            applied = git(worktree, "apply", "--recount", "--whitespace=nowarn", str(patch_file), check=False)
+            patch_file.write_text(_normalize_patch(mutant_patch), encoding="utf-8", newline="\n")
+            applied = _apply_patch(worktree, patch_file)
             if not applied.ok:
                 return _refused(f"git apply del mutante falló: {applied.combined[-1500:]}", time.monotonic() - started)
             return run_in_worktree(worktree, test_code, test_name, timeout_s=self.timeout_s)
@@ -89,5 +89,16 @@ def _refused(reason: str, duration_s: float = 0.0) -> TestRunResult:
     return TestRunResult(build_ok=False, passed=0, failed=0, output_tail=reason, duration_s=duration_s)
 
 
-def _ensure_trailing_newline(text: str) -> str:
+def _normalize_patch(patch: str) -> str:
+    """LF como los blobs de git (git apply convierte al final de línea del checkout) y salto final."""
+    text = patch.replace("\r\n", "\n")
     return text if text.endswith("\n") else text + "\n"
+
+
+def _apply_patch(worktree: Path, patch_file: Path) -> ProcResult:
+    """Primero estricto; si falla, tolerando espacios en el contexto (parches escritos por el LLM)."""
+    base_args = ("apply", "--recount", "--whitespace=nowarn")
+    strict = git(worktree, *base_args, str(patch_file), check=False)
+    if strict.ok:
+        return strict
+    return git(worktree, *base_args, "--ignore-whitespace", str(patch_file), check=False)
