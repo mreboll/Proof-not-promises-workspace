@@ -26,7 +26,7 @@ class IssueSpec:
 ISSUES: dict[str, IssueSpec] = {
     spec.issue_id: spec
     for spec in (
-        IssueSpec("2283", "ju26-issue-2283", ChangeType.BUGFIX, "Analyzer reports diagnostics on types from referenced assemblies"),
+        IssueSpec("2283", "ju26-issue-2283", ChangeType.BUGFIX, "Generator and analyzer crash with IndexOutOfRangeException on a closed generic struct from a referenced assembly"),
         IssueSpec("2234", "ju26-issue-2234", ChangeType.BUGFIX, "Analyzer does not work if SuppressSourceGeneration = true"),
         IssueSpec("2129", "ju26-issue-2129", ChangeType.FEATURE, "Generate formatters for types in referenced assemblies"),
         IssueSpec("2297", "ju26-issue-2297", ChangeType.FEATURE, "Add ExcludeFromCodeCoverage to generated code"),

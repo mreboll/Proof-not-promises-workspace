@@ -1,34 +1,43 @@
 [
   {
-    "path": "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs",
-    "scope": "IN",
-    "risk": "HIGH",
-    "rule_hits": ["R-HIGH-04: namespace núcleo del generador (MessagePack.SourceGenerator.CodeAnalysis)"],
-    "justification": "Filtra diagnósticos cuya ubicación no pertenece a la compilación analizada; es exactamente lo que pide #2283.",
-    "touches_public_api": false
-  },
-  {
-    "path": "tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs",
-    "scope": "IN",
+    "path": "README.md",
+    "scope": "OUT",
     "risk": "LOW",
-    "rule_hits": ["R-LOW-01: ruta tests/"],
-    "justification": "Tests de regresión del propio cambio.",
+    "rule_hits": [
+      "R-LOW-02: documentación .md"
+    ],
+    "justification": "El cambio añade documentación al README sobre tipos genéricos desde ensamblados referenciados, pero el issue no solicita documentación; es un informe de error y la corrección no requiere añadir notas al README.",
     "touches_public_api": false
   },
   {
     "path": "doc/analyzers/MsgPack004.md",
     "scope": "OUT",
     "risk": "LOW",
-    "rule_hits": ["R-LOW-02: documentación .md"],
-    "justification": "El agente documenta el nuevo comportamiento del analizador; el issue no lo pide.",
+    "rule_hits": [
+      "R-LOW-02: documentación .md"
+    ],
+    "justification": "El cambio solo añade documentación sobre el alcance del analizador y no aborda la excepción IndexOutOfRangeException que es el problema descrito en la incidencia.",
     "touches_public_api": false
   },
   {
-    "path": "README.md",
-    "scope": "OUT",
+    "path": "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: código de producción en src/ (lógica private/internal)",
+      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+    ],
+    "justification": "El cambio sustituye la indexación directa DeclaringSyntaxReferences[0] por FirstOrDefault y agrega ReportIfLocatedInCompilation para evitar IndexOutOfRangeException y reportes inválidos en tipos metadata, solucionando el fallo descrito.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs",
+    "scope": "IN",
     "risk": "LOW",
-    "rule_hits": ["R-LOW-02: documentación .md"],
-    "justification": "Nota en el README que el issue no pide.",
+    "rule_hits": [
+      "R-LOW-01: ruta tests/"
+    ],
+    "justification": "La prueba agrega casos de prueba que verifican que el generador y el analizador manejen tipos genéricos cerrados de un ensamblado referenciado sin bloquearse, abordando el problema #2283.",
     "touches_public_api": false
   }
 ]

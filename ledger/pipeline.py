@@ -25,8 +25,10 @@ FIXTURES_DIR = PROJECT_ROOT / "fixtures"
 
 
 def stage1_triage(issue_id: str, settings: Settings) -> tuple[FileTriage, ...]:
-    """Línea B: ledger/triage (diff.py + rules.py + scope.py)."""
-    raise NotImplementedError("Etapa 1 pendiente (Línea B: ledger/triage)")
+    """Línea B: ledger/triage (diff.py + rules.py + scope.py), orquestado en ledger/triage/stage.py."""
+    from ledger.triage import stage  # import local: así el cableado no toca la cabecera compartida
+
+    return stage.triage_issue(settings, issue_id)
 
 
 def stage2_change_test(issue_id: str, settings: Settings, runner: TestRunner) -> ChangeTestEvidence:
