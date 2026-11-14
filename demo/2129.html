@@ -176,142 +176,142 @@ li { margin: 2px 0; }
 <section id="must-read">
   <h2>What you need to read</h2>
   <p class="lede">Only these fragments need human eyes. Everything else is backed by executable tests.</p>
-  <div class="card YELLOW">
+  <div class="card YELLOW" id="read-README-md">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">README.md</span>
     <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The issue requests a feature for source-generating formatters for types in referenced assemblies, but does not ask for documentation or README updates.</li></ul>
   </div>
-  <div class="card YELLOW">
+  <div class="card YELLOW" id="read-doc-analyzers-MsgPack019-md">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">doc/analyzers/MsgPack019.md</span>
     <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The issue requests the `[GeneratedMessagePackFormatter]` feature itself, and does not request documentation files or analyzer docs.</li></ul>
   </div>
-  <div class="card YELLOW">
+  <div class="card YELLOW" id="read-doc-analyzers-MsgPack020-md">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">doc/analyzers/MsgPack020.md</span>
     <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The issue requests adding the GeneratedMessagePackFormatter feature, but does not request documentation or analyzer documentation files.</li></ul>
   </div>
-  <div class="card YELLOW">
+  <div class="card YELLOW" id="read-doc-analyzers-MsgPack021-md">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">doc/analyzers/MsgPack021.md</span>
     <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The issue requests the ability to source-generate formatters for types in referenced assemblies, but does not request documentation or analyzer doc files like MsgPack021.md.</li></ul>
   </div>
-  <div class="card YELLOW">
+  <div class="card YELLOW" id="read-doc-analyzers-MsgPack022-md">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">doc/analyzers/MsgPack022.md</span>
     <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change adds documentation for an analyzer rule, which is not requested in the issue.</li></ul>
   </div>
-  <div class="card YELLOW">
+  <div class="card YELLOW" id="read-doc-analyzers-index-md">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">doc/analyzers/index.md</span>
     <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The issue does not ask for documentation updates, so modifying doc/analyzers/index.md is out of scope.</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-Annotations-Attributes-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.Annotations/Attributes.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-AnalyzerReleases-Unshipped-md">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/AnalyzerReleases.Unshipped.md</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-Analyzers-MsgPack00xMessagePackAnalyzer-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/Analyzers/MsgPack00xMessagePackAnalyzer.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-CodeAnalysis-GeneratedFormatterCollector-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterCollector.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-CodeAnalysis-GeneratedFormatterRequest-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterRequest.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-CodeAnalysis-ObjectSerializationInfo-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/CodeAnalysis/ObjectSerializationInfo.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-GeneratorUtilities-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/GeneratorUtilities.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-MessagePackGenerator-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/MessagePackGenerator.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-Transforms-FormatterTemplate-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-Transforms-FormatterTemplate-tt">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-Transforms-StringKey-StringKeyFormatterTemplate-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-Transforms-StringKey-StringKeyFormatterTemplate-tt">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-Utils-Constants-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/Utils/Constants.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-ExecutionTests-GeneratedFormatterForExternalTypes-cs">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypes.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-ExecutionTests-GeneratedFormatterForExternalTypesTests-cs">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypesTests.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-ExecutionTests-MessagePack-SourceGenerator-ExecutionTests-csproj">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.ExecutionTests/MessagePack.SourceGenerator.ExecutionTests.csproj</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-ExternalTypes-ExternalPerson-cs">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPerson.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-ExternalTypes-ExternalPoint-cs">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPoint.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-ExternalTypes-ExternalWidget-cs">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.ExternalTypes/ExternalWidget.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-ExternalTypes-MessagePack-SourceGenerator-ExternalTypes-csproj">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.ExternalTypes/MessagePack.SourceGenerator.ExternalTypes.csproj</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-MapModeExecutionTests-MessagePack-SourceGenerator-MapModeExecutionTests-csproj">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.MapModeExecutionTests/MessagePack.SourceGenerator.MapModeExecutionTests.csproj</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-tests-MessagePack-SourceGenerator-Tests-GeneratedMessagePackFormatterTests-cs">
     <span class="pill RED">Red</span>
     <span class="path">tests/MessagePack.SourceGenerator.Tests/GeneratedMessagePackFormatterTests.cs</span>
     <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2129`: base red (1 failed), PR red (1 failed) → does not pass on the PR</li><li>invariance: deterministic, 21 general cases identical</li><li>the differential evidence shows no regressions; check the generated test before the code</li></ul>
@@ -325,7 +325,7 @@ li { margin: 2px 0; }
   <table>
     <thead><tr><th>File</th><th>Scope</th><th>Risk</th><th>Verdict</th><th>Why</th></tr></thead>
     <tbody>
-    <tr>
+    <tr id="file-README-md">
       <td class="path">README.md</td>
       <td>OUT</td>
       <td>LOW</td>
@@ -333,7 +333,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The issue requests a feature for source-generating formatters for types in referenced assemblies, but does not ask for documentation or README updates.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-doc-analyzers-MsgPack019-md">
       <td class="path">doc/analyzers/MsgPack019.md</td>
       <td>OUT</td>
       <td>LOW</td>
@@ -341,7 +341,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The issue requests the `[GeneratedMessagePackFormatter]` feature itself, and does not request documentation files or analyzer docs.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-doc-analyzers-MsgPack020-md">
       <td class="path">doc/analyzers/MsgPack020.md</td>
       <td>OUT</td>
       <td>LOW</td>
@@ -349,7 +349,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The issue requests adding the GeneratedMessagePackFormatter feature, but does not request documentation or analyzer documentation files.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-doc-analyzers-MsgPack021-md">
       <td class="path">doc/analyzers/MsgPack021.md</td>
       <td>OUT</td>
       <td>LOW</td>
@@ -357,7 +357,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The issue requests the ability to source-generate formatters for types in referenced assemblies, but does not request documentation or analyzer doc files like MsgPack021.md.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-doc-analyzers-MsgPack022-md">
       <td class="path">doc/analyzers/MsgPack022.md</td>
       <td>OUT</td>
       <td>LOW</td>
@@ -365,7 +365,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change adds documentation for an analyzer rule, which is not requested in the issue.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-doc-analyzers-index-md">
       <td class="path">doc/analyzers/index.md</td>
       <td>OUT</td>
       <td>LOW</td>
@@ -373,7 +373,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The issue does not ask for documentation updates, so modifying doc/analyzers/index.md is out of scope.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-Annotations-Attributes-cs">
       <td class="path">src/MessagePack.Annotations/Attributes.cs<br><span class="pill yellow">API public</span></td>
       <td>IN</td>
       <td>HIGH</td>
@@ -381,7 +381,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The diff defines GeneratedMessagePackFormatterAttribute with a SurrogateType property, which is directly requested and agreed upon in the issue discussion to allow source-generating formatters for external types.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-01: public signature added or removed (API contract) → +`public class GeneratedMessagePackFormatterAttribute : Attribute`</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-AnalyzerReleases-Unshipped-md">
       <td class="path">src/MessagePack.SourceGenerator/AnalyzerReleases.Unshipped.md</td>
       <td>IN</td>
       <td>LOW</td>
@@ -389,7 +389,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> Registering the new diagnostic rules (MsgPack019 through MsgPack022) in AnalyzerReleases.Unshipped.md is required when adding analyzer diagnostics for the requested GeneratedMessagePackFormatter and surrogate type feature.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-Analyzers-MsgPack00xMessagePackAnalyzer-cs">
       <td class="path">src/MessagePack.SourceGenerator/Analyzers/MsgPack00xMessagePackAnalyzer.cs<br><span class="pill yellow">API public</span></td>
       <td>IN</td>
       <td>HIGH</td>
@@ -397,7 +397,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The added diagnostic descriptors define validation rules for the requested [GeneratedMessagePackFormatter] attribute and surrogate type usage discussed in the issue.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-01: public signature added or removed (API contract) → +`public const string GeneratedFormatterMustBePartialId = &#34;MsgPack019&#34;;`</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-CodeAnalysis-GeneratedFormatterCollector-cs">
       <td class="path">src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterCollector.cs</td>
       <td>IN</td>
       <td>HIGH</td>
@@ -405,7 +405,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The file implements GeneratedFormatterCollector to analyze types marked with [GeneratedMessagePackFormatter] using contractless mode or surrogate types as agreed upon in the issue discussion.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-CodeAnalysis-GeneratedFormatterRequest-cs">
       <td class="path">src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterRequest.cs<br><span class="pill yellow">API public</span></td>
       <td>IN</td>
       <td>HIGH</td>
@@ -413,7 +413,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This file adds the data structure to represent a requested generated formatter and its optional surrogate type for the source generator, as requested in the issue.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-01: public signature added or removed (API contract) → +`public sealed record GeneratedFormatterRequest(INamedTypeSymbol Formatter, IName`</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-CodeAnalysis-ObjectSerializationInfo-cs">
       <td class="path">src/MessagePack.SourceGenerator/CodeAnalysis/ObjectSerializationInfo.cs<br><span class="pill yellow">API public</span></td>
       <td>IN</td>
       <td>HIGH</td>
@@ -421,7 +421,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The added property tracks user-declared partial formatters marked with `[GeneratedMessagePackFormatter]`, which directly implements the requested feature.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-01: public signature added or removed (API contract) → +`public bool IsUserDeclaredFormatter { get; init; }`</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-GeneratorUtilities-cs">
       <td class="path">src/MessagePack.SourceGenerator/GeneratorUtilities.cs</td>
       <td>IN</td>
       <td>MED</td>
@@ -429,7 +429,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> It excludes types marked with [GeneratedMessagePackFormatter] from being detected as hand-written formatters in the source generator, supporting the feature requested in the issue.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-MessagePackGenerator-cs">
       <td class="path">src/MessagePack.SourceGenerator/MessagePackGenerator.cs</td>
       <td>IN</td>
       <td>MED</td>
@@ -437,7 +437,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The changes integrate the requested `[GeneratedMessagePackFormatter]` attribute into the source generator&#39;s pipeline and diagnostic reporting.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-Transforms-FormatterTemplate-cs">
       <td class="path">src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs</td>
       <td>IN</td>
       <td>HIGH</td>
@@ -445,7 +445,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The change updates FormatterTemplate to generate a partial class when the formatter is user-declared, directly supporting the issue&#39;s request for source-generating partial class formatters.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-Transforms-FormatterTemplate-tt">
       <td class="path">src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt</td>
       <td>IN</td>
       <td>HIGH</td>
@@ -453,7 +453,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The change updates the formatter template to emit a partial class when the formatter is user-declared, which is necessary to implement the requested `[GeneratedMessagePackFormatter]` feature on partial classes.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-Transforms-StringKey-StringKeyFormatterTemplate-cs">
       <td class="path">src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs</td>
       <td>IN</td>
       <td>HIGH</td>
@@ -461,7 +461,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This modification updates the string-key formatter template to emit a partial class when the formatter is declared by the user, directly implementing the requested user-declared formatter feature.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-Transforms-StringKey-StringKeyFormatterTemplate-tt">
       <td class="path">src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt</td>
       <td>IN</td>
       <td>HIGH</td>
@@ -469,7 +469,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The change updates the string key formatter template to generate a partial class when the formatter is user-declared, implementing part of the requested partial class formatter feature.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-Utils-Constants-cs">
       <td class="path">src/MessagePack.SourceGenerator/Utils/Constants.cs</td>
       <td>IN</td>
       <td>MED</td>
@@ -477,7 +477,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The added constants define names for the GeneratedMessagePackFormatterAttribute and its SurrogateType property requested and agreed upon in the issue discussion.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-ExecutionTests-GeneratedFormatterForExternalTypes-cs">
       <td class="path">tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypes.cs</td>
       <td>IN</td>
       <td>LOW</td>
@@ -485,7 +485,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This file adds test cases that verify the requested [GeneratedMessagePackFormatter] attribute and surrogate type feature for external types.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-ExecutionTests-GeneratedFormatterForExternalTypesTests-cs">
       <td class="path">tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypesTests.cs</td>
       <td>IN</td>
       <td>LOW</td>
@@ -493,7 +493,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This file adds execution tests that verify the requested feature of generating formatters for external types using contractless mode and surrogate types.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-ExecutionTests-MessagePack-SourceGenerator-ExecutionTests-csproj">
       <td class="path">tests/MessagePack.SourceGenerator.ExecutionTests/MessagePack.SourceGenerator.ExecutionTests.csproj</td>
       <td>IN</td>
       <td>LOW</td>
@@ -501,7 +501,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> The change adds a project reference to an external types project without MessagePack references to enable testing formatters generated for types in referenced assemblies as requested in the issue.<br><span class="muted mono">R-LOW-01: tests/ path</span><br><span class="muted mono">R-LOW-03: project file (.csproj)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-ExternalTypes-ExternalPerson-cs">
       <td class="path">tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPerson.cs</td>
       <td>IN</td>
       <td>LOW</td>
@@ -509,7 +509,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This file adds an external type without MessagePack attributes in a separate test library to test generating a formatter for a type in a referenced assembly, as requested by the issue.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-ExternalTypes-ExternalPoint-cs">
       <td class="path">tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPoint.cs</td>
       <td>IN</td>
       <td>LOW</td>
@@ -517,7 +517,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This file defines an external type without MessagePack annotations in a separate assembly, which is needed to test generating formatters for types in referenced assemblies as requested in the issue.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-ExternalTypes-ExternalWidget-cs">
       <td class="path">tests/MessagePack.SourceGenerator.ExternalTypes/ExternalWidget.cs</td>
       <td>IN</td>
       <td>LOW</td>
@@ -525,7 +525,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This file adds an external type without serialization attributes to serve as a test case for generating formatters for types in referenced assemblies via surrogate types as discussed in the issue.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-ExternalTypes-MessagePack-SourceGenerator-ExternalTypes-csproj">
       <td class="path">tests/MessagePack.SourceGenerator.ExternalTypes/MessagePack.SourceGenerator.ExternalTypes.csproj</td>
       <td>IN</td>
       <td>LOW</td>
@@ -533,7 +533,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This project sets up a dependency-free external assembly specifically to test generating formatters for external types as requested in the issue.<br><span class="muted mono">R-LOW-01: tests/ path</span><br><span class="muted mono">R-LOW-03: project file (.csproj)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-MapModeExecutionTests-MessagePack-SourceGenerator-MapModeExecutionTests-csproj">
       <td class="path">tests/MessagePack.SourceGenerator.MapModeExecutionTests/MessagePack.SourceGenerator.MapModeExecutionTests.csproj</td>
       <td>IN</td>
       <td>LOW</td>
@@ -541,7 +541,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> Excluding the new external types test files from this test project prevents compilation failures caused by missing assembly references when adding tests that verify the new feature.<br><span class="muted mono">R-LOW-01: tests/ path</span><br><span class="muted mono">R-LOW-03: project file (.csproj)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-Tests-GeneratedMessagePackFormatterTests-cs">
       <td class="path">tests/MessagePack.SourceGenerator.Tests/GeneratedMessagePackFormatterTests.cs</td>
       <td>IN</td>
       <td>LOW</td>
@@ -554,7 +554,7 @@ li { margin: 2px 0; }
   </div>
 </section>
 
-<section>
+<section id="evidence">
   <h2>Executable evidence</h2>
   <p class="lede">Trust comes only from tests that run: a test written without seeing the diff, and a comparison of the generator output between base and PR.</p>
   <div class="grid2">
@@ -958,13 +958,13 @@ partial class GeneratedMessagePackResolver : MsgPack::IFormatterResolver
   </details>
 </section>
 
-<section>
+<section id="crossexam">
   <h2>Cross-examination: Prosecutor vs Defender</h2>
   <p class="lede">Only for in-scope, high-risk fragments. The Defender cannot argue: an objection is closed only by a test that passes on the PR and fails against a mutant that breaks that case on purpose.</p>
   <p class="muted">There were no objections to examine.</p>
 </section>
 
-<section>
+<section id="models">
   <h2>Which model played each role</h2>
   <p class="lede">Configuration when this report was generated. If the Stage 2 evidence is reused from another run (fixtures), the model that produced it is recorded with it.</p>
   <div class="table-wrap">
@@ -1021,7 +1021,7 @@ partial class GeneratedMessagePackResolver : MsgPack::IFormatterResolver
   After signing: <span class="mono">python -m ledger.trust record-change out/report-2129.json --owner "Full Name"</span>.</p>
 </section>
 
-<section>
+<section id="signoff">
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
   <h3>What was checked, and by what</h3>

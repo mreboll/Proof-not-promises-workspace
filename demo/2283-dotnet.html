@@ -176,17 +176,17 @@ li { margin: 2px 0; }
 <section id="must-read">
   <h2>What you need to read</h2>
   <p class="lede">Only these fragments need human eyes. Everything else is backed by executable tests.</p>
-  <div class="card YELLOW">
+  <div class="card YELLOW" id="read-README-md">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">README.md</span>
     <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change adds documentation in the README.md file about generic types from referenced assemblies, which is not requested in the bug report.</li></ul>
   </div>
-  <div class="card YELLOW">
+  <div class="card YELLOW" id="read-doc-analyzers-MsgPack004-md">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">doc/analyzers/MsgPack004.md</span>
     <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the error report regarding the IndexOutOfRangeException exception.</li></ul>
   </div>
-  <div class="card RED">
+  <div class="card RED" id="read-src-MessagePack-SourceGenerator-CodeAnalysis-TypeCollector-cs">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</span>
     <ul class="small"><li class="first">M7: 2 unresolved objection(s): the system refuses to decide</li><li>objection “Does Diagnostic.Create throw an exception (or produce an invalid location) when GetPropertyIdentifierLocation returns null for a property declared in metadata without [Key] inside a [MessagePackObject] type of the assembly being compiled?”: the Defender&#39;s test fails on the PR → possible defect in the PR, check the test output</li><li>objection “Does IndexOutOfRangeException occur when a [MessagePackObject] type in the assembly being compiled has a closed generic reference type member from a referenced assembly (for example List&lt;Item&lt;int&gt;&gt; or List&lt;int&gt;), instead of a closed generic value type like Item&lt;int&gt;?”: the Defender&#39;s test fails on the PR → possible defect in the PR, check the test output</li><li>change test `LedgerIssue2283`: base red (2 failed), PR green (2 passed)</li><li>invariance: deterministic, 21 general cases identical</li></ul>
@@ -200,7 +200,7 @@ li { margin: 2px 0; }
   <table>
     <thead><tr><th>File</th><th>Scope</th><th>Risk</th><th>Verdict</th><th>Why</th></tr></thead>
     <tbody>
-    <tr>
+    <tr id="file-README-md">
       <td class="path">README.md</td>
       <td>OUT</td>
       <td>LOW</td>
@@ -208,7 +208,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change adds documentation in the README.md file about generic types from referenced assemblies, which is not requested in the bug report.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-doc-analyzers-MsgPack004-md">
       <td class="path">doc/analyzers/MsgPack004.md</td>
       <td>OUT</td>
       <td>LOW</td>
@@ -216,7 +216,7 @@ li { margin: 2px 0; }
       <td class="small">
 <strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the error report regarding the IndexOutOfRangeException exception.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
-    <tr>
+    <tr id="file-src-MessagePack-SourceGenerator-CodeAnalysis-TypeCollector-cs">
       <td class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</td>
       <td>IN</td>
       <td>HIGH</td>
@@ -231,7 +231,7 @@ li { margin: 2px 0; }
   <table>
     <thead><tr><th>File</th><th>Scope</th><th>Risk</th><th>Verdict</th><th>Why</th></tr></thead>
     <tbody>
-    <tr>
+    <tr id="file-tests-MessagePack-SourceGenerator-Tests-GenericsFormatterTests-cs">
       <td class="path">tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs</td>
       <td>IN</td>
       <td>LOW</td>
@@ -245,7 +245,7 @@ li { margin: 2px 0; }
 </details>
 </section>
 
-<section>
+<section id="evidence">
   <h2>Executable evidence</h2>
   <p class="lede">Trust comes only from tests that run: a test written without seeing the diff, and a comparison of the generator output between base and PR.</p>
   <div class="grid2">
@@ -632,7 +632,7 @@ System.IndexOutOfRangeException: Index was outside the bounds of the array.
   </details>
 </section>
 
-<section>
+<section id="crossexam">
   <h2>Cross-examination: Prosecutor vs Defender</h2>
   <p class="lede">Only for in-scope, high-risk fragments. The Defender cannot argue: an objection is closed only by a test that passes on the PR and fails against a mutant that breaks that case on purpose.</p>
   <h3 class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</h3>
@@ -1196,7 +1196,7 @@ public sealed partial record Cmd([property: Key(0)] string Scope)
   </div>
 </section>
 
-<section>
+<section id="models">
   <h2>Which model played each role</h2>
   <p class="lede">Configuration when this report was generated. If the Stage 2 evidence is reused from another run (fixtures), the model that produced it is recorded with it.</p>
   <div class="table-wrap">
@@ -1238,7 +1238,7 @@ public sealed partial record Cmd([property: Key(0)] string Scope)
   After signing: <span class="mono">python -m ledger.trust record-change out/report-2283.json --owner "Full Name"</span>.</p>
 </section>
 
-<section>
+<section id="signoff">
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
   <h3>What was checked, and by what</h3>

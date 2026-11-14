@@ -8,6 +8,7 @@ Junto al HTML se escribe el JSON del `Report`, para procesarlo a máquina.
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -125,6 +126,11 @@ def funnel(report: Report) -> list[dict[str, str]]:
     return [stage1, stage2, stage3]
 
 
+def anchor(path: str) -> str:
+    """Id HTML estable para un fichero (enlaces directos desde la landing): lo que no es letra o dígito pasa a '-'."""
+    return re.sub(r"[^A-Za-z0-9]+", "-", path).strip("-")
+
+
 def _trust_areas(report: Report, record: TrackRecord) -> list[AreaTrust]:
     return [area_trust(record, area) for area in sorted({area_of(v.path) for v in report.verdicts})]
 
@@ -163,6 +169,7 @@ def render_html(report: Report, *, models: dict[str, str], issue_title: str, not
         normalizations=_normalizations(report),
         signoff=signoff(report, models, record=record),
         trust_areas=_trust_areas(report, record),
+        anchor=anchor,
         spot=spot_checks(report, record),
     )
 

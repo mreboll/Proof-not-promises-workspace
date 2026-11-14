@@ -180,7 +180,7 @@ li { margin: 2px 0; }
   {% else %}
   <p class="lede">Only these fragments need human eyes. Everything else is backed by executable tests.</p>
   {% for v in must_read %}
-  <div class="card {{ v.verdict.value }}">
+  <div class="card {{ v.verdict.value }}" id="read-{{ anchor(v.path) }}">
     <span class="pill {{ v.verdict.value }}">{{ VERDICT_LABEL[v.verdict] }}</span>
     <span class="path">{{ v.path }}</span>
     <ul class="small">{% for reason in v.reasons %}<li{% if loop.first %} class="first"{% endif %}>{{ reason }}</li>{% endfor %}</ul>
@@ -198,7 +198,7 @@ li { margin: 2px 0; }
     <thead><tr><th>File</th><th>Scope</th><th>Risk</th><th>Verdict</th><th>Why</th></tr></thead>
     <tbody>
     {% for t, v in rows %}
-    <tr>
+    <tr id="file-{{ anchor(t.path) }}">
       <td class="path">{{ t.path }}{% if t.touches_public_api %}<br><span class="pill yellow">API public</span>{% endif %}</td>
       <td>{{ t.scope.value }}</td>
       <td>{{ t.risk.value }}</td>
@@ -220,7 +220,7 @@ li { margin: 2px 0; }
   {% endif %}
 </section>
 
-<section>
+<section id="evidence">
   <h2>Executable evidence</h2>
   <p class="lede">Trust comes only from tests that run: a test written without seeing the diff, and a comparison of the generator output between base and PR.</p>
   <div class="grid2">
@@ -286,7 +286,7 @@ li { margin: 2px 0; }
   {% endif %}
 </section>
 
-<section>
+<section id="crossexam">
   <h2>Cross-examination: Prosecutor vs Defender</h2>
   <p class="lede">Only for in-scope, high-risk fragments. The Defender cannot argue: an objection is closed only by a test that passes on the PR and fails against a mutant that breaks that case on purpose.</p>
   {% if not crossexam %}
@@ -320,7 +320,7 @@ li { margin: 2px 0; }
   {% endfor %}
 </section>
 
-<section>
+<section id="models">
   <h2>Which model played each role</h2>
   <p class="lede">Configuration when this report was generated. If the Stage 2 evidence is reused from another run (fixtures), the model that produced it is recorded with it.</p>
   <div class="table-wrap">
@@ -363,7 +363,7 @@ li { margin: 2px 0; }
   After signing: <span class="mono">python -m ledger.trust record-change out/report-{{ r.issue_id }}.json --owner "Full Name"</span>.</p>
 </section>
 
-<section>
+<section id="signoff">
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
   <h3>What was checked, and by what</h3>

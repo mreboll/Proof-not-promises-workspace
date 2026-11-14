@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof, not promises</title>
+<meta name="description" content="An AI code review concept where no model approves anything: only executable evidence counts, and a named human signs what was checked, what was not, and the risk they accept. Junction 2026 · Tieto — Earned Trust in AI Code.">
+<meta name="theme-color" content="#051a22">
+<meta property="og:title" content="Proof, not promises">
+<meta property="og:description" content="AI reviews. Humans stay accountable. Trust built on evidence a person can check and own.">
+<meta property="og:image" content="assets/landing/parallel.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+/* Same palette as the demo video: dark blueprint, mint and cyan as light; verdict colours keep their meaning. */
+:root {
+  --bg: #051a22; --bg-2: #0b3341; --panel: #0c2c38; --panel-2: #0f3442;
+  --fg: #e6f5f3; --fg-2: #9fc2c3; --fg-3: #6f9597;
+  --line: rgba(141,178,180,.22); --line-2: rgba(141,178,180,.38);
+  --mint: #22d3b4; --cyan: #2a93c9; --green: #4cc26a; --amber: #e7a72a; --red: #ef5b4c;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --serif: "Source Serif 4", Georgia, serif;
+  --max: 1120px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.65 var(--sans);
+  background-image:
+    linear-gradient(rgba(34,211,180,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,180,.045) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--mint); text-underline-offset: 3px; }
+a:hover { color: #5ee6cf; }
+img { max-width: 100%; height: auto; display: block; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+.mono { font-family: var(--mono); }
+.eyebrow { font: 600 12px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
+.muted { color: var(--fg-2); }
+h1, h2, h3 { margin: 0; }
+h2 { font: 700 clamp(28px, 4vw, 42px)/1.15 var(--serif); letter-spacing: -.01em; margin: 10px 0 16px; text-wrap: balance; }
+h3 { font: 700 20px/1.3 var(--sans); }
+p { margin: 0 0 14px; }
+.lede { font-size: 19px; color: var(--fg-2); max-width: 760px; text-wrap: pretty; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--mint); color: var(--bg); padding: 8px 12px; border-radius: 6px; z-index: 10; }
+.skip:focus { left: 8px; }
+
+/* Nav */
+nav.top { position: sticky; top: 0; z-index: 5; background: rgba(5,26,34,.86); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+nav.top .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
+.brand { font: 700 18px var(--serif); color: var(--fg); text-decoration: none; white-space: nowrap; }
+.brand span { color: var(--mint); }
+nav.top ul { list-style: none; display: flex; gap: 22px; margin: 0 0 0 auto; padding: 0; }
+nav.top ul a { color: var(--fg-2); text-decoration: none; font-size: 15px; }
+nav.top ul a { position: relative; padding: 6px 0; transition: color .2s; }
+nav.top ul a:hover { color: var(--fg); }
+nav.top ul a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; border-radius: 2px; background: var(--mint); box-shadow: 0 0 10px rgba(34,211,180,.7); transform: scaleX(0); transition: transform .25s ease; }
+nav.top ul a.active { color: var(--mint); }
+nav.top ul a.active::after { transform: scaleX(1); }
+@media (max-width: 1060px) { nav.top ul { gap: 16px; } nav.top ul a { font-size: 14px; } }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 10px; font: 600 15px var(--sans); text-decoration: none; border: 1px solid var(--line-2); color: var(--fg); background: var(--panel); transition: border-color .15s, background .15s; }
+.btn:hover { border-color: var(--mint); color: var(--fg); }
+.btn.primary { background: var(--mint); color: #03201b; border-color: var(--mint); }
+.btn.primary:hover { background: #4ee3c8; color: #03201b; }
+.btn.small { padding: 7px 12px; font-size: 14px; }
+@media (max-width: 940px) { nav.top ul { display: none; } nav.top .btn.small { margin-left: auto; } }
+
+/* Hero */
+.hero { padding: 84px 0 56px; position: relative; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: -20% -10% auto auto; width: 70vw; height: 70vw; max-width: 900px; max-height: 900px; background: radial-gradient(closest-side, rgba(34,211,180,.16), transparent 70%); pointer-events: none; }
+.hero h1 { font: 700 clamp(46px, 8vw, 92px)/1.02 var(--serif); letter-spacing: -.02em; margin: 14px 0 22px; }
+.hero h1 em { font-style: normal; color: var(--mint); text-shadow: 0 0 28px rgba(34,211,180,.35); }
+.hero .tag { font: 600 clamp(20px, 2.6vw, 26px)/1.35 var(--serif); margin-bottom: 18px; }
+.hero .tag b { color: var(--mint); font-weight: 700; } .hero .tag i { color: #5fb6e3; font-style: normal; font-weight: 700; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 8px; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 48px; }
+.stat { background: rgba(12,44,56,.75); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 16px; }
+.stat .n { font: 700 34px/1.1 var(--mono); color: var(--mint); }
+.stat .n.red { color: var(--red); } .stat .n.amber { color: var(--amber); } .stat .n.cyan { color: #5fb6e3; }
+.stat .l { color: var(--fg-2); font-size: 14.5px; margin-top: 6px; line-height: 1.45; }
+@media (max-width: 860px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 460px) { .stats { grid-template-columns: 1fr; } }
+
+/* Sections */
+section { padding: 72px 0; border-top: 1px solid var(--line); }
+.grid2 { display: grid; grid-template-columns: 1.05fr 1fr; gap: 44px; align-items: center; }
+.grid2.flip > :first-child { order: 2; }
+@media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; gap: 28px; } .grid2.flip > :first-child { order: 0; } }
+.shot { border-radius: 14px; border: 1px solid var(--line-2); overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.45), 0 0 0 1px rgba(34,211,180,.06); background: var(--panel); }
+figure { margin: 0; }
+figcaption { font: 13px/1.5 var(--mono); color: var(--fg-3); margin-top: 10px; }
+.quote { border-left: 3px solid var(--mint); padding: 6px 0 6px 22px; margin: 22px 0; font: 600 clamp(20px, 2.4vw, 24px)/1.5 var(--serif); color: var(--fg); max-width: 880px; }
+ul.ticks { list-style: none; padding: 0; margin: 0; }
+ul.ticks li { position: relative; padding-left: 28px; margin: 10px 0; }
+ul.ticks li::before { content: ""; position: absolute; left: 4px; top: .62em; width: 9px; height: 9px; border-radius: 2px; background: var(--mint); box-shadow: 0 0 10px rgba(34,211,180,.6); }
+ul.ticks.red li::before { background: var(--red); box-shadow: 0 0 10px rgba(239,91,76,.5); }
+
+/* Funnel */
+.stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 30px; }
+.stage { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; position: relative; }
+.stage .id { font: 600 13px var(--mono); color: var(--mint); border: 1px solid rgba(34,211,180,.45); border-radius: 999px; padding: 3px 10px; display: inline-block; margin-bottom: 12px; }
+.stage.trust .id { color: var(--amber); border-color: rgba(231,167,42,.5); }
+.stage h3 { margin-bottom: 8px; }
+.stage p { color: var(--fg-2); font-size: 15.5px; margin: 0 0 10px; }
+.stage .who { font: 12.5px var(--mono); color: var(--fg-3); }
+@media (max-width: 980px) { .stages { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .stages { grid-template-columns: 1fr; } }
+.rule-card { margin-top: 34px; padding: 28px; border-radius: 16px; text-align: center; background: linear-gradient(180deg, rgba(34,211,180,.08), rgba(34,211,180,.02)); border: 1px solid rgba(34,211,180,.35); }
+.rule-card .big { font: 700 clamp(24px, 3.4vw, 36px)/1.2 var(--serif); }
+.rule-card .big span { color: var(--mint); }
+
+/* Tables */
+.tablewrap { overflow-x: auto; margin-top: 26px; border: 1px solid var(--line); border-radius: 14px; background: rgba(12,44,56,.6); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 15.5px; }
+th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3); background: rgba(5,26,34,.5); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 700; white-space: nowrap; }
+td .no { color: var(--fg-3); }
+
+/* PR cards */
+.prs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 30px; }
+.pr { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; }
+.pr .head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.pr .num { font: 700 20px var(--mono); }
+.pill { font: 600 12px var(--mono); padding: 3px 9px; border-radius: 999px; border: 1px solid; }
+.pill.red { color: var(--red); border-color: rgba(239,91,76,.55); background: rgba(239,91,76,.08); }
+.pill.amber { color: var(--amber); border-color: rgba(231,167,42,.55); background: rgba(231,167,42,.08); }
+.pill.mint { color: var(--mint); border-color: rgba(34,211,180,.5); background: rgba(34,211,180,.08); }
+.pill.grey { color: var(--fg-2); border-color: var(--line-2); }
+.pr p { color: var(--fg-2); font-size: 15.5px; }
+.pr .lesson { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 14.5px; color: var(--fg); }
+.pr a { font-size: 14.5px; }
+.pr.star { border-color: rgba(239,91,76,.5); box-shadow: 0 0 0 1px rgba(239,91,76,.15), 0 0 40px rgba(239,91,76,.08); }
+@media (max-width: 820px) { .prs { grid-template-columns: 1fr; } }
+
+/* Sign-off */
+.signs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
+.sign { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.sign .k { font: 600 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mint); margin-bottom: 8px; }
+.sign h3 { font: 700 19px/1.35 var(--serif); margin-bottom: 8px; }
+.sign p { color: var(--fg-2); font-size: 15px; margin: 0; }
+@media (max-width: 820px) { .signs { grid-template-columns: 1fr; } }
+
+/* Numbers */
+.nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 30px; }
+.num-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.num-card .v { font: 700 30px/1.15 var(--mono); color: var(--mint); }
+.num-card .v small { font-size: 16px; color: var(--fg-2); font-weight: 600; }
+.num-card p { color: var(--fg-2); font-size: 15px; margin: 8px 0 0; }
+.num-card .src { font: 12px var(--mono); color: var(--fg-3); margin-top: 10px; }
+@media (max-width: 900px) { .nums { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .nums { grid-template-columns: 1fr; } }
+.callout { margin-top: 26px; padding: 18px 22px; border-radius: 12px; background: rgba(42,147,201,.08); border: 1px solid rgba(42,147,201,.35); color: var(--fg); }
+
+/* Q&A + limits */
+.qa { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
+.q { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+.q h3 { font: 700 19px/1.35 var(--serif); margin-bottom: 10px; color: var(--mint); }
+.q p { color: var(--fg-2); font-size: 15.5px; margin: 0; }
+@media (max-width: 900px) { .qa { grid-template-columns: 1fr; } }
+.limits { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 32px; margin-top: 22px; }
+@media (max-width: 760px) { .limits { grid-template-columns: 1fr; } }
+
+/* Explore */
+.links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
+.link { display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; text-decoration: none; color: var(--fg); transition: border-color .15s, transform .15s; }
+.link:hover { border-color: var(--mint); color: var(--fg); transform: translateY(-2px); }
+.link b { display: block; font-size: 16.5px; margin-bottom: 4px; }
+.link span { color: var(--fg-2); font-size: 14.5px; }
+@media (max-width: 900px) { .links { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .links { grid-template-columns: 1fr; } }
+pre.cmd { background: #03141a; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; overflow-x: auto; font: 14px/1.7 var(--mono); color: #d6ecea; margin: 22px 0 0; }
+pre.cmd .c { color: var(--fg-3); }
+
+/* Video */
+.video { position: relative; display: block; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+.video img { width: 100%; filter: brightness(.62); transition: filter .2s; }
+.video:hover img { filter: brightness(.75); }
+.video .play { position: absolute; inset: 0; display: grid; place-items: center; text-decoration: none; }
+.video .play span { display: inline-flex; align-items: center; gap: 12px; background: var(--mint); color: #03201b; font: 700 17px var(--sans); padding: 15px 24px; border-radius: 999px; box-shadow: 0 0 40px rgba(34,211,180,.45); }
+.video .play span::before { content: ""; width: 0; height: 0; border-left: 14px solid #03201b; border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+.video .soon { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px; text-align: center; font: 13px var(--mono); color: var(--fg-2); background: rgba(3,20,26,.85); }
+
+footer { border-top: 1px solid var(--line); padding: 44px 0 64px; color: var(--fg-2); font-size: 15px; }
+footer .team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 18px 0 28px; }
+footer .team div { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+footer .team b { display: block; color: var(--fg); font-size: 15.5px; }
+footer .team span { font-size: 13.5px; }
+@media (max-width: 900px) { footer .team { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { footer .team { grid-template-columns: 1fr; } }
+
+/* Reveal on scroll (content stays visible without JS or with reduced motion) */
+.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.js .reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .js .reveal { opacity: 1; transform: none; transition: none; } }
+
+/* Try it: terminal replay */
+.try { display: grid; grid-template-columns: 1.55fr 1fr; gap: 16px; margin-top: 28px; align-items: stretch; }
+@media (max-width: 900px) { .try { grid-template-columns: 1fr; } }
+.term { background: #03141a; border: 1px solid var(--line-2); border-radius: 14px; display: flex; flex-direction: column; min-height: 440px; box-shadow: 0 24px 60px rgba(0,0,0,.45); cursor: text; }
+.term:focus-visible, .term.focused { border-color: var(--mint); box-shadow: 0 0 0 3px rgba(34,211,180,.18), 0 24px 60px rgba(0,0,0,.45); outline: none; }
+.term-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+.term-bar span { width: 11px; height: 11px; border-radius: 50%; background: #ef5b4c; }
+.term-bar span:nth-child(2) { background: #e7a72a; } .term-bar span:nth-child(3) { background: #4cc26a; }
+.term-bar b { margin-left: 8px; font: 500 12.5px var(--mono); color: var(--fg-3); }
+.term-body { flex: 1; padding: 14px 16px; font: 13.5px/1.75 var(--mono); color: #d6ecea; overflow-y: auto; max-height: 460px; }
+.term-line { white-space: pre-wrap; word-break: break-word; animation: lineIn .25s ease both; }
+.term-line .ps { color: var(--mint); margin-right: 6px; }
+.term-line.phase { color: var(--mint); font-weight: 600; margin-top: 8px; }
+.term-line.dim { color: var(--fg-3); }
+.term-line.ok { color: #7fe0cf; } .term-line.bad { color: #ffa59b; } .term-line.warn { color: #f3c56b; }
+.term-line.final { color: var(--fg); font-weight: 600; margin-top: 8px; }
+.caret { display: inline-block; width: 8px; height: 1.05em; background: var(--mint); vertical-align: -2px; margin-left: 4px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes lineIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .term-line { animation: none; } .caret { animation: none; } }
+.term-foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 14px; border-top: 1px solid var(--line); }
+.term-foot .muted { font-size: 14px; }
+.run kbd { font: 600 12px var(--mono); background: rgba(3,32,27,.18); border-radius: 5px; padding: 2px 6px; margin-left: 4px; }
+.run[disabled] { opacity: .45; cursor: default; }
+.tracker { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.clock span { font: 700 34px/1 var(--mono); color: var(--mint); display: block; }
+.clock small { font: 12px var(--mono); color: var(--fg-3); }
+.bar { height: 8px; background: rgba(141,178,180,.15); border-radius: 999px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--mint)); box-shadow: 0 0 14px rgba(34,211,180,.6); transition: width .2s linear; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.steps li { display: flex; gap: 12px; align-items: flex-start; opacity: .45; transition: opacity .3s; }
+.steps li b { display: block; font-size: 15px; } .steps li small { color: var(--fg-2); font-size: 13.5px; }
+.steps .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-2); margin-top: 4px; flex: none; }
+.steps li.active { opacity: 1; } .steps li.active .dot { border-color: var(--mint); box-shadow: 0 0 0 4px rgba(34,211,180,.15); animation: pulse 1.1s ease-in-out infinite; }
+.steps li.done { opacity: 1; } .steps li.done .dot { background: var(--mint); border-color: var(--mint); }
+.steps li.done.bad .dot { background: var(--red); border-color: var(--red); }
+@keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(34,211,180,.04); } }
+@media (prefers-reduced-motion: reduce) { .steps li.active .dot { animation: none; } }
+.tally { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: auto; }
+.tally div { background: rgba(5,26,34,.6); border: 1px solid var(--line); border-radius: 10px; padding: 10px; text-align: center; }
+.tally b { display: block; font: 700 24px var(--mono); } .tally span { font-size: 12.5px; color: var(--fg-2); }
+.tally .g { color: var(--green); } .tally .y { color: var(--amber); } .tally .r { color: var(--red); }
+.result { margin-top: 22px; border: 1px solid rgba(239,91,76,.45); border-radius: 16px; background: var(--panel); overflow: hidden; animation: lineIn .4s ease both; }
+.result-head { display: flex; gap: 20px; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; padding: 22px; }
+.result-head h3 { font: 700 22px/1.3 var(--serif); margin: 8px 0; max-width: 720px; }
+.result-head p { margin: 0; }
+.result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.frame { border-top: 1px solid var(--line); background: #f6f4ef; }
+.frame iframe { display: block; width: 100%; height: 620px; border: 0; }
+
+a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85em; }
+
+/* Modal */
+.sbx-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 12px; align-items: stretch; margin-top: 28px; }
+.sbx-step { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.sbx-step .n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(34,211,180,.12); border: 1px solid rgba(34,211,180,.5); color: var(--mint); font: 700 13px var(--mono); margin-bottom: 10px; }
+.sbx-step b { display: block; font-size: 16.5px; margin-bottom: 6px; }
+.sbx-step p { margin: 0; color: var(--fg-2); font-size: 14.5px; }
+.sbx-arrow { align-self: center; color: var(--mint); font: 700 22px var(--sans); text-shadow: 0 0 12px rgba(34,211,180,.6); }
+@media (max-width: 900px) { .sbx-flow { grid-template-columns: 1fr; } .sbx-arrow { transform: rotate(90deg); justify-self: center; } }
+.sbx-pair { margin-top: 34px; align-items: start; }
+.sbx-viz { background: #03141a; border: 1px solid var(--line-2); border-radius: 16px; padding: 20px; box-shadow: 0 24px 60px rgba(0,0,0,.4); }
+.sbx-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; }
+.sbx-cell { aspect-ratio: 1; border-radius: 5px; border: 1px solid rgba(141,178,180,.25); background: rgba(12,44,56,.6); transition: background .35s, border-color .35s, box-shadow .35s; }
+.sbx-cell.run { background: rgba(42,147,201,.35); border-color: rgba(42,147,201,.8); box-shadow: 0 0 10px rgba(42,147,201,.5); }
+.sbx-cell.ok { background: rgba(34,211,180,.55); border-color: var(--mint); box-shadow: 0 0 10px rgba(34,211,180,.55); }
+.sbx-read { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+.sbx-read div { background: rgba(12,44,56,.7); border: 1px solid var(--line); border-radius: 10px; padding: 10px; text-align: center; }
+.sbx-read b { display: block; font: 700 24px var(--mono); color: var(--mint); }
+.sbx-read b.ok { color: var(--green); }
+.sbx-read span { font-size: 12.5px; color: var(--fg-2); }
+.sbx-cap { margin: 12px 0 0; font: 12.5px/1.55 var(--mono); color: var(--fg-3); }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="top" aria-label="Primary">
+  <div class="wrap">
+    <a class="brand" href="#top">Proof, not <span>promises</span></a>
+    <ul>
+      <li><a href="#concept">Concept</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#try">Try it</a></li>
+      <li><a href="#found">What it found</a></li>
+      <li><a href="#trust">Trust</a></li>
+      <li><a href="#modal">Modal</a></li>
+      <li><a href="#scale">At scale</a></li>
+      <li><a href="#explore">Check</a></li>
+    </ul>
+    <a class="btn small" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </div>
+</nav>
+
+<main id="main">
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">Junction 2026 · Tieto — Earned Trust in AI Code</div>
+    <h1>Proof, not <em>promises</em>.</h1>
+    <p class="tag"><b>AI reviews.</b> <i>Humans stay accountable.</i></p>
+    <p class="lede">A code review factory for AI-written changes where <strong>no model approves anything</strong>.
+      Trust comes only from executable evidence traced to the requirement. When the evidence is missing,
+      the system <strong>refuses to decide</strong> and tells a named human exactly what to read.</p>
+    <div class="cta">
+      <a class="btn primary" href="#video">Watch the 2-minute demo</a>
+      <a class="btn" href="demo/2297.html#signoff">Open a real sign-off report</a>
+      <a class="btn" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer">Source code</a>
+    </div>
+    <div class="stats" role="list">
+      <div class="stat" role="listitem"><div class="n">237 → 12</div><div class="l">files in an AI-written PR, and the ones a human had to read in one real run</div></div>
+      <div class="stat" role="listitem"><div class="n red">0</div><div class="l">approvals by argument: a test that kills a mutant, or no approval</div></div>
+      <div class="stat" role="listitem"><div class="n cyan">&gt;1 h → ~17 min</div><div class="l">36 objections cross-examined in parallel, each test in its own sandbox</div></div>
+      <div class="stat" role="listitem"><div class="n amber">24</div><div class="l">real AI failures logged, each with the layer that caught it</div></div>
+    </div>
+  </div>
+</header>
+
+<section id="video" aria-labelledby="video-h">
+  <div class="wrap">
+    <div class="eyebrow">The demo</div>
+    <h2 id="video-h">Two minutes: where the trust comes from</h2>
+    <p class="lede">Four real AI-written pull requests to MessagePack-CSharp, from triage to a named signature.</p>
+    <!-- VIDEO_URL: replace "#video" in the href below with the published video link (YouTube, Vimeo or the submission platform). -->
+    <div class="video" style="margin-top:24px">
+      <img src="assets/landing/parallel.jpg" alt="Frame of the demo video: 36 objections cross-examined in parallel, 12 closed by a valid test, 12 tests failing on the PR, 12 that proved nothing" width="1600" height="775">
+      <a class="play" href="#video" aria-label="Play the 2-minute demo video"><span>Play the demo</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="problem" aria-labelledby="problem-h">
+  <div class="wrap grid2">
+    <div class="reveal">
+      <div class="eyebrow">The problem</div>
+      <h2 id="problem-h">Friday afternoon. 237 files. Your name on the approval.</h2>
+      <p class="lede">Agent tokens passed human tokens in February 2026 and reached 7.3 trillion by August.
+        Reviewing every change by hand doesn't scale, and trusting another AI's summary is negligent.</p>
+      <ul class="ticks red">
+        <li><b>Too much to read.</b> Nobody reads 237 files line by line.</li>
+        <li><b>Confident isn't correct.</b> An AI sounds just as sure when it is wrong.</li>
+        <li><b>AI grading AI.</b> Same model family, same blind spots.</li>
+        <li><b>Nobody owns the merge.</b> "The AI said it was fine" is not an owner.</li>
+      </ul>
+    </div>
+    <figure class="reveal">
+      <div class="shot"><img src="assets/landing/friday.jpg" alt="An AI agent stacks 237 changed files next to the human owner; an AI reviewer shows LGTM, 98% confident" width="1600" height="775" loading="lazy"></div>
+      <figcaption>The question is not "is the code good?" but "what evidence lets a person sign without reading every line?"</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="concept" aria-labelledby="concept-h">
+  <div class="wrap">
+    <div class="eyebrow">Our recommendation</div>
+    <h2 id="concept-h">Stop reviewing line by line. Stop trusting the summary.</h2>
+    <p class="quote reveal">Turn every AI-written change into a ledger of executable evidence traced to its requirement.
+      Spend human attention only where that evidence is missing or contradicted. The named owner signs what was checked,
+      what was not, and the residual risk they accept.</p>
+    <div class="tablewrap reveal">
+      <table>
+        <caption class="muted" style="caption-side:top;text-align:left;padding:14px 18px 0;font-size:15px">How it balances the five forces the challenge names</caption>
+        <thead><tr><th scope="col">Axis</th><th scope="col">Mechanism</th><th scope="col">What we refuse</th></tr></thead>
+        <tbody>
+          <tr><td>Risk</td><td>Static, auditable rules set the depth of scrutiny per file. High risk triggers cross-examination; out of scope and high risk is always red.</td><td class="no">A risk score from a model that nobody can explain</td></tr>
+          <tr><td>Hallucination</td><td>A model's claim counts only once it is a test that runs. Change tests are written from the issue alone; Defender tests must fail against a mutant; infrastructure failures never count as evidence.</td><td class="no">"I checked it", or a test that would also pass on broken code</td></tr>
+          <tr><td>Transparency</td><td>Every verdict starts with its rule (M1–M7). Every test, hash, mutant and model is in the report; normalizations are declared.</td><td class="no">Hidden reasoning, undeclared filtering</td></tr>
+          <tr><td>Confidence</td><td>No self-reported confidence. Confidence is the state of the evidence: proven, contradicted, or missing.</td><td class="no">A confidence number without evidence behind it</td></tr>
+          <tr><td>Quality</td><td>Generation invariance guards everything outside the issue. Prosecutor and Defender come from different model families.</td><td class="no">One model grading its own homework</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2 id="how-h">One command. One rule. A funnel that ends in a signature.</h2>
+    <pre class="cmd" aria-label="Command"><span class="c">$</span> LEDGER_RUNNER=modal python -m ledger run --issue 2297</pre>
+    <div class="stages">
+      <div class="stage reveal"><span class="id">T1</span><h3>Triage</h3><p>Every file: in or out of the issue's scope, times a risk level from static rules (public API, memory, security-sensitive APIs, core namespaces).</p><div class="who">rules + Gemini flash for scope</div></div>
+      <div class="stage reveal"><span class="id">T2</span><h3>Evidence</h3><p>A model that never sees the fix writes a test from the issue alone: it must fail before and pass after. Outside the issue, generated code and diagnostics must hash identically.</p><div class="who">Gemini · .NET 8 · Modal sandboxes</div></div>
+      <div class="stage reveal"><span class="id">T3</span><h3>Cross-examination</h3><p>A Prosecutor raises up to 3 objections per high-risk file. The Defender can't argue: it answers with a test that passes on the PR and fails against a mutant.</p><div class="who">Nemotron (Prosecutor) vs Gemini (Defender)</div></div>
+      <div class="stage trust reveal"><span class="id">TRUST</span><h3>Track record</h3><p>Trust is earned per area from signed changes and withdrawn after an escape. A hash-picked sample of green files is read by a human, so the AI reviewer is checked too.</p><div class="who">trust/track_record.json · written by people</div></div>
+    </div>
+    <div class="rule-card reveal">
+      <div class="eyebrow" style="margin-bottom:8px">The one rule</div>
+      <div class="big">No model approves anything. <span>Only executable evidence counts.</span></div>
+    </div>
+    <div class="grid2" style="margin-top:44px">
+      <figure class="reveal"><div class="shot"><img src="assets/landing/evidence.jpg" alt="Evidence stage: a test written from issue 2297 alone fails before the fix and passes after, each run in a Modal sandbox" width="1600" height="775" loading="lazy"></div><figcaption>T2 · the change test is written from the issue, never from the diff.</figcaption></figure>
+      <div class="reveal">
+        <h3 style="margin-bottom:10px">Why separate model families?</h3>
+        <p class="muted">If accusation and defence share a model, they share blind spots and their errors are correlated.
+          The Prosecutor is NVIDIA Nemotron; the Defender, the change tests and the mutants are Google Gemini.</p>
+        <h3 style="margin:22px 0 10px">Why mutants?</h3>
+        <p class="muted">A test that also passes on deliberately broken code proves nothing. Every Defender test must
+          <strong>fail</strong> against a mutant that breaks the edge case again, or it doesn't count. AI-written tests are untrusted code,
+          so they run in network-less Modal Sandboxes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="try" aria-labelledby="try-h">
+  <div class="wrap">
+    <div class="eyebrow">Try it</div>
+    <h2 id="try-h">Press Enter. Watch a real review run.</h2>
+    <p class="lede">The command is ready. This replays, about 60 times faster, the recorded run of the AI-written fix for issue #2283
+      (<span class="mono">fixtures/report_2283_dotnet.json</span>): the real pipeline took 18–22 minutes on a laptop.
+      Every line below is what that run actually did.</p>
+
+    <div class="try">
+      <div class="term" id="term" tabindex="0" role="group" aria-label="Terminal. Press Enter to run the review.">
+        <div class="term-bar"><span></span><span></span><span></span><b>ledger — issue #2283</b></div>
+        <div class="term-body" id="term-body" aria-live="polite">
+          <div class="term-line prompt"><span class="ps">$</span> python -m ledger run --issue 2283<span class="caret" id="caret"></span></div>
+        </div>
+        <div class="term-foot">
+          <button class="btn primary run" id="run-btn" type="button">Run <kbd>Enter ↵</kbd></button>
+          <span class="muted" id="run-hint">Click the terminal or the button, then press Enter.</span>
+        </div>
+      </div>
+
+      <aside class="tracker" aria-label="Progress of the review">
+        <div class="clock"><span id="clock">00:00</span><small>simulated pipeline time · replay ×60</small></div>
+        <div class="bar"><i id="bar"></i></div>
+        <ol class="steps">
+          <li data-step="t1"><span class="dot"></span><div><b>T1 · Triage</b><small id="s-t1">4 files · static rules + scope</small></div></li>
+          <li data-step="t2"><span class="dot"></span><div><b>T2 · Evidence</b><small id="s-t2">change test + invariance</small></div></li>
+          <li data-step="t3"><span class="dot"></span><div><b>T3 · Cross-examination</b><small id="s-t3">Prosecutor vs Defender</small></div></li>
+          <li data-step="v"><span class="dot"></span><div><b>Verdict & sign-off</b><small id="s-v">report for a named human</small></div></li>
+        </ol>
+        <div class="tally" id="tally" hidden>
+          <div><b class="g" id="n-green">0</b><span>green</span></div>
+          <div><b class="y" id="n-yellow">0</b><span>yellow</span></div>
+          <div><b class="r" id="n-red">0</b><span>red</span></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="result" id="result" hidden>
+      <div class="result-head">
+        <div>
+          <div class="eyebrow" style="color:var(--red)">Decision · manual audit required</div>
+          <h3>The AI fix passed its own test. The cross-examination says it moved the crash.</h3>
+          <p class="muted">1 file refused to decide (2 Defender tests fail on the PR), 2 out-of-scope files to glance at, 1 file approved on evidence. This is the real report that run produced:</p>
+        </div>
+        <div class="result-actions">
+          <a class="btn primary" href="demo/2283-dotnet.html#must-read">Open the full report</a>
+          <button class="btn" id="again" type="button">Run again</button>
+        </div>
+      </div>
+      <div class="frame"><iframe id="report-frame" title="Sign-off report for issue 2283" loading="lazy"></iframe></div>
+    </div>
+  </div>
+</section>
+
+<section id="found" aria-labelledby="found-h">
+  <div class="wrap">
+    <div class="eyebrow">What it found · four real AI-written PRs</div>
+    <h2 id="found-h">What the AI found, what it refused to decide, and why</h2>
+    <p class="lede">The challenge's own sample: agentic implementations of four MessagePack-CSharp issues, each with its requirement ID.</p>
+    <div class="prs">
+      <article class="pr star reveal">
+        <div class="head"><span class="num">#2283</span><span class="pill grey">bug fix · 4 files</span><span class="pill red">defect found</span></div>
+        <p>The change test went red on base and green on the PR; invariance was identical in all general cases. A reviewer reading only that would approve.
+          The Prosecutor's questions led to Defender tests that <strong>fail on the PR</strong>: the AI fix moved the crash
+          (<span class="mono">IndexOutOfRange</span> → <span class="mono">InvalidOperation</span>) instead of removing it.</p>
+        <div class="lesson">Green evidence is not the end: cross-examination is what caught it. <a href="demo/2283-dotnet.html#crossexam">See the failing Defender tests in the report →</a></div>
+      </article>
+      <article class="pr reveal">
+        <div class="head"><span class="num">#2234</span><span class="pill grey">bug fix · 4 files</span><span class="pill red">red · two reasons</span></div>
+        <p>The issue is one sentence, so the independent test also passed on base: no evidence. And the invariance check showed the fix
+          changes behaviour <strong>outside</strong> the issue (duplicate keys without the option).</p>
+        <div class="lesson">A badly written ticket gives weak evidence. The system says so. <a href="demo/2234.html#evidence">See the evidence in the report →</a></div>
+      </article>
+      <article class="pr reveal">
+        <div class="head"><span class="num">#2297</span><span class="pill grey">feature · 237 files</span><span class="pill amber">refused on 10</span></div>
+        <p>Static rules rank 223 in-scope files low risk (222 are generated snapshots) and the evidence approves them unread.
+          12 high-risk files go to cross-examination; the scope check flags <span class="mono">TransformUtilities.cs</span>, an unrequested change.</p>
+        <div class="lesson">At most 14 of 237 files need human eyes, each with its reason. <a href="demo/2297.html#must-read">See what the human must read →</a></div>
+      </article>
+      <article class="pr reveal">
+        <div class="head"><span class="num">#2129</span><span class="pill grey">feature · 28 files</span><span class="pill mint">test was wrong</span></div>
+        <p>The AI's own change test failed on the PR, so there is no evidence and no approval. The independent invariance oracle showed the feature
+          worked, pointing the human at the test instead of the code.</p>
+        <div class="lesson">Two independent oracles disagree, and the human gets told exactly where. <a href="demo/2129.html#evidence">See the two oracles in the report →</a></div>
+      </article>
+    </div>
+    <figure class="reveal" style="margin-top:36px"><div class="shot"><img src="assets/landing/moved-crash.jpg" alt="Real finding on PR 2283: the first evidence was all green, but cross-examination showed the AI fix moved the crash from IndexOutOfRange to InvalidOperation at line 1013" width="1600" height="775" loading="lazy"></div><figcaption>#2283 · green evidence, and still wrong: the cross-examination caught it.</figcaption></figure>
+    <div class="reveal" style="margin-top:44px">
+      <div class="eyebrow">Refused to decide</div>
+      <h3 style="margin:8px 0 12px;font:700 26px/1.25 var(--serif)">When evidence is missing, it doesn't guess.</h3>
+      <p class="lede">On #2297, 36 objections ran in parallel: 12 closed by a valid test, 12 Defender tests failed on the PR (possible defects),
+        12 proved nothing against their mutant. Most objections don't close, and that's the point: you see which,
+        and the system refuses to approve those files instead of guessing.</p>
+    </div>
+  </div>
+</section>
+
+<section id="sign" aria-labelledby="sign-h">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">Accept without a full read</div>
+      <h2 id="sign-h">What lands on your desk isn't 237 files. It's twelve.</h2>
+      <p class="lede">Each one with the reason it needs your eyes and the exact open question. Everything else is backed by tests you can rerun.</p>
+    </div>
+    <figure class="reveal" style="margin-top:24px"><div class="shot"><img src="assets/landing/refused.jpg" alt="Refused to decide card for CompositeResolverTemplate.cs: open objection, 2 Defender tests fail on the PR, read this file, the rest is backed by evidence" width="1600" height="775" loading="lazy"></div></figure>
+    <div class="signs">
+      <div class="sign reveal"><div class="k">01 · Checked</div><h3>What was checked, and by what</h3><p>Rules, models, tests and hashes: each line names what produced it and can be rerun.</p></div>
+      <div class="sign reveal"><div class="k">02 · Not checked</div><h3>What was NOT checked, and why</h3><p>Open objections, refusals to decide, out-of-scope files, and the green files nobody read.</p></div>
+      <div class="sign reveal"><div class="k">03 · Accepted</div><h3>The residual risk I accept</h3><p>The limits of the oracle and every unanswered question, accepted by name, plus the spot-checks to read before signing.</p></div>
+    </div>
+    <figure class="reveal" style="margin-top:28px"><div class="shot"><img src="assets/landing/signoff.jpg" alt="Approval and accountability record for issue 2297: what was checked, what was not, residual risk, signed by a named owner (example); approved or rejected stays human" width="1600" height="775" loading="lazy"></div><figcaption>The AI review is advice with evidence. The approval is a person's, by name.</figcaption></figure>
+  </div>
+</section>
+
+<section id="trust" aria-labelledby="trust-h">
+  <div class="wrap grid2 flip">
+    <figure class="reveal"><div class="shot"><img src="assets/landing/escape.jpg" alt="Escape on TypeCollector.cs: one of our own runs approved the moved crash; trust in SourceGenerator/CodeAnalysis is withdrawn until 5 clean signed changes earn it back" width="1600" height="775" loading="lazy"></div><figcaption>Our own escape, logged: trust/track_record.json</figcaption></figure>
+    <div class="reveal">
+      <div class="eyebrow">Trust is earned, and withdrawn</div>
+      <h2 id="trust-h">In one run, our own evidence missed it too.</h2>
+      <p class="muted">All three objections on <span class="mono">TypeCollector.cs</span> closed, and the ledger approved the file with the moved crash inside.
+        We logged it as an escape. Trust in that area is now <strong style="color:var(--amber)">withdrawn</strong>: its green files go back to a human
+        until five clean signed changes earn it back.</p>
+      <ul class="ticks">
+        <li><b>Humans spot-check the AI reviewer.</b> 20% of each area's green files (5% once trust is earned), 1 to 3 per area, picked by hash: neither the AI nor the signer chooses.</li>
+        <li><b>Areas are a fixed rule</b>, the file's directory, not a model's call.</li>
+        <li><b>Measure outcomes, not activity:</b> escapes per approved file, and how each was found: spot-check, revert, incident or rerun.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="modal" aria-labelledby="modal-h">
+  <div class="wrap">
+    <div class="eyebrow">Built on Modal</div>
+    <h2 id="modal-h">AI-written code is untrusted code. So it never runs on our machines.</h2>
+    <p class="lede">Every test and every mutant an AI writes runs in its own disposable Modal Sandbox, with no network.
+      That isolation is what makes the evidence trustworthy, and it is also what lets the review fan out in parallel.</p>
+
+    <div class="sbx-flow reveal" role="list">
+      <div class="sbx-step" role="listitem"><span class="n">1</span><b>Trusted image</b><p>.NET 8 SDK and the base and PR worktrees of all four issues, restored and compiled once (8 builds). Every package the tests need is fetched while building the image.</p></div>
+      <div class="sbx-arrow" aria-hidden="true">→</div>
+      <div class="sbx-step" role="listitem"><span class="n">2</span><b>One sandbox per run</b><p><span class="mono">block_network=True</span>. The AI-written test or mutant is applied inside; it cannot exfiltrate anything or pull dependencies.</p></div>
+      <div class="sbx-arrow" aria-hidden="true">→</div>
+      <div class="sbx-step" role="listitem"><span class="n">3</span><b>Thrown away</b><p>Terminated in a <span class="mono">finally</span>. No shared state between base, PR and mutants. Only the test result comes back.</p></div>
+    </div>
+
+    <div class="grid2 sbx-pair">
+      <div class="sbx-viz reveal" id="sbx-viz" aria-label="Capacity test: 60 Modal sandboxes started at once, all 60 passed">
+        <div class="sbx-grid" id="sbx-grid"></div>
+        <div class="sbx-read">
+          <div><b id="sbx-n">0</b><span>sandboxes at once</span></div>
+          <div><b id="sbx-t">0 s</b><span>wall time</span></div>
+          <div><b class="ok">0</b><span>failures</span></div>
+        </div>
+        <p class="sbx-cap">Capacity sweep: the real change test of #2283, 60 copies at once. One alone takes 18.7 s; sixty finish in 27.4 s.</p>
+      </div>
+      <div class="reveal">
+        <h3 style="margin-bottom:10px">Parallel where it is safe, measured where it matters</h3>
+        <ul class="ticks">
+          <li><b>Base, PR and mutant at the same time:</b> 28 s on Modal versus 63 s one after another on a laptop, with identical results.</li>
+          <li><b>Cross-examination fans out:</b> on the 237-file PR, 36 objections ran at once, each test in its own sandbox. 126 sandboxes, peak 16, zero failures; over 1 hour sequentially became about 17 minutes.</li>
+          <li><b>Modal was never the limit:</b> 60 at once scaled almost linearly, 131 runs per minute against 3 for one. The ceiling was the language model's latency.</li>
+          <li><b>Locally, nothing runs in parallel on purpose:</b> two runs on the same worktree would overwrite each other. Parallelism switches on only with <span class="mono">LEDGER_RUNNER=modal</span>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="nums">
+      <div class="num-card reveal"><div class="v">60 <small>at once</small></div><p>sandboxes in the capacity test, all green; the plan allows 100 and we cap at 60.</p><div class="src">fixtures/capacity_modal.json</div></div>
+      <div class="num-card reveal"><div class="v">28 <small>s vs 63 s</small></div><p>base, PR and mutant in parallel on Modal versus sequentially on a laptop.</p><div class="src">fixtures/bench_2283.json</div></div>
+      <div class="num-card reveal"><div class="v">$2.86</div><p>of Modal compute for everything we ran during the hackathon, $0 in charges, with a usage cap set to the free credits.</p><div class="src">modal billing report</div></div>
+    </div>
+
+    <div class="grid2 sbx-pair" style="margin-top:34px">
+      <div class="reveal">
+        <h3 style="margin-bottom:10px">Guard rails before any sandbox starts</h3>
+        <ul class="ticks">
+          <li>Everything that reaches a shell inside the sandbox is validated first: the issue ID, the test class name, and the mutant patch, which may only touch existing <span class="mono">src/**/*.cs</span> files.</li>
+          <li>An infrastructure failure is recorded as "no evidence", never as a pass.</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <h3 style="margin-bottom:10px">What isolation caught</h3>
+        <p class="muted">Without network, an AI-written test that downloaded packages at run time failed, and that failure looked exactly like
+          "bug reproduced" on the base branch. Network and package failures are now marked <span class="mono">INFRA</span> and never count as
+          evidence. Running untrusted code in isolation exposed a false positive in our own verifier.</p>
+        <p class="muted" style="margin-top:12px"><b style="color:var(--fg)">Honest limit:</b> the generation-invariance check still runs locally; everything written by an AI runs on Modal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="scale" aria-labelledby="scale-h">
+  <div class="wrap">
+    <div class="eyebrow">At scale · measured, not promised</div>
+    <h2 id="scale-h">Human reading grows with risk, not with the diff</h2>
+    <p class="lede">What changes when the PR is 237 files instead of 4. Every figure comes from a real run, with its source in the repo.</p>
+    <div class="nums">
+      <div class="num-card reveal"><div class="v">14 <small>of 237</small></div><p>files that can need human eyes on the 237-file PR; 223 approved by evidence, unread.</p><div class="src">fixtures/triage_2297.json</div></div>
+      <div class="num-card reveal"><div class="v">~17 <small>min</small></div><p>full pipeline on the 237-file PR with cross-examination in parallel (14–20 min over 4 runs); over 1 h sequentially.</p><div class="src">fixtures/measure_2297_par_v*.json</div></div>
+      <div class="num-card reveal"><div class="v">390 <small>tests</small></div><p>pass with no network and no API keys; 18 decisions and 24 AI failures logged.</p><div class="src">docs/decision-log.md · docs/lessons-log.md</div></div>
+    </div>
+    <p class="callout reveal"><strong>Past a point, speed is the model's, not ours.</strong> Raising Gemini's concurrency from 8 to 32 removed the queue
+      (no rate-limit errors up to 48 at once). After that, one slow model call sets the end time, and its run-to-run variance was larger than any further optimisation we measured.</p>
+  </div>
+</section>
+
+<section id="limits" aria-labelledby="limits-h">
+  <div class="wrap">
+    <div class="eyebrow">Questions judges will ask</div>
+    <h2 id="limits-h">What would make us not trust our own output?</h2>
+    <div class="qa">
+      <div class="q reveal"><h3>What would make you not trust it?</h3><p>An open objection, a missing oracle for that area, or a test written from a vague ticket, like #2234. And an escape: it already happened to us once, and that area lost its trust.</p></div>
+      <div class="q reveal"><h3>Who owns the decision?</h3><p>The named engineer in the sign-off block. They sign what was checked, what was not, and the residual risk. The AI never approves, and an empty owner is rejected.</p></div>
+      <div class="q reveal"><h3>How would this scale?</h3><p>Human reading follows risk: 14 of 237 files. Compute fans out: 60 sandboxes at once with no failures. The model's latency is the real ceiling, and we say so.</p></div>
+    </div>
+    <h3 style="margin-top:44px">Honest limits</h3>
+    <ul class="ticks red limits">
+      <li>A badly written ticket gives weak evidence (#2234). The system says so; it doesn't fix the ticket.</li>
+      <li>It needs a differential oracle. Here: generated code and diagnostics. Areas without one get less.</li>
+      <li>LLMs are not reproducible run to run: 3 to 12 of 36 objections closed across four runs. The disk cache makes the demo repeatable, not the models.</li>
+      <li>Implemented and measured on backend code. Frontend (visual and accessibility diffs) is a design, not code.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="explore" aria-labelledby="explore-h">
+  <div class="wrap">
+    <div class="eyebrow">Check it yourself</div>
+    <h2 id="explore-h">Everything here is in the repo</h2>
+    <div class="links">
+      <a class="link" href="demo/index.html"><b>Real sign-off reports →</b><span>Five reports from the four PRs, rebuilt from recorded runs.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/concept-card.md" target="_blank" rel="noopener noreferrer"><b>Concept Card →</b><span>Recommendation, principles, trade-offs and limits.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/lessons-log.md" target="_blank" rel="noopener noreferrer"><b>Lessons log →</b><span>Every real AI failure we hit, and the layer that caught it.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/decision-log.md" target="_blank" rel="noopener noreferrer"><b>Decision log →</b><span>D1–D18: what we chose, what we rejected, and why.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/numeros-evidencia.md" target="_blank" rel="noopener noreferrer"><b>Measured numbers →</b><span>Every timing and result, with its source (Spanish).</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer"><b>Source code →</b><span>Python pipeline, .NET probe, Modal runner, tests.</span></a>
+    </div>
+    <pre class="cmd"><span class="c"># in seconds, no API keys, no .NET — uses the recorded evidence</span>
+python -m ledger run --issue 2283 --fixtures --fake-runner
+<span class="c"># trust per area: escapes per approved file, and how they were found</span>
+python -m ledger.trust status</pre>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="eyebrow">Team</div>
+    <div class="team">
+      <div><b>Víctor Verdú García</b></div>
+      <div><b>Martín Reboll Gómez</b></div>
+      <div><b>Javier de Paz Figueras</b></div>
+      <div><b>Marco García López</b></div>
+    </div>
+    <p>Junction 2026 · Tieto — Earned Trust in AI Code. Sample changes: agent-written branches of
+      <a href="https://github.com/te-industry-tech-office/junction26-messagepack-csharp" target="_blank" rel="noopener noreferrer">junction26-messagepack-csharp</a>. Public data only.</p>
+    <p class="mono" style="font-size:13px;color:var(--fg-3)">Trust is built on evidence a person can check and own, not on the AI being confident.</p>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll. Without JS (or with reduced motion) everything is simply visible.
+  document.documentElement.classList.add("js");
+  (function () {
+    var items = document.querySelectorAll(".reveal");
+    if (!("IntersectionObserver" in window)) { items.forEach(function (el) { el.classList.add("in"); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+
+  // Nav: highlights the section you are reading.
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.top ul a[href^="#"]'));
+    var byId = {};
+    links.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
+    var sections = Object.keys(byId).map(function (id) { return document.getElementById(id); }).filter(Boolean);
+    function update() {
+      var line = window.innerHeight * 0.35, current = null;
+      sections.forEach(function (s) { if (s.getBoundingClientRect().top <= line) current = s.id; });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) current = sections[sections.length - 1].id;
+      links.forEach(function (a) {
+        var on = a === byId[current];
+        a.classList.toggle("active", on);
+        if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+      });
+    }
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(function () { ticking = false; update(); }); }
+    }, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  })();
+
+
+  // Modal: 60 sandboxes start at once and finish green (the real capacity sweep: 60 at once, 27.4 s, 0 failures).
+  (function () {
+    var grid = document.getElementById("sbx-grid"), viz = document.getElementById("sbx-viz");
+    if (!grid || !viz) return;
+    var N = 60, WALL = 27.4, cells = [];
+    for (var i = 0; i < N; i++) { var c = document.createElement("div"); c.className = "sbx-cell"; grid.appendChild(c); cells.push(c); }
+    var nEl = document.getElementById("sbx-n"), tEl = document.getElementById("sbx-t");
+    function finalState() { cells.forEach(function (c) { c.className = "sbx-cell ok"; }); nEl.textContent = N; tEl.textContent = WALL + " s"; }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) { finalState(); return; }
+    function play() {
+      cells.forEach(function (c, i) { setTimeout(function () { c.className = "sbx-cell run"; nEl.textContent = i + 1; }, i * 18); });
+      var start = performance.now(), DUR = 2600;
+      (function tick() {
+        var p = Math.min(1, (performance.now() - start) / DUR);
+        tEl.textContent = (p * WALL).toFixed(1) + " s";
+        if (p < 1) requestAnimationFrame(tick);
+      })();
+      // Finish in an order that is spread out, like real runs that end at slightly different times (17-27 s).
+      cells.forEach(function (c, i) { setTimeout(function () { c.className = "sbx-cell ok"; }, 1500 + ((i * 37) % N) * 18); });
+    }
+    var io = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { io.disconnect(); play(); }
+    }, { threshold: 0.4 });
+    io.observe(viz);
+  })();
+
+  // Try it: replay of the recorded run of issue #2283 (fixtures/report_2283_dotnet.json), ~60x faster.
+  (function () {
+    var term = document.getElementById("term"), body = document.getElementById("term-body");
+    var btn = document.getElementById("run-btn"), again = document.getElementById("again");
+    if (!term || !body || !btn) return;
+    var TOTAL_MS = 17000, REAL_S = 1140; // ~19 min of real pipeline time
+    // [ms, step, class, text]; step: t1 | t2 | t3 | v | done-t1 ... ; text is plain (set with textContent).
+    var SCRIPT = [
+      [300, "t1", "phase", "▶ T1 · Triage  — 4 files in the diff, risk by static rules, scope by Gemini flash"],
+      [1000, null, "", "  README.md                                   OUT · LOW   R-LOW-02 markdown"],
+      [1600, null, "", "  doc/analyzers/MsgPack004.md                 OUT · LOW   R-LOW-02 markdown"],
+      [2300, null, "warn", "  …/CodeAnalysis/TypeCollector.cs             IN  · HIGH  R-HIGH-03 core generator namespace"],
+      [2900, null, "", "  tests/…/GenericsFormatterTests.cs           IN  · LOW   R-LOW-01 tests/"],
+      [3400, "done-t1", "dim", "  1 high-risk file goes to cross-examination; 2 out of scope go to a human"],
+      [3900, "t2", "phase", "▶ T2 · Evidence — Gemini writes LedgerIssue2283 from the issue text only (never the diff)"],
+      [4900, null, "", "  base (before the fix)   2 failed   → red: the test reproduces the bug"],
+      [5900, null, "ok", "  PR   (after the fix)    2 passed   → green"],
+      [6900, null, "", "  invariance  29 cases through the source generator, base run twice"],
+      [7700, null, "ok", "  21/21 general cases identical · base deterministic"],
+      [8100, "done-t2", "dim", "  evidence passed. A reviewer reading only this would approve."],
+      [8700, "t3", "phase", "▶ T3 · Cross-examination — Nemotron (Prosecutor) vs Gemini (Defender) on TypeCollector.cs"],
+      [9500, null, "", "  Q1  Does GetObjectInfo still throw IndexOutOfRange on the other diagnostic branches?"],
+      [10400, null, "ok", "      Defender test: green on PR · red on mutant → objection closed"],
+      [11000, null, "", "  Q2  Does Diagnostic.Create throw when the property location comes from metadata?"],
+      [11900, null, "bad", "      Defender test FAILS on the PR (2 failed) → possible defect"],
+      [12500, null, "", "  Q3  Does it still crash with a closed generic reference type from another assembly?"],
+      [13400, null, "bad", "      Defender test FAILS on the PR (2 failed) → possible defect"],
+      [13900, "done-t3-bad", "dim", "  1 of 3 objections closed. The fix moved the crash: InvalidOperation at line 1013."],
+      [14500, "v", "phase", "▶ Verdicts"],
+      [15000, "tally", "bad", "  TypeCollector.cs              RED     M7 · refuses to decide: 2 open objections"],
+      [15500, null, "warn", "  README.md · MsgPack004.md      YELLOW  M2 · out of scope: read the justification"],
+      [15900, null, "ok", "  GenericsFormatterTests.cs     GREEN   M4 · approved on evidence, unread"],
+      [16500, "done-v", "final", "Decision: MANUAL AUDIT REQUIRED  ·  report → out/report-2283.html  ·  signed by: ______"]
+    ];
+    var running = false, timers = [], rafId = 0, start = 0;
+
+    function step(name, cls) {
+      var li = document.querySelector('.steps li[data-step="' + name + '"]');
+      if (!li) return;
+      if (cls === "active") { li.classList.add("active"); }
+      else { li.classList.remove("active"); li.classList.add("done"); if (cls === "bad") li.classList.add("bad"); }
+    }
+    function line(cls, text) {
+      var d = document.createElement("div");
+      d.className = "term-line" + (cls ? " " + cls : "");
+      d.textContent = text;
+      body.appendChild(d);
+      body.scrollTop = body.scrollHeight;
+    }
+    function fmt(s) { var m = Math.floor(s / 60), r = Math.floor(s % 60); return (m < 10 ? "0" : "") + m + ":" + (r < 10 ? "0" : "") + r; }
+    function tick() {
+      var p = Math.min(1, (performance.now() - start) / TOTAL_MS);
+      document.getElementById("bar").style.width = (p * 100).toFixed(1) + "%";
+      document.getElementById("clock").textContent = fmt(p * REAL_S);
+      if (p < 1 && running) rafId = requestAnimationFrame(tick);
+    }
+    function reset() {
+      timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(rafId);
+      body.querySelectorAll(".term-line:not(.prompt)").forEach(function (n) { n.remove(); });
+      document.querySelectorAll(".steps li").forEach(function (li) { li.className = ""; });
+      document.getElementById("bar").style.width = "0";
+      document.getElementById("clock").textContent = "00:00";
+      document.getElementById("tally").hidden = true;
+      ["n-green", "n-yellow", "n-red"].forEach(function (id) { document.getElementById(id).textContent = "0"; });
+      document.getElementById("result").hidden = true;
+      document.getElementById("caret").style.display = "";
+    }
+    function finish() {
+      running = false;
+      btn.disabled = false;
+      document.getElementById("run-hint").textContent = "Done. Scroll down for the report, or run it again.";
+      var result = document.getElementById("result"), frame = document.getElementById("report-frame");
+      // Without "#must-read" in the src: an anchor inside the iframe would also scroll this page past the decision header.
+      if (!frame.getAttribute("src")) {
+        frame.addEventListener("load", function () {
+          try {
+            var target = frame.contentDocument.getElementById("must-read");
+            if (target) frame.contentWindow.scrollTo(0, target.offsetTop - 12);
+          } catch (e) { /* different origin (e.g. opened from disk): the report simply starts at the top */ }
+        });
+        frame.setAttribute("src", "demo/2283-dotnet.html");
+      }
+      result.hidden = false;
+      result.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    }
+    function run() {
+      if (running) return;
+      reset();
+      running = true;
+      btn.disabled = true;
+      document.getElementById("caret").style.display = "none";
+      document.getElementById("run-hint").textContent = "Running a replay of the recorded run…";
+      start = performance.now();
+      rafId = requestAnimationFrame(tick);
+      SCRIPT.forEach(function (row) {
+        timers.push(setTimeout(function () {
+          var s = row[1];
+          if (s === "t1" || s === "t2" || s === "t3" || s === "v") step(s, "active");
+          if (s === "done-t1") step("t1", "done");
+          if (s === "done-t2") step("t2", "done");
+          if (s === "done-t3-bad") step("t3", "bad");
+          if (s === "done-v") step("v", "bad");
+          if (s === "tally") {
+            document.getElementById("tally").hidden = false;
+            document.getElementById("n-red").textContent = "1";
+            timers.push(setTimeout(function () { document.getElementById("n-yellow").textContent = "2"; }, 500));
+            timers.push(setTimeout(function () { document.getElementById("n-green").textContent = "1"; }, 900));
+          }
+          line(row[2], row[3]);
+        }, row[0]));
+      });
+      timers.push(setTimeout(finish, TOTAL_MS + 400));
+    }
+    btn.addEventListener("click", run);
+    if (again) again.addEventListener("click", function () { term.scrollIntoView({ block: "center" }); run(); });
+    term.addEventListener("click", function () { term.focus(); });
+    term.addEventListener("focus", function () { term.classList.add("focused"); });
+    term.addEventListener("blur", function () { term.classList.remove("focused"); });
+    term.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); run(); } });
+  })();
+</script>
+</body>
+</html>

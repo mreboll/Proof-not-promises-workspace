@@ -288,3 +288,15 @@ def test_write_report_writes_html_and_json(tmp_path):
     path = write_report(make_report(), tmp_path, models=MODELS, issue_title="#2283")
     assert path == tmp_path / "report-2283.html" and path.read_text(encoding="utf-8").startswith("<!doctype html>")
     assert json.loads((tmp_path / "report-2283.json").read_text(encoding="utf-8"))["issue_id"] == "2283"
+
+
+def test_sections_have_stable_anchors_for_deep_links(html):
+    """La landing enlaza a la zona exacta del informe (evidencia, interrogatorio, firma...), no al principio."""
+    for anchor in ("funnel", "must-read", "files", "evidence", "crossexam", "models", "trust", "signoff"):
+        assert f'id="{anchor}"' in html
+
+
+def test_each_file_has_its_own_anchor(html):
+    """Cada fila de la tabla (file-...) y cada tarjeta de lo que hay que leer (read-...) se puede enlazar directamente."""
+    assert 'id="file-src-G-CodeAnalysis-TypeCollector-cs"' in html and 'id="file-README-md"' in html
+    assert 'id="read-README-md"' in html  # amarillo: está en "What you need to read"
