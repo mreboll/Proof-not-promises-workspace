@@ -16,6 +16,12 @@ from ledger.models import TestRunResult
 _NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
 _COMPILE_ERROR = re.compile(r"^.*\berror (?:CS|MSB|NU)\d{4}\b.*$", re.MULTILINE)
 _FAILED_COUNTERS = ("failed", "error", "timeout", "aborted")
+# Excepciones que indican que el test no pudo ni ejecutarse de verdad (sin red, NuGet caído...).
+_INFRA_MARKERS = (
+    "System.Net.Http.HttpRequestException",
+    "System.Net.Sockets.SocketException",
+    "NuGet.Protocol.Core.Types.FatalProtocolException",
+)
 MAX_TAIL_CHARS = 4000
 MAX_FAILURE_MESSAGE_CHARS = 800
 
@@ -64,6 +70,13 @@ def build_result(trx_text: str | None, build_output: str, duration_s: float) -> 
         summary = parse_trx(trx_text)
     except (ET.ParseError, ValueError) as exc:
         return TestRunResult(build_ok=False, passed=0, failed=0, output_tail=f"trx ilegible: {exc}", duration_s=duration_s)
+    if any(marker in failure for failure in summary.failures for marker in _INFRA_MARKERS):
+        # Un fallo de red/descarga no dice nada del código: no puede contar como "reproduce el bug".
+        return TestRunResult(
+            build_ok=False, passed=summary.passed, failed=summary.failed,
+            output_tail=_clip(f"INFRA: test failed for infrastructure reasons (network/package download)\n{_describe(summary)}"),
+            duration_s=duration_s,
+        )
     return TestRunResult(
         build_ok=True,
         passed=summary.passed,

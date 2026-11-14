@@ -32,7 +32,12 @@ _ENV = {
     "DOTNET_NOLOGO": "1",
     "DOTNET_SKIP_FIRST_TIME_EXPERIENCE": "1",
     "DOTNET_CLI_UI_LANGUAGE": "en",
+    # Microsoft.CodeAnalysis.Testing descarga ReferenceAssemblies a <temp>/test-packages en tiempo de
+    # ejecución. Temp fijo para precalentarlo en la imagen (con red) y reutilizarlo en el sandbox (sin red).
+    "TMPDIR": "/opt/ledger-tmp",
 }
+# Un test existente del repo que resuelve ReferenceAssemblies.Net.Net80: al ejecutarlo en la imagen deja la caché.
+WARMUP_FILTER = "FullyQualifiedName~GenericsFormatterTests.NullableFormatter"
 
 SandboxFactory = Callable[..., Any]
 
@@ -46,6 +51,7 @@ def build_image(settings: Settings) -> Any:
     import modal
 
     prepare = [
+        f"mkdir -p {_ENV['TMPDIR']}",
         f"git clone -q -c core.longpaths=true {REPO_URL} /repo",
         "cd /repo && git fetch -q origin '+refs/heads/ju26-*:refs/remotes/origin/ju26-*'",
     ]
@@ -56,6 +62,8 @@ def build_image(settings: Settings) -> Any:
                 f"git -C /repo worktree add -q --detach {wt} {settings.ref(issue_id, side)}",
                 f"cd {wt} && dotnet build {TEST_PROJECT.as_posix()} -nologo -v q",
             ]
+    warm_wt = worktree_dir(sorted(ISSUES)[0], "pr")
+    prepare.append(f"cd {warm_wt} && dotnet test {TEST_PROJECT.as_posix()} --no-build --filter {WARMUP_FILTER}")
     return (
         modal.Image.from_registry(SDK_IMAGE, add_python="3.12")
         .apt_install("git")
@@ -111,8 +119,9 @@ def _run_in_sandbox(sandbox: Any, wt: str, test_code: str, test_name: str, mutan
         patch_path = f"{wt}/.ledger-mutant/mutant.patch"
         _sh(sandbox, f"mkdir -p {wt}/.ledger-mutant")
         sandbox.filesystem.write_text(normalize_patch(mutant_patch), patch_path)
-        base = f"cd {wt} && git apply --recount --whitespace=nowarn"
-        code, out = _sh(sandbox, f"{base} {patch_path} || {base} --ignore-whitespace {patch_path}")
+        apply = "git apply --recount --whitespace=nowarn"
+        # Agrupado: sin llaves, `cd X && A || cd X && B` ejecutaría B siempre (y fallaría: ya aplicado).
+        code, out = _sh(sandbox, f"cd {wt} && {{ {apply} {patch_path} || {apply} --ignore-whitespace {patch_path}; }}")
         if code != 0:
             return _failed(f"git apply del mutante falló: {out[-1500:]}", time.monotonic() - started)
 

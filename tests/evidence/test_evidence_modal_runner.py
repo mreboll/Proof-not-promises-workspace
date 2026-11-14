@@ -150,6 +150,20 @@ def test_mutant_is_applied_in_the_sandbox_before_testing(settings):
     assert result.red_for_real
 
 
+def test_lenient_apply_only_runs_if_strict_fails(settings):
+    """`cd X && A || cd X && B` ejecuta B siempre (y falla: el parche ya está aplicado). Hay que agrupar."""
+    sandbox = FakeSandbox()
+    runner, _ = make_runner(settings, sandbox)
+
+    runner.run_against_mutant("pr", "--- a/x\n+++ b/x\n", "class T {}", "T")
+
+    apply_cmd = next(c for c in sandbox.commands if "git apply" in c)
+    strict, lenient = apply_cmd.split("||")
+    assert strict.count("&&") == 1 and strict.strip().endswith(".patch")
+    assert "&&" not in lenient  # el tolerante solo depende del fallo del estricto
+    assert "{" in strict and lenient.strip().endswith("}")
+
+
 def test_mutant_that_does_not_apply_is_not_tested(settings):
     sandbox = FakeSandbox(apply_ok=False)
     runner, _ = make_runner(settings, sandbox)

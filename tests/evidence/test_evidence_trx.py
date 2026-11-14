@@ -81,6 +81,34 @@ def test_malformed_trx_is_reported_not_raised():
     assert "trx" in result.output_tail.lower()
 
 
+NETWORK_FAILURE = """<?xml version="1.0" encoding="utf-8"?>
+<TestRun xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Results>
+    <UnitTestResult testName="T.Repro" outcome="Failed">
+      <Output><ErrorInfo><Message>NuGet.Protocol.Core.Types.FatalProtocolException : An error occurred while retrieving package metadata for 'Microsoft.NETCore.App.Ref.8.0.0' from source 'nuget.org'.
+---- System.Net.Http.HttpRequestException : Resource temporarily unavailable (api.nuget.org:443)</Message></ErrorInfo></Output>
+    </UnitTestResult>
+  </Results>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" />
+  </ResultSummary>
+</TestRun>"""
+
+
+def test_network_failure_is_infrastructure_not_a_reproduced_bug():
+    """Sin red (sandbox) o sin conexión: un test que falla por descargar paquetes NO reproduce nada."""
+    result = build_result(NETWORK_FAILURE, "", 5.0)
+
+    assert not result.red_for_real and not result.green
+    assert result.output_tail.startswith("INFRA")
+    assert "HttpRequestException" in result.output_tail
+
+
+def test_assertion_failure_mentioning_nothing_network_is_still_red():
+    result = build_result((DATA / "pass_fail.trx").read_text(encoding="utf-8-sig"), "", 1.0)
+    assert result.red_for_real
+
+
 def test_extract_compile_errors_dedupes_and_ignores_warnings():
     errors = extract_compile_errors(BUILD_OUTPUT_ES)
     assert len(errors) == 2
