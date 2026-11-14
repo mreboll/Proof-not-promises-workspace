@@ -95,14 +95,24 @@ def test_test_that_passes_on_base_does_not_prove_a_bugfix(settings):
     assert not evidence.ok
 
 
-def test_feature_only_needs_pr_green_and_skips_base(settings):
-    runner = ScriptedRunner({"pr": [GREEN], "base": []})
+def test_feature_only_needs_pr_green_but_records_base_as_extra_evidence(settings):
+    runner = ScriptedRunner({"pr": [GREEN], "base": [RED]})
 
     evidence = run(settings, ScriptedLLM([T1]), runner, issue_id="2297")
 
     assert evidence.change_type is ChangeType.FEATURE
-    assert evidence.base is None and evidence.ok
-    assert [side for side, _ in runner.calls] == ["pr"]
+    assert evidence.ok
+    assert evidence.base is not None and evidence.base.red_for_real  # el test mide algo nuevo
+    assert [side for side, _ in runner.calls] == ["pr", "base"]
+
+
+def test_feature_is_ok_even_if_test_does_not_compile_on_base(settings):
+    """Una feature puede usar API nueva que en la base no existe: eso no invalida la evidencia."""
+    runner = ScriptedRunner({"pr": [GREEN], "base": [BUILD_FAIL]})
+
+    evidence = run(settings, ScriptedLLM([T1]), runner, issue_id="2297")
+
+    assert evidence.ok and not evidence.base.build_ok
 
 
 def test_missing_issue_file_is_a_clear_error(settings, tmp_path):

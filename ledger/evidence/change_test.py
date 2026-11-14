@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field
 from ledger import llm
 from ledger.config import Settings, get_issue
 from ledger.evidence.workspace import ensure_worktree
-from ledger.models import ChangeTestEvidence, ChangeType, TestRunner, TestRunResult
+from ledger.models import ChangeTestEvidence, TestRunner, TestRunResult
 
 TEMPLATE_FILE = "tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs"
 TEMPLATE_MAX_LINES = 75
@@ -133,9 +133,9 @@ def generate_change_test(
         test = complete(SYSTEM_PROMPT, retry_prompt, GeneratedTest, "pro")
         pr = runner.run_tests("pr", test.test_code, test.test_name)
 
-    base: TestRunResult | None = None
-    if spec.change_type is ChangeType.BUGFIX:
-        base = runner.run_tests("base", test.test_code, test.test_name)
+    # En bug fix la base es obligatoria (debe fallar). En feature es evidencia extra: rojo en base
+    # demuestra que el test mide algo nuevo; `ChangeTestEvidence.ok` sigue dependiendo solo del PR.
+    base: TestRunResult = runner.run_tests("base", test.test_code, test.test_name)
 
     return ChangeTestEvidence(
         issue_id=issue_id,
