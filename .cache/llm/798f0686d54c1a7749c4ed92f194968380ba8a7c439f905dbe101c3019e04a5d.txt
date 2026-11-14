@@ -1,0 +1,1 @@
+{"scope":"IN","justification":"El problema solicita añadir el atributo ExcludeFromCodeCoverage al código generado; el diff agrega ese atributo a los tipos generados en CompositeResolverTemplate.tt, satisfaciendo directamente la petición."}

@@ -1,0 +1,1 @@
+{"scope": "IN", "justification": "El diff agrega el atributo ExcludeFromCodeCoverage a las clases de resolutor generadas, lo cual satisface la solicitud del issue de decorar el código generado con ese atributo."}

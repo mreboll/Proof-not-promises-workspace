@@ -1,0 +1,1 @@
+{"scope":"OUT","justification":"El cambio solo añade una nota en el README sobre la decoración del atributo, pero no agrega el atributo ExcludeFromCodeCoverage al código generado, que es lo que solicita la incidencia."}

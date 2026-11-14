@@ -1,0 +1,1 @@
+{"scope":"IN","justification":"El issue solicita añadir ExcludeFromCodeCoverage a todo el código generado, y el diff lo implementa en la plantilla StringKeyFormatterTemplate.tt."}

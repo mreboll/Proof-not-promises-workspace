@@ -85,6 +85,34 @@ def test_binary_file_is_still_classified_by_path():
     assert "binary" in fake.calls[0]["user"].lower()
 
 
+class FlakyComplete(FakeComplete):
+    """Falla con LLMError en los roles de `fail_roles` (p. ej. el modelo devuelve el esquema en vez de la respuesta)."""
+
+    def __init__(self, fail_roles):
+        super().__init__()
+        self.fail_roles = fail_roles
+
+    def __call__(self, system, user, schema, role, **kwargs):
+        self.calls.append({"system": system, "user": user, "schema": schema, "role": role})
+        if role in self.fail_roles:
+            from ledger.llm import LLMError
+
+            raise LLMError("JSON inválido tras reparar")
+        return self.answer
+
+
+def test_falls_back_to_pro_role_when_flash_gives_invalid_json():
+    fake = FlakyComplete({"flash"})
+    assert classify_scope(ISSUE, CODE, complete=fake) == (Scope.IN, "Arregla el crash del issue.")
+    assert [c["role"] for c in fake.calls] == ["flash", "pro"]
+
+
+def test_unclassifiable_file_goes_to_human_review_instead_of_crashing():
+    fake = FlakyComplete({"flash", "pro"})
+    scope, why = classify_scope(ISSUE, CODE, complete=fake)
+    assert scope is Scope.OUT and "revisión humana" in why and "JSON inválido" in why
+
+
 def test_load_issue_text_reads_the_literal_markdown():
     text = load_issue_text(load_settings(), "2283")
     assert text.startswith("# #2283:") and "IndexOutOfRangeException" in text

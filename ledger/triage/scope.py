@@ -84,5 +84,15 @@ def classify_scope(issue_text: str, fd: FileDiff, *, complete: Complete = llm.co
             return Scope.IN, "Snapshot de código generado y el issue trata del código generado (regla sin LLM)."
         return Scope.OUT, "Snapshot de código generado, pero el issue no habla del código generado (regla sin LLM)."
 
-    answer: ScopeAnswer = complete(SYSTEM, _user_prompt(issue_text, fd), ScopeAnswer, "flash", settings=settings)
-    return answer.scope, answer.justification.strip()
+    user = _user_prompt(issue_text, fd)
+    error = ""
+    # flash primero (barato); si no da JSON válido, pro (otro modelo). Visto en #2297: Nemotron Lightning
+    # devolvió el propio esquema JSON dos veces seguidas para FormatterTemplate.tt (lessons-log H4).
+    for role in ("flash", "pro"):
+        try:
+            answer: ScopeAnswer = complete(SYSTEM, user, ScopeAnswer, role, settings=settings)
+            return answer.scope, answer.justification.strip()
+        except llm.LLMError as exc:
+            error = str(exc).splitlines()[0][:200]
+    # Lo que el sistema no sabe clasificar no se aprueba: OUT → amarillo (o rojo si es HIGH), lo mira un humano.
+    return Scope.OUT, f"El LLM no pudo clasificar este fichero ({error}): revisión humana."

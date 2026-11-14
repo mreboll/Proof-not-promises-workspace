@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "¿Sigue lanzando IndexOutOfRangeException cuando el miembro de tipo struct genérico cerrado de una ensamblada referenciada es un campo público (IFieldSymbol) sin [Key], por ejemplo public Item<int> Field;, en lugar de una propiedad?",
+      "rationale": "GetPropertyIdentifierLocation solo cubre IPropertySymbol. Las rutas de diagnóstico para campos dentro de GetObjectInfo pueden seguir indexando DeclaringSyntaxReferences[0] directamente sobre un símbolo de metadatos sin sintaxis, y el test de cambio solo ejerció la propiedad del repro."
+    },
+    {
+      "question": "¿Falla GetObjectInfo al acceder a DeclaringSyntaxReferences[0] de la declaración del propio tipo genérico cerrado de valor de metadatos (o de un tipo anidado dentro de él) al emitir un diagnóstico de nivel de tipo, en lugar de usar GetIdentifierLocation?",
+      "rationale": "El diff corrige ubicaciones de miembros (propiedades) pero no se demuestra que elimine todo el indexado directo de DeclaringSyntaxReferences[0] sobre el tipo genérico cerrado en sí dentro de GetObjectInfo; ni el test de cambio ni la invarianza ejercen ese camino de declaración de tipo anidado."
+    },
+    {
+      "question": "¿Se produce la excepción cuando el struct genérico cerrado de metadatos es un record struct con parámetro de constructor primario (por ejemplo Item<T>(string Key)) y el código indexa DeclaringSyntaxReferences[0] del parámetro (IParameterSymbol) en lugar de usar GetLocation?",
+      "rationale": "El repro usa un record struct posicional cuyo parámetro es un símbolo de metadatos sin sintaxis. GetLocation ya usa FirstOrDefault para parámetros, pero GetObjectInfo podría seguir indexando DeclaringSyntaxReferences[0] del parámetro directamente; ese camino no está cubierto por el test de cambio ni por las correcciones de ubicación de propiedad."
+    }
+  ]
+}

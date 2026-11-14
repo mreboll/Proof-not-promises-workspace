@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "¿Lanza NullReferenceException la rama AOTDerivedKeyAttribute cuando un miembro de un struct genérico cerrado de metadatos tiene el atributo de clave derivada, dado que derivedKeyAttribute.GetSyntax(cancellationToken) devuelve null para símbolos de metadatos y el código llama .GetLocation() sin comprobar null?",
+      "rationale": "El diff solo protege la rama MemberNeedsKey con FirstOrDefault(); la rama AOTDerivedKeyAttribute sigue invocando derivedKeyAttribute.GetSyntax(this.cancellationToken).GetLocation() directamente. Para miembros de metadatos GetSyntax() retorna null, por lo que .GetLocation() falla. Ni el test de cambio ni la invarianza ejercen este camino con símbolos de metadatos."
+    },
+    {
+      "question": "¿Sigue produciéndose IndexOutOfRangeException en GetObjectInfo al procesar un struct genérico cerrado de un ensamblado referenciado que active una ruta de diagnóstico distinta a las dos protegidas por el parche, es decir, cualquiera de las indizaciones DeclaringSyntaxReferences[0] que el issue ubica en líneas 735, 1009 y 1101 y que el diff no toca?",
+      "rationale": "El diff solo reemplaza el índice [0] en los sitios de las líneas 982 y 1074 (y agrega helpers). Las demás indizaciones directas a DeclaringSyntaxReferences[0] dentro de GetObjectInfo citadas en el issue no aparecen parcheadas, por lo que un tipo de valor genérico cerrado de metadatos que las alcance sigue haciendo fallar al generador y al analizador sin generar resolver."
+    },
+    {
+      "question": "¿Se genera un resolver sin fallar cuando un tipo de origen tiene un miembro de tipo genérico cerrado anidado de metadatos (por ejemplo List<Item<int>>, Item<int>[] o Item<Item<int>>) donde Item<T> es un struct genérico de un ensamblado referenciado, dado que CollectGeneric (línea 661) sigue llamando a GetObjectInfo directamente sobre tipos cerrados de metadatos?",
+      "rationale": "El diff no modifica CollectGeneric ni la recursión sobre argumentos de tipo y elementos de array. Cualquier indización desprotegida dentro de GetObjectInfo que sobreviva al parche se dispara al recorrer tipos genéricos cerrados anidados de metadatos. El test de cambio y la invarianza no cubren necesariamente esta recursión con símbolos de metadatos."
+    }
+  ]
+}

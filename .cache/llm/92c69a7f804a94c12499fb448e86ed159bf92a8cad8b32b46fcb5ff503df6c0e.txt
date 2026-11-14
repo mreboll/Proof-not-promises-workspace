@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El diff solo agrega un archivo de prueba que verifica la presencia del atributo, pero no añade el atributo ExcludeFromCodeCoverage a los tipos generados, por lo que no satisface la solicitud del issue."
+}

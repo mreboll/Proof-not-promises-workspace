@@ -1,0 +1,1 @@
+{"scope": "OUT", "justification": "El cambio solo ajusta el formato de las llaves en TransformUtilities.cs y no agrega el atributo ExcludeFromCodeCoverage al código generado que solicita el issue #2297."}

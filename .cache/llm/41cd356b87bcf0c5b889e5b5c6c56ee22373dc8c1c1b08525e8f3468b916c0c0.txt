@@ -1,0 +1,1 @@
+{"scope": "IN", "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a las clases de generador de formatos, que es parte del código generado solicitado en el issue."}

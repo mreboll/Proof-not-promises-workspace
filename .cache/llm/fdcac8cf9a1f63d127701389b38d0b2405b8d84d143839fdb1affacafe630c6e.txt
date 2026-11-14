@@ -1,0 +1,32 @@
+{
+  "$defs": {
+    "Scope": {
+      "enum": [
+        "IN",
+        "OUT"
+      ],
+      "title": "Scope",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "scope": {
+      "$ref": "#/$defs/Scope",
+      "description": "IN if this file's change is needed to satisfy the issue, OUT otherwise",
+      "title": "Scope",
+      "type": "string"
+    },
+    "justification": {
+      "description": "One sentence, in Spanish, citing what in the issue or the diff decides it",
+      "title": "Justification",
+      "type": "string"
+    }
+  },
+  "required": [
+    "scope",
+    "justification"
+  ],
+  "title": "ScopeAnswer",
+  "scope": "IN",
+  "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a los tipos generados en CompositeResolverTemplate.cs, cumpliendo la solicitud del issue #2297 de decorar el código generado con ese atributo."
+}

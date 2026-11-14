@@ -1,0 +1,1 @@
+{"scope":"IN","justification":"El cambio en EnumTemplate.cs agrega el atributo ExcludeFromCodeCoverage al código generado, cumpliendo la solicitud del issue de decorar el código generado con ese atributo."}

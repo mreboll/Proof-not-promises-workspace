@@ -1,0 +1,1 @@
+{"scope": "IN", "justification": "El issue solicita agregar el atributo ExcludeFromCodeCoverage al código generado, y el diff agrega exactamente ese atributo a la clase formatter generada en EnumTemplate.tt, satisfaciendo la petición."}

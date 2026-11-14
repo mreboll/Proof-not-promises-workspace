@@ -1,0 +1,1 @@
+{"scope":"OUT","justification":"El issue solicita añadir ExcludeFromCodeCoverage a todo el código generado, no solo a un archivo; el cambio afecta solo a UnionTemplate.tt, por lo que no satisface la petición completa."}

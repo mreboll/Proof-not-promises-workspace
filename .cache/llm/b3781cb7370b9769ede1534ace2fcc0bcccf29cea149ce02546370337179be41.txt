@@ -1,0 +1,1 @@
+{"scope":"IN","justification":"El issue #2297 solicita agregar el atributo ExcludeFromCodeCoverage a todo el código generado, y el diff lo añade condicionalmente al template del resolutor, cumpliendo la petición."}
