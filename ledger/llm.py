@@ -187,5 +187,8 @@ def complete(
         )
 
     cache_file.parent.mkdir(parents=True, exist_ok=True)
-    cache_file.write_text(text, encoding="utf-8")
+    # Atómico: con la Etapa 3 en paralelo, otro hilo podría leer el fichero a medio escribir.
+    tmp = cache_file.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
+    tmp.write_text(text, encoding="utf-8")
+    os.replace(tmp, cache_file)
     return result
