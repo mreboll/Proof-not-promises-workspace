@@ -61,6 +61,14 @@ def _cache_key(model: str, system: str, user: str, schema_name: str) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+MAX_TIMEOUT_ATTEMPTS = 2
+
+
+def _is_timeout(exc: BaseException) -> bool:
+    """httpx.TimeoutException (google-genai), openai.APITimeoutError (Nemotron) o TimeoutError de Python."""
+    return isinstance(exc, TimeoutError) or any("Timeout" in cls.__name__ for cls in type(exc).__mro__)
+
+
 def _status_code(exc: Exception) -> int | None:
     for attr in ("code", "status_code"):  # google-genai usa .code; openai usa .status_code
         value = getattr(exc, attr, None)
@@ -76,6 +84,12 @@ def _with_retry(generate: Generate, client: Any, model: str, system: str, user: 
         except LLMError:
             raise
         except Exception as exc:
+            if _is_timeout(exc):
+                # Un timeout ya ha costado LLM_TIMEOUT_S: un solo reintento, no MAX_ATTEMPTS (serían ~25 min).
+                if attempt >= MAX_TIMEOUT_ATTEMPTS:
+                    raise LLMError(f"{model} timeout tras {attempt} intentos: {exc}") from exc
+                time.sleep(BACKOFF_BASE_S**attempt)
+                continue
             code = _status_code(exc)
             if code not in RETRYABLE_CODES or attempt == MAX_ATTEMPTS:
                 raise LLMError(f"{model} falló ({code}): {exc}") from exc

@@ -20,6 +20,11 @@ class LLMError(RuntimeError):
     pass
 
 
+# Timeout por petición, en segundos. No puede ser corto: en ejecuciones reales gemini-4-hydrogen tardó
+# 215 s en escribir un test del Defensor y Nemotron 96 s en las objeciones del Fiscal.
+LLM_TIMEOUT_S = 300
+
+
 # --------------------------------------------------------------------------- Gemini
 
 
@@ -28,7 +33,10 @@ def gemini_client(settings: Settings) -> Any:
         raise LLMError("Falta GEMINI_API_KEY. Copia .env.example a .env y rellénala.")
     from google import genai  # import diferido: los tests no necesitan el SDK
 
-    return genai.Client(api_key=settings.gemini_api_key)
+    from google.genai import types
+
+    # Sin timeout, una llamada colgada bloqueó el pipeline casi una hora en Modal (A). HttpOptions va en ms.
+    return genai.Client(api_key=settings.gemini_api_key, http_options=types.HttpOptions(timeout=LLM_TIMEOUT_S * 1000))
 
 
 def gemini_generate(client: Any, model: str, system: str, user: str, schema: type[BaseModel] | None) -> str:
@@ -59,7 +67,7 @@ def nvidia_client(settings: Settings) -> Any:
         raise LLMError("Falta NVIDIA_MODEL: copia el ID exacto de Nemotron 3.5 Super VL desde build.nvidia.com.")
     from openai import OpenAI
 
-    return OpenAI(base_url=settings.nvidia_base_url, api_key=settings.nvidia_api_key)
+    return OpenAI(base_url=settings.nvidia_base_url, api_key=settings.nvidia_api_key, timeout=LLM_TIMEOUT_S)
 
 
 def schema_instruction(schema: type[BaseModel]) -> str:
