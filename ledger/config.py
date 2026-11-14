@@ -78,8 +78,9 @@ def load_settings() -> Settings:
         out_dir=PROJECT_ROOT / "out",
         issues_dir=PROJECT_ROOT / "issues",
         gemini_api_key=os.environ.get("GEMINI_API_KEY", ""),
-        model_pro=os.environ.get("GEMINI_MODEL_PRO", "gemini-2.5-pro"),
-        model_flash=os.environ.get("GEMINI_MODEL_FLASH", "gemini-2.5-flash"),
+        # gemini-2.5-* ya no está disponible para claves nuevas (404); estos son los modelos con los que se ejecutó.
+        model_pro=os.environ.get("GEMINI_MODEL_PRO", "gemini-4-hydrogen"),
+        model_flash=os.environ.get("GEMINI_MODEL_FLASH", "gemini-3.8-flash"),
         nvidia_api_key=os.environ.get("NVIDIA_API_KEY", ""),
         nvidia_model=os.environ.get("NVIDIA_MODEL", "nvidia/nemotron-3.5-super-vl-120b-a12b"),
         nvidia_base_url=os.environ.get("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1"),
