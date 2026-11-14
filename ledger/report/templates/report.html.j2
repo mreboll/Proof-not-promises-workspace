@@ -342,10 +342,20 @@ li { margin: 2px 0; }
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
+  <h3>What was checked, and by what</h3>
+  <ul class="small">{% for line in signoff.checked %}<li>{{ line }}</li>{% endfor %}</ul>
+  <h3>What was NOT checked, and why</h3>
+  {% if signoff.not_checked %}
+  <ul class="small">{% for line in signoff.not_checked %}<li>{{ line }}</li>{% endfor %}</ul>
+  {% else %}<p class="small">Nothing left unchecked by the funnel.</p>{% endif %}
+  <h3>Residual risk I accept</h3>
+  <ul class="small">{% for line in signoff.residual %}<li>{{ line }}</li>{% endfor %}</ul>
+  <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
   <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
 Requirement / Issue ID: #{{ r.issue_id }} ({{ r.change_type.value }}) | Evaluated branch: {{ r.branch }} | Base: {{ r.base_commit }}
 Auto-verified claims (Green): {{ counts[Verdict.GREEN] }}/{{ total }} | Reviewed manually (Yellow/Red): {{ counts[Verdict.YELLOW] + counts[Verdict.RED] }}/{{ total }}
 Approved by (full name): ______________________  Role: _________________
+I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>
 

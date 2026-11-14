@@ -1,0 +1,47 @@
+{
+  "issue": "2283",
+  "mode": "par",
+  "wall_s": 622.0,
+  "sandboxes": {
+    "peak": 12,
+    "total": 26,
+    "limit": 60
+  },
+  "llm": {
+    "gemini": {
+      "requests": 19,
+      "ok": 19,
+      "errors": {},
+      "timeouts": 0,
+      "peak": 12,
+      "wait_s": 0.0,
+      "max_latency_s": 203.98,
+      "limit": 32
+    },
+    "nvidia": {
+      "requests": 1,
+      "ok": 1,
+      "errors": {},
+      "timeouts": 0,
+      "peak": 1,
+      "wait_s": 0.0,
+      "max_latency_s": 154.89,
+      "limit": 16
+    },
+    "cache_hits": 1
+  },
+  "config": {
+    "LEDGER_CROSSEXAM_WORKERS": "default",
+    "LEDGER_MODAL_MAX_SANDBOXES": "default",
+    "LEDGER_MAX_CONCURRENT_GEMINI": "default",
+    "LEDGER_MAX_CONCURRENT_NVIDIA": "default"
+  },
+  "files_cross_examined": 1,
+  "objections": 3,
+  "objections_valid": 0,
+  "verdicts": {
+    "README.md": "YELLOW",
+    "doc/analyzers/MsgPack004.md": "YELLOW",
+    "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs": "RED"
+  }
+}

@@ -187,7 +187,8 @@ def test_objections_run_in_parallel_and_keep_their_order():
     assert runner.gauge.peak >= 3
 
 
-def test_pr_and_mutant_run_speculatively_at_the_same_time():
+def test_pr_and_mutant_run_speculatively_at_the_same_time(monkeypatch):
+    monkeypatch.setenv("LEDGER_DEFENSE_VARIANTS", "1")
     runner = TimedRunner(parallel_safe=True)
 
     _cross(runner, n_objections=1)
@@ -205,6 +206,58 @@ def test_speculative_mutant_result_is_discarded_when_pr_is_not_green():
 
     assert obj.pr_result is not None and not obj.pr_result.green
     assert obj.mutant_result is None and not obj.valid
+
+
+class SlowLLMComplete(ThreadSafeComplete):
+    """Como ThreadSafeComplete, pero el mutante y el Defensor tardan y se registran sus intervalos."""
+
+    def __init__(self, n_objections: int, edit=EDIT) -> None:
+        super().__init__(n_objections)
+        self.edit = edit
+        self.spans: dict[str, list[tuple[float, float]]] = {"mutant": [], "defense": []}
+        self._lock = threading.Lock()
+
+    def __call__(self, system, user, schema, role, **kwargs):
+        if schema is Objections:
+            return super().__call__(system, user, schema, role, **kwargs)
+        kind = "mutant" if schema is MutantEdit else "defense"
+        start = time.monotonic()
+        time.sleep(DELAY)
+        with self._lock:
+            self.spans[kind].append((start, time.monotonic()))
+        return self.edit if schema is MutantEdit else super().__call__(system, user, schema, role, **kwargs)
+
+
+def test_mutant_and_first_defense_are_generated_at_the_same_time():
+    """El Defensor no ve el mutante: con un runner paralelo, las dos llamadas al LLM van a la vez."""
+    complete = SlowLLMComplete(1)
+
+    (obj,) = loop.cross_examine("2283", "# issue", FD, TimedRunner(parallel_safe=True), read_source=lambda p: SOURCE, complete=complete)
+
+    (mut,) = complete.spans["mutant"]
+    first_defense = complete.spans["defense"][0]
+    assert mut[0] < first_defense[1] and first_defense[0] < mut[1]
+    assert obj.valid
+
+
+def test_without_mutant_the_speculative_defense_is_discarded():
+    bad_edit = MutantEdit(find="does not exist", replace="x", explanation="nope")
+    complete = SlowLLMComplete(1, edit=bad_edit)
+    runner = TimedRunner(parallel_safe=True)
+
+    (obj,) = loop.cross_examine("2283", "# issue", FD, runner, read_source=lambda p: SOURCE, complete=complete)
+
+    assert not obj.valid and obj.mutant_patch == "" and obj.pr_result is None and obj.test_code == ""
+    assert runner.spans == []  # sin mutante no se ejecuta nada
+
+
+def test_sequential_runner_generates_mutant_before_defense():
+    complete = SlowLLMComplete(1)
+
+    loop.cross_examine("2283", "# issue", FD, TimedRunner(parallel_safe=False), read_source=lambda p: SOURCE, complete=complete)
+
+    (mut,) = complete.spans["mutant"]
+    assert all(d[0] >= mut[1] for d in complete.spans["defense"])
 
 
 def test_sequential_runner_never_overlaps_and_skips_mutant_after_red_pr():
@@ -243,3 +296,120 @@ def test_llm_calls_are_capped_per_provider(monkeypatch):
 
     assert gauge.peak == 2
     llm._reset_limits()
+
+
+# --------------------------------------------------------------------------- variantes del Defensor en la ronda 1
+
+
+@pytest.mark.parametrize(("active", "limit", "expected"), [(3, 32, 3), (1, 32, 3), (8, 32, 3), (12, 32, 1), (36, 32, 1), (6, 32, 3), (10, 32, 2)])
+def test_defense_variants_use_only_spare_llm_capacity(active, limit, expected):
+    """Cada objeción pide 1 mutante + K tests a la vez: K se elige para que active × (1 + K) quepa en el tope."""
+    assert loop.defense_variants(active, limit) == expected
+
+
+class VariantComplete(ThreadSafeComplete):
+    """Defensor cuyo test lleva el número de variante; registra cada petición del Defensor."""
+
+    def __init__(self, n_objections: int) -> None:
+        super().__init__(n_objections)
+        self.defense_users: list[str] = []
+        self._lock = threading.Lock()
+
+    def __call__(self, system, user, schema, role, **kwargs):
+        if schema is not DefenseTest:
+            return super().__call__(system, user, schema, role, **kwargs)
+        with self._lock:
+            self.defense_users.append(user)
+        name = next(line.split("`")[1] for line in user.splitlines() if "class must be named" in line)
+        variant = next((line.split()[2] for line in user.splitlines() if line.startswith("Independent attempt")), "1")
+        return DefenseTest(test_name=name, test_code=f"public class {name} {{ /* v{variant} */ }}")
+
+
+class OutcomeRunner:
+    """Resultado según la variante que lleva el test: `pr[v]` y `mutant[v]`."""
+
+    parallel_safe = True
+
+    def __init__(self, pr: dict[str, object], mutant: dict[str, object]) -> None:
+        self.pr, self.mutant = pr, mutant
+
+    @staticmethod
+    def _variant(code: str) -> str:
+        return code.split("/* v")[1].split(" ")[0]
+
+    def run_tests(self, side, test_code, test_name):
+        return self.pr.get(self._variant(test_code), GREEN)
+
+    def run_against_mutant(self, side, mutant_patch, test_code, test_name):
+        return self.mutant.get(self._variant(test_code), GREEN)
+
+
+def test_round_one_asks_several_variants_and_keeps_the_valid_one():
+    complete = VariantComplete(1)
+    runner = OutcomeRunner(pr={}, mutant={"2": RED})  # solo la variante 2 detecta el mutante
+
+    (obj,) = loop.cross_examine("2283", "# issue", FD, runner, read_source=lambda p: SOURCE, complete=complete)
+
+    assert obj.valid and "/* v2 */" in obj.test_code
+    assert len(complete.defense_users) == 3  # 3 variantes y ninguna ronda más
+    assert len(set(complete.defense_users)) == 3  # prompts distintos: si no, la caché daría tres veces el mismo test
+
+
+def test_with_variants_there_is_only_one_feedback_round():
+    complete = VariantComplete(1)
+    runner = OutcomeRunner(pr={}, mutant={})  # ningún test detecta el mutante
+
+    (obj,) = loop.cross_examine("2283", "# issue", FD, runner, read_source=lambda p: SOURCE, complete=complete)
+
+    assert not obj.valid
+    assert len(complete.defense_users) == 4  # 3 variantes + 1 ronda con feedback (antes: 3 rondas en serie)
+    assert "PASSED against a mutant" in complete.defense_users[-1]
+
+
+def test_a_variant_red_on_the_pr_is_the_one_reported():
+    """Un test que falla en el PR es la señal de posible defecto: no se tapa con otra variante que no prueba nada."""
+    complete = VariantComplete(1)
+    runner = OutcomeRunner(pr={"3": RED}, mutant={})
+
+    (obj,) = loop.cross_examine("2283", "# issue", FD, runner, read_source=lambda p: SOURCE, complete=complete)
+
+    assert obj.pr_result is not None and obj.pr_result.red_for_real and not obj.valid
+
+
+def test_first_variant_prompt_is_unchanged_so_existing_caches_still_hit():
+    complete = VariantComplete(1)
+    loop.cross_examine("2283", "# issue", FD, OutcomeRunner(pr={}, mutant={"1": RED}), read_source=lambda p: SOURCE, complete=complete)
+    assert sum("Independent attempt" not in u for u in complete.defense_users) == 1
+
+
+def test_many_objections_fall_back_to_one_variant(monkeypatch):
+    monkeypatch.setenv("LEDGER_MAX_CONCURRENT_GEMINI", "4")
+    complete = VariantComplete(3)  # 3 objeciones con tope 4: no sobra capacidad para variantes
+
+    loop.cross_examine("2283", "# issue", FD, OutcomeRunner(pr={}, mutant={"1": RED}), read_source=lambda p: SOURCE, complete=complete)
+
+    assert len(complete.defense_users) == 3 and all("Independent attempt" not in u for u in complete.defense_users)
+
+
+def test_files_reserve_their_objections_before_the_prosecutor_answers(monkeypatch):
+    """12 ficheros a la vez: el primero en recibir objeciones no debe creer que hay capacidad libre para variantes."""
+    import ledger.crossexam.loop as loop_mod
+
+    seen: list[int] = []
+    real = loop_mod.defense_variants
+    monkeypatch.setattr(loop_mod, "defense_variants", lambda active, limit: seen.append(active) or real(active, limit))
+    barrier = threading.Barrier(4)
+
+    class BarrierComplete(ThreadSafeComplete):
+        def __call__(self, system, user, schema, role, **kwargs):
+            if schema is Objections:
+                barrier.wait(timeout=5)  # los 4 ficheros ya han arrancado antes de que el Fiscal conteste
+            return super().__call__(system, user, schema, role, **kwargs)
+
+    def one_file(_):
+        return loop.cross_examine("2283", "# issue", FD, TimedRunner(parallel_safe=True), read_source=lambda p: SOURCE, complete=BarrierComplete(1))
+
+    ordered_map(one_file, range(4), workers=4)
+
+    assert min(seen) >= 4  # cada fichero ve las reservas de los otros tres
+    assert loop_mod._track_objections(0) == 0  # nada se queda reservado al terminar

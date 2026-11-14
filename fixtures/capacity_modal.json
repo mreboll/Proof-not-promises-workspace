@@ -1,0 +1,67 @@
+{
+  "resource": "modal",
+  "job": "test del cambio de #2283 en el PR (cpu=4)",
+  "levels": [
+    {
+      "n": 1,
+      "wall_s": 18.7,
+      "ok": 1,
+      "failed": 0,
+      "p50_s": 18.4,
+      "max_s": 18.4,
+      "per_min": 3.2,
+      "sandbox_peak": 1
+    },
+    {
+      "n": 4,
+      "wall_s": 23.1,
+      "ok": 4,
+      "failed": 0,
+      "p50_s": 20.2,
+      "max_s": 22.8,
+      "per_min": 10.4,
+      "sandbox_peak": 4
+    },
+    {
+      "n": 8,
+      "wall_s": 20.0,
+      "ok": 8,
+      "failed": 0,
+      "p50_s": 17.5,
+      "max_s": 19.7,
+      "per_min": 24.0,
+      "sandbox_peak": 8
+    },
+    {
+      "n": 16,
+      "wall_s": 23.1,
+      "ok": 16,
+      "failed": 0,
+      "p50_s": 19.5,
+      "max_s": 22.5,
+      "per_min": 41.6,
+      "sandbox_peak": 16
+    },
+    {
+      "n": 32,
+      "wall_s": 32.1,
+      "ok": 32,
+      "failed": 0,
+      "p50_s": 16.9,
+      "max_s": 30.9,
+      "per_min": 59.7,
+      "sandbox_peak": 32
+    },
+    {
+      "n": 60,
+      "wall_s": 27.4,
+      "ok": 60,
+      "failed": 0,
+      "p50_s": 18.5,
+      "max_s": 27.0,
+      "per_min": 131.2,
+      "sandbox_peak": 60
+    }
+  ],
+  "knee": 60
+}

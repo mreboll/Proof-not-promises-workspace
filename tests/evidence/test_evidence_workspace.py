@@ -69,3 +69,25 @@ def test_disposable_worktree_is_removed_even_on_error(settings):
 def test_two_disposable_worktrees_do_not_collide(settings):
     with disposable_worktree(settings, "2283", "pr") as a, disposable_worktree(settings, "2283", "pr") as b:
         assert a != b
+
+
+def test_ensure_worktree_survives_concurrent_calls(settings):
+    """Con Modal, Etapa 1 y 2 van a la vez: dos `ensure_worktree` del mismo lado no pueden chocar en index.lock."""
+    import threading
+
+    ensure_worktree(settings, "2283", "base")
+    errors: list[BaseException] = []
+
+    def call() -> None:
+        try:
+            ensure_worktree(settings, "2283", "base")
+        except BaseException as exc:  # noqa: BLE001 - el test recoge cualquier fallo de los hilos
+            errors.append(exc)
+
+    threads = [threading.Thread(target=call) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert errors == []

@@ -53,6 +53,8 @@ def write_test(
     class_name: str,
     style_example: str,
     feedback: str = "",
+    variant: int = 0,
+    variants: int = 1,
     complete: Complete = llm.complete,
     settings: Settings | None = None,
 ) -> DefenseTest:
@@ -63,6 +65,12 @@ def write_test(
         f"<style_example>\n{style_example}\n</style_example>",
         f"The test class must be named `{class_name}`.",
     ]
+    if variant > 0:
+        # Variantes de la ronda 1 (loop.py): prompts distintos, o la caché devolvería el mismo test. La 0 no cambia.
+        parts.append(
+            f"Independent attempt {variant + 1} of {variants}: other attempts run in parallel, "
+            "so test the objection through a different scenario or assertion than the most obvious one."
+        )
     if feedback:
         parts.append(f"Feedback from your previous attempt:\n<feedback>\n{feedback}\n</feedback>")
     return complete(SYSTEM, "\n\n".join(parts), DefenseTest, "pro", settings=settings)

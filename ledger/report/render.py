@@ -15,6 +15,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pydantic import BaseModel
 
+from ledger.report.signoff import signoff
 from ledger.models import ChangeTestEvidence, ChangeType, FragmentVerdict, Report, Risk, Scope, TestRunResult, Verdict
 
 TEMPLATES = Path(__file__).parent / "templates"
@@ -153,6 +154,7 @@ def render_html(report: Report, *, models: dict[str, str], issue_title: str, not
         run_class=run_class,
         base_view=base_view(report.change_test),
         normalizations=_normalizations(report),
+        signoff=signoff(report, models),
     )
 
 

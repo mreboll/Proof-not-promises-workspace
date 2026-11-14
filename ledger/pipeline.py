@@ -8,10 +8,12 @@ los JSON de `fixtures/` para que el otro pueda avanzar.
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
 from ledger.config import PROJECT_ROOT, Settings, get_issue
+from ledger.crossexam.concurrency import parallel_enabled
 from ledger.models import (
     ChangeTestEvidence,
     FileTriage,
@@ -70,6 +72,20 @@ def _load_fixture(name: str) -> dict:
     return json.loads((FIXTURES_DIR / name).read_text(encoding="utf-8"))
 
 
+def _stages_1_and_2(
+    issue_id: str, settings: Settings, runner: TestRunner,
+) -> tuple[tuple[FileTriage, ...], ChangeTestEvidence, InvarianceEvidence]:
+    """Triaje, test del cambio e invarianza no dependen entre sí. Con un runner paralelo (Modal) van A LA VEZ;
+    en local, en secuencia: el test del cambio y la invarianza compilan en los mismos worktrees de .work/."""
+    if not parallel_enabled(runner):
+        return stage1_triage(issue_id, settings), stage2_change_test(issue_id, settings, runner), stage2_invariance(issue_id, settings)
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        triage = pool.submit(stage1_triage, issue_id, settings)
+        change_test = pool.submit(stage2_change_test, issue_id, settings, runner)
+        invariance = pool.submit(stage2_invariance, issue_id, settings)
+        return triage.result(), change_test.result(), invariance.result()
+
+
 def run(issue_id: str, settings: Settings, runner: TestRunner, *, use_fixtures: bool = False) -> Path:
     spec = get_issue(issue_id)
 
@@ -79,9 +95,7 @@ def run(issue_id: str, settings: Settings, runner: TestRunner, *, use_fixtures: 
         change_test = ChangeTestEvidence.model_validate(evidence["change_test"])
         invariance = InvarianceEvidence.model_validate(evidence["invariance"])
     else:
-        triage = stage1_triage(issue_id, settings)
-        change_test = stage2_change_test(issue_id, settings, runner)
-        invariance = stage2_invariance(issue_id, settings)
+        triage, change_test, invariance = _stages_1_and_2(issue_id, settings, runner)
 
     try:
         verdicts = stage3_and_verdicts(issue_id, triage, change_test, invariance, runner, settings)

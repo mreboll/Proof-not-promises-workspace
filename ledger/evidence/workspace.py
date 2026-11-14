@@ -6,6 +6,8 @@ se compilan y ejecutan en procesos separados (decision-log D3).
 
 from __future__ import annotations
 
+import threading
+
 import os
 import shutil
 import stat
@@ -24,6 +26,9 @@ def worktree_path(settings: Settings, issue_id: str, side: Side) -> Path:
     return settings.work_dir / issue_id / side
 
 
+_WORKTREE_LOCK = threading.Lock()
+
+
 def resolve_commit(settings: Settings, issue_id: str, side: Side) -> str:
     ref = settings.ref(issue_id, side)
     return git(settings.msgpack_repo, "rev-parse", "--verify", f"{ref}^{{commit}}").stdout.strip()
@@ -38,6 +43,13 @@ def ensure_worktree(settings: Settings, issue_id: str, side: Side) -> Path:
     """
     commit = resolve_commit(settings, issue_id, side)
     path = worktree_path(settings, issue_id, side)
+    # Un solo hilo a la vez prepara worktrees: dos `checkout --force` del mismo worktree chocan en index.lock
+    # (pasó en real con las Etapas 1 y 2 en paralelo, lessons-log H8). Solo cubre los comandos de git, no el build.
+    with _WORKTREE_LOCK:
+        return _prepare(settings, path, commit)
+
+
+def _prepare(settings: Settings, path: Path, commit: str) -> Path:
     if _is_worktree(path):
         git(path, "checkout", "-q", "--detach", "--force", commit)
         git(path, "reset", "-q", "--hard", commit)

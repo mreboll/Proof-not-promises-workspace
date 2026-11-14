@@ -1,0 +1,92 @@
+{
+  "resource": "llm-pro",
+  "model": "gemini-3.8-flash",
+  "job": "ping de una palabra (latencia de cola y 429, no de prompts largos)",
+  "levels": [
+    {
+      "n": 1,
+      "wall_s": 5.9,
+      "ok": 1,
+      "failed": 0,
+      "p50_s": 5.9,
+      "max_s": 5.9,
+      "per_min": 10.2,
+      "errors": {},
+      "timeouts": 0,
+      "requests": 1
+    },
+    {
+      "n": 4,
+      "wall_s": 5.7,
+      "ok": 4,
+      "failed": 0,
+      "p50_s": 5.2,
+      "max_s": 5.7,
+      "per_min": 41.9,
+      "errors": {},
+      "timeouts": 0,
+      "requests": 4
+    },
+    {
+      "n": 8,
+      "wall_s": 5.5,
+      "ok": 8,
+      "failed": 0,
+      "p50_s": 4.9,
+      "max_s": 5.4,
+      "per_min": 88.1,
+      "errors": {},
+      "timeouts": 0,
+      "requests": 8
+    },
+    {
+      "n": 16,
+      "wall_s": 5.9,
+      "ok": 16,
+      "failed": 0,
+      "p50_s": 5.4,
+      "max_s": 5.8,
+      "per_min": 161.6,
+      "errors": {},
+      "timeouts": 0,
+      "requests": 16
+    },
+    {
+      "n": 32,
+      "wall_s": 9.6,
+      "ok": 32,
+      "failed": 0,
+      "p50_s": 8.4,
+      "max_s": 9.2,
+      "per_min": 201.0,
+      "errors": {},
+      "timeouts": 0,
+      "requests": 32
+    },
+    {
+      "n": 48,
+      "wall_s": 11.8,
+      "ok": 48,
+      "failed": 0,
+      "p50_s": 10.6,
+      "max_s": 11.7,
+      "per_min": 243.4,
+      "errors": {},
+      "timeouts": 0,
+      "requests": 48
+    },
+    {
+      "n": 64,
+      "wall_s": 29.9,
+      "ok": 64,
+      "failed": 0,
+      "p50_s": 11.1,
+      "max_s": 29.2,
+      "per_min": 128.6,
+      "errors": {},
+      "timeouts": 0,
+      "requests": 64
+    }
+  ],
+  "knee": 48
+}

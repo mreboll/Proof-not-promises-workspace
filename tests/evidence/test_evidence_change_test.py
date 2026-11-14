@@ -140,3 +140,17 @@ def test_missing_issue_file_is_a_clear_error(settings, tmp_path):
     empty = replace(settings, issues_dir=tmp_path / "no-issues")
     with pytest.raises(FileNotFoundError, match="2283.md"):
         generate_change_test("2283", empty, FakeTestRunner(), template=TEMPLATE, complete=ScriptedLLM([T1]))
+
+
+def test_style_template_reads_git_and_never_touches_the_worktrees(monkeypatch):
+    """Lo lee con `git show` de la base: así no reinicia el worktree que la invarianza puede estar compilando."""
+    from ledger.config import load_settings
+    from ledger.evidence import change_test as ct_mod
+
+    def no_worktree(*args, **kwargs):
+        raise AssertionError("style_template no debe tocar .work/")
+
+    monkeypatch.setattr(ct_mod, "ensure_worktree", no_worktree, raising=False)
+    monkeypatch.setattr(ct_mod, "read_file_at", lambda s, i, side, path: "﻿line1\nline2\n" if side == "base" else "")
+
+    assert ct_mod.style_template(load_settings(), "2283").splitlines()[:2] == ["line1", "line2"]

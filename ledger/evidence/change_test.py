@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 
 from ledger import llm
 from ledger.config import Settings, get_issue
-from ledger.evidence.workspace import ensure_worktree
+from ledger.triage.diff import read_file_at
 from ledger.models import ChangeTestEvidence, TestRunner, TestRunResult
 
 TEMPLATE_FILE = "tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs"
@@ -116,8 +116,8 @@ def read_issue(settings: Settings, issue_id: str) -> str:
 
 def style_template(settings: Settings, issue_id: str) -> str:
     """Extracto de GenericsFormatterTests.cs de la BASE (no del PR, que ya trae los tests del fix)."""
-    source = ensure_worktree(settings, issue_id, "base") / TEMPLATE_FILE
-    lines = source.read_text(encoding="utf-8-sig").splitlines()
+    # `git show` y no el worktree: con Modal, la invarianza puede estar compilando en ese mismo worktree a la vez.
+    lines = read_file_at(settings, issue_id, "base", TEMPLATE_FILE).lstrip("﻿").splitlines()
     return "\n".join(lines[:TEMPLATE_MAX_LINES])
 
 

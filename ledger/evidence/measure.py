@@ -7,6 +7,7 @@ está caliente, el LLM tarda 0 y solo se mediría Modal). Guarda <out_dir>/<issu
 """
 
 import json
+import os
 import sys
 import time
 import warnings
@@ -15,7 +16,7 @@ from pathlib import Path
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-from ledger import pipeline  # noqa: E402
+from ledger import llm, pipeline  # noqa: E402
 from ledger.config import load_settings  # noqa: E402
 from ledger.evidence import modal_runner  # noqa: E402
 from ledger.evidence.modal_runner import ModalTestRunner  # noqa: E402
@@ -29,6 +30,7 @@ if mode == "seq":
 
 settings = replace(load_settings(), cache_dir=run_dir / "cache", out_dir=run_dir / "out")
 modal_runner.reset_sandbox_stats()
+llm.reset_llm_stats()
 started = time.monotonic()
 report_path = pipeline.run(issue, settings, ModalTestRunner(settings, issue))
 wall = time.monotonic() - started
@@ -40,6 +42,9 @@ summary = {
     "mode": mode,
     "wall_s": round(wall, 1),
     "sandboxes": modal_runner.sandbox_stats(),
+    "llm": llm.llm_stats(),
+    "config": {k: os.environ.get(k, "default") for k in (
+        "LEDGER_CROSSEXAM_WORKERS", "LEDGER_MODAL_MAX_SANDBOXES", "LEDGER_MAX_CONCURRENT_GEMINI", "LEDGER_MAX_CONCURRENT_NVIDIA")},
     "files_cross_examined": sum(1 for v in report["verdicts"] if v["objections"]),
     "objections": len(objections),
     "objections_valid": sum(1 for o in objections if o["valid"]),

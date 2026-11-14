@@ -1,0 +1,56 @@
+{
+  "issue": "2297",
+  "mode": "par",
+  "wall_s": 1024.5,
+  "sandboxes": {
+    "peak": 16,
+    "total": 126,
+    "limit": 60
+  },
+  "llm": {
+    "gemini": {
+      "requests": 131,
+      "ok": 130,
+      "errors": {},
+      "timeouts": 1,
+      "peak": 32,
+      "wait_s": 39.07,
+      "max_latency_s": 300.05,
+      "limit": 32
+    },
+    "nvidia": {
+      "requests": 12,
+      "ok": 12,
+      "errors": {},
+      "timeouts": 0,
+      "peak": 12,
+      "wait_s": 0.0,
+      "max_latency_s": 148.8,
+      "limit": 16
+    },
+    "cache_hits": 11
+  },
+  "config": {
+    "LEDGER_CROSSEXAM_WORKERS": "12",
+    "LEDGER_MODAL_MAX_SANDBOXES": "60",
+    "LEDGER_MAX_CONCURRENT_GEMINI": "32",
+    "LEDGER_MAX_CONCURRENT_NVIDIA": "16"
+  },
+  "files_cross_examined": 12,
+  "objections": 36,
+  "objections_valid": 12,
+  "verdicts": {
+    "README.md": "YELLOW",
+    "src/MessagePack.SourceGenerator/Transforms/CompositeResolverTemplate.cs": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/CompositeResolverTemplate.tt": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/EnumTemplate.tt": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/ResolverTemplate.tt": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/TransformUtilities.cs": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/UnionTemplate.cs": "RED",
+    "src/MessagePack.SourceGenerator/Transforms/UnionTemplate.tt": "RED"
+  }
+}
