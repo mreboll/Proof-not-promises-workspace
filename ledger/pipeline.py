@@ -33,12 +33,16 @@ def stage1_triage(issue_id: str, settings: Settings) -> tuple[FileTriage, ...]:
 
 def stage2_change_test(issue_id: str, settings: Settings, runner: TestRunner) -> ChangeTestEvidence:
     """Línea A: ledger/evidence/change_test.py."""
-    raise NotImplementedError("Etapa 2 / test del cambio pendiente (Línea A)")
+    from ledger.evidence.change_test import generate_change_test
+
+    return generate_change_test(issue_id, settings, runner)
 
 
 def stage2_invariance(issue_id: str, settings: Settings) -> InvarianceEvidence:
     """Línea A: ledger/evidence/invariance.py + harness/GeneratorProbe."""
-    raise NotImplementedError("Etapa 2 / invarianza pendiente (Línea A)")
+    from ledger.evidence.invariance import collect_invariance
+
+    return collect_invariance(settings, issue_id)
 
 
 def stage3_and_verdicts(

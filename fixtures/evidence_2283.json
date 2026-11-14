@@ -1,19 +1,211 @@
 {
-  "_comment": "Datos de EJEMPLO para que la Línea B avance sin .NET. La Línea A los sustituye por resultados reales.",
+  "_comment": "Salida REAL de la Línea A (pipeline.stage2_*, dotnet local, test escrito por nvidia/nemotron-3.5-super-vl-120b-a12b solo desde issues/2283.md).",
   "change_test": {
     "issue_id": "2283",
     "change_type": "bugfix",
-    "test_name": "Issue2283_NoDiagnosticForTypeFromReferencedAssembly",
-    "test_code": "// generado a partir de issues/2283.md (sin ver el diff)",
-    "base": {"build_ok": true, "passed": 0, "failed": 1, "output_tail": "Expected no diagnostics, got MsgPack004", "duration_s": 41.2},
-    "pr": {"build_ok": true, "passed": 1, "failed": 0, "output_tail": "Passed!", "duration_s": 39.8}
+    "test_name": "LedgerIssue2283",
+    "test_code": "using System;\nusing System.IO;\nusing System.Linq;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing Microsoft.CodeAnalysis;\nusing Microsoft.CodeAnalysis.CSharp;\nusing Microsoft.CodeAnalysis.Diagnostics;\nusing Microsoft.CodeAnalysis.Testing;\nusing MessagePack.SourceGenerator;\nusing MessagePack.SourceGenerator.Analyzers;\nusing Xunit;\n\npublic class LedgerIssue2283\n{\n    [Fact]\n    public async Task ClosedGenericValueTypeFromReferencedAssemblyDoesNotCrashGeneratorOrAnalyzer()\n    {\n        string libSource = \"\"\"\nusing MessagePack;\n\nnamespace Lib;\n\n[MessagePackObject]\npublic partial record struct Item<T>([property: Key(0)] string Key);\n\"\"\";\n\n        string appSource = \"\"\"\nusing MessagePack;\nusing Lib;\n\nnamespace App;\n\n[MessagePackObject]\npublic sealed partial record Cmd([property: Key(0)] string Scope)\n{\n    [Key(1)] public Item<int> Member { get; init; }\n}\n\"\"\";\n\n        var frameworkReferences = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);\n        var messagePackReferences = ReferencesHelper.GetReferences(ReferencesSet.MessagePack);\n        var libReferences = frameworkReferences.Concat(messagePackReferences).ToArray();\n\n        var libCompilation = CSharpCompilation.Create(\n            \"Lib\",\n            new[] { CSharpSyntaxTree.ParseText(libSource, new CSharpParseOptions(LanguageVersion.Latest)) },\n            libReferences,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        using var libStream = new MemoryStream();\n        var libEmitResult = libCompilation.Emit(libStream);\n        Assert.True(libEmitResult.Success, string.Join(Environment.NewLine, libEmitResult.Diagnostics.Select(d => d.ToString())));\n        libStream.Seek(0, SeekOrigin.Begin);\n        var libReference = MetadataReference.CreateFromImage(libStream.ToArray());\n\n        var appReferences = frameworkReferences.Concat(messagePackReferences).Concat(new[] { libReference }).ToArray();\n\n        var appCompilation = CSharpCompilation.Create(\n            \"App\",\n            new[] { CSharpSyntaxTree.ParseText(appSource, new CSharpParseOptions(LanguageVersion.Latest)) },\n            appReferences,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        var driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());\n        GeneratorDriverRunResult runResult = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out var outputCompilation, out var generatorDiagnostics).GetRunResult();\n\n        var generatorExceptions = runResult.Results.Where(r => r.Exception != null).ToArray();\n        Assert.Empty(generatorExceptions);\n\n        var generatorErrors = runResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();\n        Assert.Empty(generatorErrors);\n\n        var analyzerDiagnostics = await appCompilation\n            .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new MsgPack00xMessagePackAnalyzer()))\n            .GetAnalyzerDiagnosticsAsync();\n\n        var analyzerCrashes = analyzerDiagnostics.Where(d => d.Id == \"AD0001\").ToArray();\n        Assert.Empty(analyzerCrashes);\n\n        var generatedSources = runResult.Results.SelectMany(r => r.GeneratedSources).ToArray();\n        Assert.NotEmpty(generatedSources);\n    }\n}",
+    "base": {
+      "build_ok": true,
+      "passed": 0,
+      "failed": 1,
+      "output_tail": "0 passed, 1 failed (of 1)\nLedgerIssue2283.ClosedGenericValueTypeFromReferencedAssemblyDoesNotCrashGeneratorOrAnalyzer: Assert.Empty() Failure: Collection was not empty\nCollection: [Microsoft.CodeAnalysis.GeneratorRunResult]",
+      "duration_s": 11.401479399995878,
+      "green": false,
+      "red_for_real": true
+    },
+    "pr": {
+      "build_ok": true,
+      "passed": 1,
+      "failed": 0,
+      "output_tail": "1 passed, 0 failed (of 1)",
+      "duration_s": 12.163005500100553,
+      "green": true,
+      "red_for_real": false
+    },
+    "ok": true
   },
   "invariance": {
     "cases": [
-      {"id": "simple-int-keys", "tag": "general", "base_hash": "a1", "base_hash_rerun": "a1", "pr_hash": "a1"},
-      {"id": "string-keys", "tag": "general", "base_hash": "b2", "base_hash_rerun": "b2", "pr_hash": "b2"},
-      {"id": "union-nested", "tag": "general", "base_hash": "c3", "base_hash_rerun": "c3", "pr_hash": "c3"},
-      {"id": "generic-from-referenced-assembly", "tag": "issue-2283", "base_hash": "d4", "base_hash_rerun": "d4", "pr_hash": "e5"}
-    ]
+      {
+        "id": "general-collections",
+        "tag": "general",
+        "base_hash": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "base_hash_rerun": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "pr_hash": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "normalization": ""
+      },
+      {
+        "id": "general-constructor",
+        "tag": "general",
+        "base_hash": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "base_hash_rerun": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "pr_hash": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "normalization": ""
+      },
+      {
+        "id": "general-enum",
+        "tag": "general",
+        "base_hash": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "base_hash_rerun": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "pr_hash": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "normalization": ""
+      },
+      {
+        "id": "general-generic-class",
+        "tag": "general",
+        "base_hash": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "base_hash_rerun": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "pr_hash": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "normalization": ""
+      },
+      {
+        "id": "general-generic-from-same-compilation",
+        "tag": "general",
+        "base_hash": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "base_hash_rerun": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "pr_hash": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "normalization": ""
+      },
+      {
+        "id": "general-ignore-member",
+        "tag": "general",
+        "base_hash": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "base_hash_rerun": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "pr_hash": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "normalization": ""
+      },
+      {
+        "id": "general-inheritance",
+        "tag": "general",
+        "base_hash": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "base_hash_rerun": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "pr_hash": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "normalization": ""
+      },
+      {
+        "id": "general-init-only",
+        "tag": "general",
+        "base_hash": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "base_hash_rerun": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "pr_hash": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "normalization": ""
+      },
+      {
+        "id": "general-int-keys",
+        "tag": "general",
+        "base_hash": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "base_hash_rerun": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "pr_hash": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "normalization": ""
+      },
+      {
+        "id": "general-keyasname",
+        "tag": "general",
+        "base_hash": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "base_hash_rerun": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "pr_hash": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "normalization": ""
+      },
+      {
+        "id": "general-missing-key-in-source",
+        "tag": "general",
+        "base_hash": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "base_hash_rerun": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "pr_hash": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "normalization": ""
+      },
+      {
+        "id": "general-nested-types",
+        "tag": "general",
+        "base_hash": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "base_hash_rerun": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "pr_hash": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "normalization": ""
+      },
+      {
+        "id": "general-nullable",
+        "tag": "general",
+        "base_hash": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "base_hash_rerun": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "pr_hash": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "normalization": ""
+      },
+      {
+        "id": "general-private-members",
+        "tag": "general",
+        "base_hash": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "base_hash_rerun": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "pr_hash": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "normalization": ""
+      },
+      {
+        "id": "general-record",
+        "tag": "general",
+        "base_hash": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "base_hash_rerun": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "pr_hash": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "normalization": ""
+      },
+      {
+        "id": "general-resolver-attribute",
+        "tag": "general",
+        "base_hash": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "base_hash_rerun": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "pr_hash": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "normalization": ""
+      },
+      {
+        "id": "general-string-keys",
+        "tag": "general",
+        "base_hash": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "base_hash_rerun": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "pr_hash": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "normalization": ""
+      },
+      {
+        "id": "general-struct",
+        "tag": "general",
+        "base_hash": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "base_hash_rerun": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "pr_hash": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "normalization": ""
+      },
+      {
+        "id": "general-union",
+        "tag": "general",
+        "base_hash": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "base_hash_rerun": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "pr_hash": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-closed-generic-struct-from-metadata",
+        "tag": "issue-2283",
+        "base_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "base_hash_rerun": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "pr_hash": "2287d29fe7bd917554f482b5938c70d0c33170fcd947a0146cabbff53966cc9d",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-generic-record-struct-from-metadata",
+        "tag": "issue-2283",
+        "base_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "base_hash_rerun": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "pr_hash": "6c6d528d89bb9fc45e0072a73c99b8bcd4253292cd0afe7d2937e463304f836b",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-unkeyed-member-in-metadata-generic",
+        "tag": "issue-2283",
+        "base_hash": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
+        "base_hash_rerun": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
+        "pr_hash": "b6d36cbcf45ef1c156864095b430dc4ba3dbd7c29d2c7056fbd61b51f1bd0805",
+        "normalization": ""
+      }
+    ],
+    "deterministic": true,
+    "unexpected_diffs": [],
+    "ok": true
   }
 }

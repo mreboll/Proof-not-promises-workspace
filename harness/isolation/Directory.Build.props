@@ -1,0 +1,4 @@
+<Project>
+  <!-- Se copia a <worktree>/.ledger-probe/: corta la herencia del Directory.Build.props del repo
+       (StyleCop, bin/obj en la raíz del repo, documentación obligatoria). -->
+</Project>
