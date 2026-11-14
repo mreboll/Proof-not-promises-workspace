@@ -12,7 +12,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from ledger.models import ChangeTestEvidence, ChangeType, FragmentVerdict, Report, TestRunResult, Verdict
+from ledger.models import ChangeTestEvidence, ChangeType, FragmentVerdict, Report, Risk, Scope, TestRunResult, Verdict
 
 TEMPLATES = Path(__file__).parent / "templates"
 ROLES = {
@@ -83,8 +83,47 @@ def _normalizations(report: Report) -> list[tuple[str, int]]:
     return sorted(Counter(c.normalization for c in report.invariance.cases if c.normalization).items())
 
 
+def _plural(n: int, singular: str, plural: str | None = None) -> str:
+    return f"{n} {singular if n == 1 else (plural or singular + 's')}"
+
+
+def funnel(report: Report) -> list[dict[str, str]]:
+    """Una línea por etapa del embudo (T3 → T1 → T2) para la tira de la cabecera."""
+    triage = report.triage
+    out = sum(t.scope is Scope.OUT for t in triage)
+    high = sum(t.risk is Risk.HIGH for t in triage)
+    stage1 = {"id": "T3", "name": "Triaje", "status": "done",
+              "lines": [_plural(len(triage), "fichero"), f"{out} fuera de alcance", f"{high} de riesgo alto"]}
+
+    ct, inv = report.change_test, report.invariance
+    ev_lines = [
+        "sin test del cambio" if ct is None else ("test del cambio superado" if ct.ok else "test del cambio no superado"),
+        "sin invarianza" if inv is None else ("invarianza superada" if inv.ok else "invarianza no superada"),
+    ]
+    ev_ok = bool(ct and ct.ok and inv and inv.ok)
+    stage2 = {"id": "T1", "name": "Evidencia", "status": "pass" if ev_ok else "fail", "lines": ev_lines}
+
+    objections = [o for v in report.verdicts for o in v.objections]
+    valid = sum(o.valid for o in objections)
+    defects = sum((not o.valid) and o.pr_result is not None and o.pr_result.red_for_real for o in objections)
+    if objections:
+        x_lines = [_plural(len(objections), "objeción", "objeciones"), _plural(valid, "cerrada", "cerradas") + " con test válido"]
+        if defects:
+            x_lines.append(_plural(defects, "posible defecto", "posibles defectos") + " en el PR")
+        status = "pass" if valid == len(objections) else "fail"
+    else:
+        refused = sum(v.reasons[0].startswith("M7") for v in report.verdicts if v.reasons)
+        x_lines = ["sin objeciones" if not refused else "no ejecutado"]
+        status = "idle" if not refused else "fail"
+    stage3 = {"id": "T2", "name": "Interrogatorio", "status": status, "lines": x_lines}
+    return [stage1, stage2, stage3]
+
+
 def render_html(report: Report, *, models: dict[str, str], issue_title: str) -> str:
     verdict_by_path = {v.path: v for v in report.verdicts}
+    rows = [(t, verdict_by_path.get(t.path)) for t in report.triage]
+    green_rows = [(t, v) for t, v in rows if v is not None and v.verdict is Verdict.GREEN]
+    attention_rows = [(t, v) for t, v in rows if v is None or v.verdict is not Verdict.GREEN]
     counts = {k: sum(v.verdict is k for v in report.verdicts) for k in Verdict}
     total = len(report.verdicts)
     title, explanation, css = overall_decision(report.verdicts)
@@ -97,9 +136,12 @@ def render_html(report: Report, *, models: dict[str, str], issue_title: str) -> 
         counts=counts,
         total=total,
         must_read=[v for v in report.verdicts if v.verdict is not Verdict.GREEN],
-        rows=[(t, verdict_by_path.get(t.path)) for t in report.triage],
+        attention_rows=attention_rows,
+        green_rows=green_rows,
+        funnel=funnel(report),
         crossexam=[v for v in report.verdicts if v.objections],
         models=[(role, models.get(role, "?"), task) for role, task in ROLES.items()],
+        models_by_role={role: models.get(role, "?") for role in ROLES},
         same_family=models.get("pro") == models.get("fiscal"),
         Verdict=Verdict,
         VERDICT_LABEL=VERDICT_LABEL,

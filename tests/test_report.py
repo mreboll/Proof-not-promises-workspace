@@ -182,6 +182,29 @@ def test_defensor_test_failing_on_pr_is_shown_as_possible_defect_with_output_ope
     assert "<details open><summary>Salida del test en el PR</summary>" in card and RED.output_tail in card
 
 
+def test_funnel_strip_summarises_each_stage(html):
+    funnel = html.split('id="funnel"')[1].split("</section>")[0]
+    assert "T3" in funnel and "T1" in funnel and "T2" in funnel
+    assert "3 ficheros" in funnel and "1 fuera de alcance" in funnel and "1 de riesgo alto" in funnel
+    assert "test del cambio superado" in funnel and "invarianza superada" in funnel
+    assert "1 objeción" in funnel and "1 cerrada con test válido" in funnel
+
+
+def test_funnel_counts_possible_defects():
+    defect = OBJ.model_copy(update={"pr_result": RED, "mutant_result": None})
+    r = make_report()
+    verdicts = tuple(v.model_copy(update={"objections": (defect,)}) if v.objections else v for v in r.verdicts)
+    funnel = render_html(r.model_copy(update={"verdicts": verdicts}), models=MODELS, issue_title="#2283").split('id="funnel"')[1].split("</section>")[0]
+    assert "1 posible defecto en el PR" in funnel
+
+
+def test_green_files_are_folded_after_the_ones_that_need_attention(html):
+    table = html.split('id="files"')[1].split("</section>")[0]
+    attention, folded = table.split("<details")[0], table.split("<details")[1]
+    assert "README.md" in attention and "TypeCollector.cs" not in attention
+    assert "2 ficheros en verde" in folded and "TypeCollector.cs" in folded
+
+
 def test_report_without_verdicts_still_renders():
     html = render_html(make_report(verdicts=()), models=MODELS, issue_title="#2283")
     assert "Sin veredictos" in html and "README.md" in html
