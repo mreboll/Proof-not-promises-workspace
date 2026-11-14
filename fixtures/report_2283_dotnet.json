@@ -1,0 +1,420 @@
+{
+  "issue_id": "2283",
+  "change_type": "bugfix",
+  "branch": "ju26-issue-2283",
+  "base_commit": "origin/ju26-issue-2283~1",
+  "pr_commit": "origin/ju26-issue-2283",
+  "generated_at": "2026-11-14T01:56:16+00:00",
+  "triage": [
+    {
+      "path": "README.md",
+      "scope": "OUT",
+      "risk": "LOW",
+      "rule_hits": [
+        "R-LOW-02: documentación .md"
+      ],
+      "justification": "El cambio añade documentación en el archivo README.md sobre tipos genéricos de ensamblados referenciados, lo cual no es solicitado en el reporte del error.",
+      "touches_public_api": false
+    },
+    {
+      "path": "doc/analyzers/MsgPack004.md",
+      "scope": "OUT",
+      "risk": "LOW",
+      "rule_hits": [
+        "R-LOW-02: documentación .md"
+      ],
+      "justification": "El cambio modifica documentación en doc/analyzers/MsgPack004.md, lo cual no es solicitado en el reporte de error sobre la excepción IndexOutOfRangeException.",
+      "touches_public_api": false
+    },
+    {
+      "path": "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs",
+      "scope": "IN",
+      "risk": "HIGH",
+      "rule_hits": [
+        "R-MED-01: código de producción en src/ (lógica private/internal)",
+        "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      ],
+      "justification": "El cambio en TypeCollector.cs corrige la excepción IndexOutOfRangeException al acceder de forma segura a DeclaringSyntaxReferences para tipos procedentes de ensamblados referenciados.",
+      "touches_public_api": false
+    },
+    {
+      "path": "tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs",
+      "scope": "IN",
+      "risk": "LOW",
+      "rule_hits": [
+        "R-LOW-01: ruta tests/"
+      ],
+      "justification": "El cambio añade pruebas unitarias para verificar que la presencia de estructuras genéricas cerradas en ensamblados referenciados no provoque errores en el generador y analizador, satisfaciendo el reporte de la falla.",
+      "touches_public_api": false
+    }
+  ],
+  "change_test": {
+    "issue_id": "2283",
+    "change_type": "bugfix",
+    "test_name": "LedgerIssue2283",
+    "test_code": "using System;\nusing System.Collections.Generic;\nusing System.IO;\nusing System.Linq;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing MessagePack.SourceGenerator;\nusing MessagePack.SourceGenerator.Analyzers;\nusing Microsoft.CodeAnalysis;\nusing Microsoft.CodeAnalysis.CSharp;\nusing Microsoft.CodeAnalysis.Diagnostics;\nusing Microsoft.CodeAnalysis.Emit;\nusing Microsoft.CodeAnalysis.Testing;\n\npublic class LedgerIssue2283\n{\n    private const string LibSource = \"\"\"\n        using MessagePack;\n\n        namespace Lib;\n\n        [MessagePackObject]\n        public partial record struct Item<T>([property: Key(0)] string Key);\n        \"\"\";\n\n    private const string AppSource = \"\"\"\n        using MessagePack;\n        using Lib;\n\n        namespace App;\n\n        [MessagePackObject]\n        public sealed partial record Cmd([property: Key(0)] string Scope)\n        {\n            [Key(1)]\n            public Item<int> Member { get; init; }\n        }\n        \"\"\";\n\n    private static async Task<CSharpCompilation> CreateAppCompilationAsync()\n    {\n        ImmutableArray<MetadataReference> net80Refs = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);\n        IEnumerable<MetadataReference> baseReferences = net80Refs.Concat(ReferencesHelper.GetReferences(ReferencesSet.MessagePack));\n        CSharpParseOptions parseOptions = new CSharpParseOptions(LanguageVersion.Latest);\n\n        CSharpCompilation libCompilation = CSharpCompilation.Create(\n            \"Lib\",\n            new[] { CSharpSyntaxTree.ParseText(LibSource, parseOptions) },\n            baseReferences,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        GeneratorDriver libDriver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());\n        libDriver = libDriver.RunGeneratorsAndUpdateCompilation(libCompilation, out Compilation libOutputCompilation, out ImmutableArray<Diagnostic> libGenDiagnostics);\n        Assert.DoesNotContain(libGenDiagnostics, d => d.Id == \"CS8785\" || d.Severity == DiagnosticSeverity.Error);\n\n        using MemoryStream libStream = new MemoryStream();\n        EmitResult libEmitResult = libOutputCompilation.Emit(libStream);\n        Assert.True(libEmitResult.Success, string.Join(Environment.NewLine, libEmitResult.Diagnostics));\n\n        MetadataReference libReference = MetadataReference.CreateFromImage(libStream.ToArray());\n        IEnumerable<MetadataReference> appReferences = baseReferences.Append(libReference);\n\n        return CSharpCompilation.Create(\n            \"App\",\n            new[] { CSharpSyntaxTree.ParseText(AppSource, parseOptions) },\n            appReferences,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n    }\n\n    [Fact]\n    public async Task GeneratorSucceedsOnClosedGenericStructFromReferencedAssembly()\n    {\n        CSharpCompilation appCompilation = await CreateAppCompilationAsync();\n\n        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());\n        driver = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out Compilation outputCompilation, out ImmutableArray<Diagnostic> generatorDiagnostics);\n        GeneratorDriverRunResult runResult = driver.GetRunResult();\n\n        foreach (GeneratorRunResult result in runResult.Results)\n        {\n            Assert.Null(result.Exception);\n        }\n\n        Assert.DoesNotContain(generatorDiagnostics, d => d.Id == \"CS8785\" || d.Severity == DiagnosticSeverity.Error);\n        Assert.Contains(\n            runResult.Results.SelectMany(r => r.GeneratedSources),\n            s => s.SourceText.ToString().Contains(\"GeneratedMessagePackResolver\", StringComparison.Ordinal));\n\n        ImmutableArray<Diagnostic> compilationErrors = outputCompilation\n            .GetDiagnostics()\n            .Where(d => d.Severity == DiagnosticSeverity.Error)\n            .ToImmutableArray();\n        Assert.Empty(compilationErrors);\n    }\n\n    [Fact]\n    public async Task AnalyzerDoesNotCrashOnClosedGenericStructFromReferencedAssembly()\n    {\n        CSharpCompilation appCompilation = await CreateAppCompilationAsync();\n\n        ImmutableArray<Diagnostic> analyzerDiagnostics = await appCompilation\n            .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new MsgPack00xMessagePackAnalyzer()))\n            .GetAnalyzerDiagnosticsAsync();\n\n        Assert.DoesNotContain(analyzerDiagnostics, d => d.Id == \"AD0001\");\n        Assert.DoesNotContain(analyzerDiagnostics, d => d.Severity == DiagnosticSeverity.Error);\n    }\n}\n",
+    "base": {
+      "build_ok": true,
+      "passed": 0,
+      "failed": 2,
+      "output_tail": "0 passed, 2 failed (of 2)\nLedgerIssue2283.GeneratorSucceedsOnClosedGenericStructFromReferencedAssembly: Assert.Null() Failure: Value is not null\nExpected: null\nActual:   System.IndexOutOfRangeException: Index was outside the bounds of the array.\n   at System.Collections.Immutable.ImmutableArray`1.get_Item(Int32 index)\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\\MessagePack.SourceGenerator\\CodeAnalysis\\TypeCollector.cs:line 1075\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectGeneric(INamedTypeSymbol type, ISymbol callerSymbol) in src\\MessagePack.SourceGenerator\\CodeAnalysis\\TypeCollector.cs:line 651\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectCore(ITypeSymbol typeSymbol, ISymbol callerSymbol) in src\\MessagePack.SourceGenerator\\CodeAnalysis\\TypeCollector.cs:l\nLedgerIssue2283.AnalyzerDoesNotCrashOnClosedGenericStructFromReferencedAssembly: Assert.DoesNotContain() Failure: Filter matched in collection\n             ↓ (pos 0)\nCollection: [warning AD0001: Analyzer 'MessagePack.SourceGenerator.Analyzers.MsgPack00xMessagePackAnalyzer' threw an exception of type 'System.IndexOutOfRangeException' with message 'Index was outside the bounds of the array.'.\nException occurred with following context:\nCompilation: App\nISymbol: Cmd (NamedType)\n\nSystem.IndexOutOfRangeException: Index was outside the bounds of the array.\n   at System.Collections.Immutable.ImmutableArray`1.get_Item(Int32 index)\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\\MessagePack.SourceGenerator\\CodeAnalysis\\TypeCollector.cs:line 1075\n   at MessagePack.SourceGenerator.CodeAnalysis.",
+      "duration_s": 11.247016000095755,
+      "green": false,
+      "red_for_real": true
+    },
+    "pr": {
+      "build_ok": true,
+      "passed": 2,
+      "failed": 0,
+      "output_tail": "2 passed, 0 failed (of 2)",
+      "duration_s": 12.86559999990277,
+      "green": true,
+      "red_for_real": false
+    },
+    "ok": true
+  },
+  "invariance": {
+    "cases": [
+      {
+        "id": "general-collections",
+        "tag": "general",
+        "base_hash": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "base_hash_rerun": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "pr_hash": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "normalization": ""
+      },
+      {
+        "id": "general-constructor",
+        "tag": "general",
+        "base_hash": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "base_hash_rerun": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "pr_hash": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "normalization": ""
+      },
+      {
+        "id": "general-duplicate-int-keys-not-suppressed",
+        "tag": "general",
+        "base_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "base_hash_rerun": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "pr_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "normalization": ""
+      },
+      {
+        "id": "general-enum",
+        "tag": "general",
+        "base_hash": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "base_hash_rerun": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "pr_hash": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "normalization": ""
+      },
+      {
+        "id": "general-generic-class",
+        "tag": "general",
+        "base_hash": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "base_hash_rerun": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "pr_hash": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "normalization": ""
+      },
+      {
+        "id": "general-generic-from-same-compilation",
+        "tag": "general",
+        "base_hash": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "base_hash_rerun": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "pr_hash": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "normalization": ""
+      },
+      {
+        "id": "general-generic-with-constraints",
+        "tag": "general",
+        "base_hash": "416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b",
+        "base_hash_rerun": "416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b",
+        "pr_hash": "416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b",
+        "normalization": ""
+      },
+      {
+        "id": "general-ignore-member",
+        "tag": "general",
+        "base_hash": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "base_hash_rerun": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "pr_hash": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "normalization": ""
+      },
+      {
+        "id": "general-inheritance",
+        "tag": "general",
+        "base_hash": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "base_hash_rerun": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "pr_hash": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "normalization": ""
+      },
+      {
+        "id": "general-init-only",
+        "tag": "general",
+        "base_hash": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "base_hash_rerun": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "pr_hash": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "normalization": ""
+      },
+      {
+        "id": "general-int-keys",
+        "tag": "general",
+        "base_hash": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "base_hash_rerun": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "pr_hash": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "normalization": ""
+      },
+      {
+        "id": "general-keyasname",
+        "tag": "general",
+        "base_hash": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "base_hash_rerun": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "pr_hash": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "normalization": ""
+      },
+      {
+        "id": "general-missing-key-in-source",
+        "tag": "general",
+        "base_hash": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "base_hash_rerun": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "pr_hash": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "normalization": ""
+      },
+      {
+        "id": "general-nested-types",
+        "tag": "general",
+        "base_hash": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "base_hash_rerun": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "pr_hash": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "normalization": ""
+      },
+      {
+        "id": "general-nullable",
+        "tag": "general",
+        "base_hash": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "base_hash_rerun": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "pr_hash": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "normalization": ""
+      },
+      {
+        "id": "general-private-members",
+        "tag": "general",
+        "base_hash": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "base_hash_rerun": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "pr_hash": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "normalization": ""
+      },
+      {
+        "id": "general-record",
+        "tag": "general",
+        "base_hash": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "base_hash_rerun": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "pr_hash": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "normalization": ""
+      },
+      {
+        "id": "general-resolver-attribute",
+        "tag": "general",
+        "base_hash": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "base_hash_rerun": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "pr_hash": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "normalization": ""
+      },
+      {
+        "id": "general-string-keys",
+        "tag": "general",
+        "base_hash": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "base_hash_rerun": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "pr_hash": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "normalization": ""
+      },
+      {
+        "id": "general-struct",
+        "tag": "general",
+        "base_hash": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "base_hash_rerun": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "pr_hash": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "normalization": ""
+      },
+      {
+        "id": "general-union",
+        "tag": "general",
+        "base_hash": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "base_hash_rerun": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "pr_hash": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-duplicate-int-keys",
+        "tag": "issue-2234",
+        "base_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "base_hash_rerun": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "pr_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-duplicate-string-keys",
+        "tag": "issue-2234",
+        "base_hash": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
+        "base_hash_rerun": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
+        "pr_hash": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-missing-key",
+        "tag": "issue-2234",
+        "base_hash": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "base_hash_rerun": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "pr_hash": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-mixed-keys",
+        "tag": "issue-2234",
+        "base_hash": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
+        "base_hash_rerun": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
+        "pr_hash": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-closed-generic-struct-from-metadata",
+        "tag": "issue-2283",
+        "base_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "base_hash_rerun": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "pr_hash": "2287d29fe7bd917554f482b5938c70d0c33170fcd947a0146cabbff53966cc9d",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-generic-record-struct-from-metadata",
+        "tag": "issue-2283",
+        "base_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "base_hash_rerun": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "pr_hash": "6c6d528d89bb9fc45e0072a73c99b8bcd4253292cd0afe7d2937e463304f836b",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-unkeyed-member-in-metadata-generic",
+        "tag": "issue-2283",
+        "base_hash": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
+        "base_hash_rerun": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
+        "pr_hash": "b6d36cbcf45ef1c156864095b430dc4ba3dbd7c29d2c7056fbd61b51f1bd0805",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2297-generated-code-excluded-from-coverage",
+        "tag": "issue-2297",
+        "base_hash": "636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717",
+        "base_hash_rerun": "636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717",
+        "pr_hash": "636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717",
+        "normalization": ""
+      }
+    ],
+    "deterministic": true,
+    "unexpected_diffs": [],
+    "ok": true
+  },
+  "verdicts": [
+    {
+      "path": "README.md",
+      "verdict": "YELLOW",
+      "reasons": [
+        "M2: fuera del alcance, riesgo LOW: revisar la justificación",
+        "justificación: El cambio añade documentación en el archivo README.md sobre tipos genéricos de ensamblados referenciados, lo cual no es solicitado en el reporte del error."
+      ],
+      "objections": []
+    },
+    {
+      "path": "doc/analyzers/MsgPack004.md",
+      "verdict": "YELLOW",
+      "reasons": [
+        "M2: fuera del alcance, riesgo LOW: revisar la justificación",
+        "justificación: El cambio modifica documentación en doc/analyzers/MsgPack004.md, lo cual no es solicitado en el reporte de error sobre la excepción IndexOutOfRangeException."
+      ],
+      "objections": []
+    },
+    {
+      "path": "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs",
+      "verdict": "RED",
+      "reasons": [
+        "M7: 2 objeción(es) sin resolver: el sistema se niega a decidir",
+        "objeción sin test válido: «¿Lanza Diagnostic.Create una excepción (o produce una ubicación no válida) cuando GetPropertyIdentifierLocation devuelve null para una propiedad declarada en metadatos sin [Key] dentro de un tipo [MessagePackObject] del ensamblado en compilación?»",
+        "objeción sin test válido: «¿Se produce IndexOutOfRangeException cuando un tipo [MessagePackObject] del ensamblado en compilación tiene un miembro de tipo genérico cerrado de referencia desde un ensamblado referenciado (por ejemplo List<Item<int>> o List<int>), en lugar de un tipo de valor genérico cerrado como Item<int>?»",
+        "test del cambio `LedgerIssue2283`: base rojo (2 fallan), PR verde (2 ok)",
+        "invarianza: determinista, 21 casos generales idénticos"
+      ],
+      "objections": [
+        {
+          "question": "¿Sigue lanzando IndexOutOfRangeException GetObjectInfo cuando un tipo de valor genérico cerrado definido en un ensamblado referenciado activa una de las ramas de diagnóstico que aún indexan DeclaringSyntaxReferences[0] directamente (líneas 735, 1009 y 1101 del issue), por ejemplo un miembro sin [Key] o ambas claves nulas en ese tipo de metadatos?",
+          "rationale": "El diff solo reemplaza el acceso directo en dos sitios de diagnóstico y envuelve reportDiagnostic en ReportIfLocatedInCompilation, pero no elimina los accesos directos sin guardia dentro de GetObjectInfo señalados en el issue. La excepción ocurre al construir el diagnóstico, antes de que el filtro de ubicación pueda actuar. La prueba de cambio LedgerIssue2283 no cubre esas ramas alternativas de GetObjectInfo.",
+          "test_name": "Ledger_2283_Objection1",
+          "test_code": "using System;\nusing System.IO;\nusing System.Linq;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing MessagePack.SourceGenerator;\nusing MessagePack.SourceGenerator.Analyzers;\nusing Microsoft.CodeAnalysis;\nusing Microsoft.CodeAnalysis.CSharp;\nusing Microsoft.CodeAnalysis.Diagnostics;\nusing Microsoft.CodeAnalysis.Testing;\n\npublic class Ledger_2283_Objection1\n{\n    [Fact]\n    public async Task ClosedGenericStructFromReferencedAssembly_MemberWithoutKey_DoesNotThrow()\n    {\n        string libSource = \"\"\"\n            using MessagePack;\n\n            namespace Lib\n            {\n                [MessagePackObject]\n                public partial struct ItemWithoutKey<T>\n                {\n                    public T Value { get; set; }\n                }\n\n                [MessagePackObject]\n                public partial record struct RecordItemWithoutKey<T>\n                {\n                    public T Value { get; set; }\n                }\n            }\n            \"\"\";\n\n        string appSource = \"\"\"\n            using MessagePack;\n            using Lib;\n\n            namespace App\n            {\n                [MessagePackObject]\n                public sealed partial record Cmd([property: Key(0)] string Scope)\n                {\n                    [Key(1)]\n                    public ItemWithoutKey<int> StructMember { get; init; }\n\n                    [Key(2)]\n                    public RecordItemWithoutKey<string> RecordStructMember { get; init; }\n                }\n            }\n            \"\"\";\n\n        await AssertGeneratorAndAnalyzerSucceedAsync(libSource, appSource);\n    }\n\n    [Fact]\n    public async Task ClosedGenericStructFromReferencedAssembly_BothStringAndIntKeyNull_DoesNotThrow()\n    {\n        string libSource = \"\"\"\n            using MessagePack;\n\n            namespace Lib\n            {\n                [MessagePackObject]\n                public partial struct ItemWithNullKey<T>\n                {\n                    [Key((string)null)]\n                    public T Value { get; set; }\n                }\n\n                [MessagePackObject]\n                public partial record struct RecordItemWithNullKey<T>\n                {\n                    [Key((string)null)]\n                    public T Value { get; set; }\n                }\n            }\n            \"\"\";\n\n        string appSource = \"\"\"\n            using MessagePack;\n            using Lib;\n\n            namespace App\n            {\n                [MessagePackObject]\n                public sealed partial record Cmd([property: Key(0)] string Scope)\n                {\n                    [Key(1)]\n                    public ItemWithNullKey<int> StructMember { get; init; }\n\n                    [Key(2)]\n                    public RecordItemWithNullKey<string> RecordStructMember { get; init; }\n                }\n            }\n            \"\"\";\n\n        await AssertGeneratorAndAnalyzerSucceedAsync(libSource, appSource);\n    }\n\n    private static async Task AssertGeneratorAndAnalyzerSucceedAsync(string libSource, string appSource)\n    {\n        ImmutableArray<MetadataReference> netReferences = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);\n        ImmutableArray<MetadataReference> baseReferences = netReferences.AddRange(ReferencesHelper.GetReferences(ReferencesSet.MessagePack));\n\n        var parseOptions = new CSharpParseOptions(LanguageVersion.Latest);\n\n        CSharpCompilation libCompilation = CSharpCompilation.Create(\n            \"Lib\",\n            new[] { CSharpSyntaxTree.ParseText(libSource, parseOptions) },\n            baseReferences,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        using var libStream = new MemoryStream();\n        var emitResult = libCompilation.Emit(libStream);\n        Assert.True(emitResult.Success, string.Join(Environment.NewLine, emitResult.Diagnostics));\n\n        MetadataReference libReference = MetadataReference.CreateFromImage(libStream.ToArray());\n\n        CSharpCompilation appCompilation = CSharpCompilation.Create(\n            \"App\",\n            new[] { CSharpSyntaxTree.ParseText(appSource, parseOptions) },\n            baseReferences.Add(libReference),\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());\n        driver = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out Compilation outputCompilation, out ImmutableArray<Diagnostic> generatorDiagnostics);\n        GeneratorDriverRunResult runResult = driver.GetRunResult();\n\n        Assert.DoesNotContain(generatorDiagnostics, d => d.Id == \"CS8785\");\n        Assert.DoesNotContain(runResult.Diagnostics, d => d.Id == \"CS8785\");\n        Assert.All(runResult.Results, r => Assert.Null(r.Exception));\n\n        var generatedSources = runResult.Results.SelectMany(r => r.GeneratedSources).ToList();\n        Assert.NotEmpty(generatedSources);\n        Assert.Contains(generatedSources, s => s.SourceText.ToString().Contains(\"GeneratedMessagePackResolver\", StringComparison.Ordinal));\n        Assert.DoesNotContain(outputCompilation.GetDiagnostics(), d => d.Severity == DiagnosticSeverity.Error);\n\n        ImmutableArray<Diagnostic> analyzerDiagnostics = await appCompilation\n            .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new MsgPack00xMessagePackAnalyzer()))\n            .GetAnalyzerDiagnosticsAsync();\n\n        Assert.DoesNotContain(analyzerDiagnostics, d => d.Id == \"AD0001\");\n        Assert.All(analyzerDiagnostics, d => Assert.True(d.Location.IsInSource, $\"Unexpected non-source diagnostic: {d}\"));\n    }\n}\n",
+          "pr_result": {
+            "build_ok": true,
+            "passed": 2,
+            "failed": 0,
+            "output_tail": "2 passed, 0 failed (of 2)",
+            "duration_s": 14.432906799949706,
+            "green": true,
+            "red_for_real": false
+          },
+          "mutant_patch": "--- a/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs\n+++ b/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs\n@@ -1431,7 +1431,7 @@\n     /// </summary>\n     /// <param name=\"property\">The property symbol. It may be declared in metadata, in which case <see langword=\"null\" /> is returned.</param>\n     /// <returns>The location of the identifier, or <see langword=\"null\" /> if the property has no declaration in source.</returns>\n-    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) => (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();\n+    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) => (property.DeclaringSyntaxReferences[0].GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();\n \n     /// <summary>\n     /// Reports a diagnostic only when its location belongs to the compilation being analyzed.\n",
+          "mutant_result": {
+            "build_ok": true,
+            "passed": 1,
+            "failed": 1,
+            "output_tail": "1 passed, 1 failed (of 2)\nLedger_2283_Objection1.ClosedGenericStructFromReferencedAssembly_BothStringAndIntKeyNull_DoesNotThrow: Assert.DoesNotContain() Failure: Filter matched in collection\n             ↓ (pos 0)\nCollection: [warning AD0001: Analyzer 'MessagePack.SourceGenerator.Analyzers.MsgPack00xMessagePackAnalyzer' threw an exception of type 'System.IndexOutOfRangeException' with message 'Index was outside the bounds of the array.'.\nException occurred with following context:\nCompilation: App\nISymbol: Cmd (NamedType)\n\nSystem.IndexOutOfRangeException: Index was outside the bounds of the array.\n   at System.Collections.Immutable.ImmutableArray`1.get_Item(Int32 index)\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetPropertyIdentifierLocation(IPropertySymbol property) in src\\MessagePack.SourceGenerator\\CodeAnalysis\\TypeCollector.cs:line 1434\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollecto",
+            "duration_s": 24.21386680006981,
+            "green": false,
+            "red_for_real": true
+          },
+          "valid": true
+        },
+        {
+          "question": "¿Lanza Diagnostic.Create una excepción (o produce una ubicación no válida) cuando GetPropertyIdentifierLocation devuelve null para una propiedad declarada en metadatos sin [Key] dentro de un tipo [MessagePackObject] del ensamblado en compilación?",
+          "rationale": "GetPropertyIdentifierLocation devuelve null para símbolos de metadatos. Ese null se pasa a Diagnostic.Create antes de invocar ReportIfLocatedInCompilation; si Diagnostic.Create no acepta null, el analizador falla con ArgumentNullException en lugar de descartar el diagnóstico. La prueba de cambio no cubre miembros de metadatos que carecen de clave.",
+          "test_name": "Ledger_2283_Objection2",
+          "test_code": "using System;\nusing System.IO;\nusing System.Linq;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing MessagePack.SourceGenerator;\nusing MessagePack.SourceGenerator.Analyzers;\nusing Microsoft.CodeAnalysis;\nusing Microsoft.CodeAnalysis.CSharp;\nusing Microsoft.CodeAnalysis.Diagnostics;\nusing Microsoft.CodeAnalysis.Emit;\nusing Microsoft.CodeAnalysis.Testing;\n\npublic class Ledger_2283_Objection2\n{\n    [Fact]\n    public async Task MetadataPropertyWithoutKey_DoesNotThrowOrReportInvalidLocation()\n    {\n        string libSource = \"\"\"\n            #nullable enable\n            using MessagePack;\n\n            namespace Lib;\n\n            [MessagePackObject]\n            public partial struct ItemNoKey<T>\n            {\n                public T Value { get; set; }\n            }\n\n            public class BaseWithMetadataProperty\n            {\n                public string InheritedNoKey { get; set; } = string.Empty;\n            }\n            \"\"\";\n\n        string appSource = \"\"\"\n            #nullable enable\n            using MessagePack;\n            using Lib;\n\n            namespace App;\n\n            [MessagePackObject]\n            public sealed partial class Holder\n            {\n                [Key(0)]\n                public ItemNoKey<int> Member { get; set; }\n            }\n\n            [MessagePackObject]\n            public sealed partial class DerivedHolder : BaseWithMetadataProperty\n            {\n                [Key(0)]\n                public int OwnKey { get; set; }\n            }\n            \"\"\";\n\n        (ImmutableArray<MetadataReference> baseReferences, MetadataReference libReference) = await CompileLibraryAsync(libSource);\n\n        CSharpCompilation appCompilation = CSharpCompilation.Create(\n            \"App\",\n            new[] { CSharpSyntaxTree.ParseText(appSource, new CSharpParseOptions(LanguageVersion.Latest)) },\n            baseReferences.Add(libReference),\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());\n        driver = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out _, out ImmutableArray<Diagnostic> generatorDiagnostics);\n        GeneratorDriverRunResult runResult = driver.GetRunResult();\n\n        Assert.Empty(generatorDiagnostics);\n        Assert.Empty(runResult.Diagnostics);\n        Assert.All(runResult.Results, r => Assert.Null(r.Exception));\n        Assert.NotEmpty(runResult.Results.SelectMany(r => r.GeneratedSources));\n\n        ImmutableArray<Diagnostic> analyzerDiagnostics = await appCompilation\n            .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new MsgPack00xMessagePackAnalyzer()))\n            .GetAnalyzerDiagnosticsAsync();\n\n        Assert.DoesNotContain(analyzerDiagnostics, d => d.Id == \"AD0001\");\n        Assert.All(analyzerDiagnostics, d =>\n        {\n            Assert.True(d.Location.IsInSource);\n            Assert.NotNull(d.Location.SourceTree);\n            Assert.True(appCompilation.ContainsSyntaxTree(d.Location.SourceTree!));\n        });\n        Assert.Empty(analyzerDiagnostics);\n    }\n\n    [Fact]\n    public async Task MetadataPropertyWithNullKey_GetPropertyIdentifierLocationNull_DoesNotThrowOrReportInvalidLocation()\n    {\n        string libSource = \"\"\"\n            #nullable enable\n            using MessagePack;\n\n            namespace Lib;\n\n            [MessagePackObject]\n            public partial struct ItemNullKey<T>\n            {\n                [Key((string)null!)]\n                public T Value { get; set; }\n            }\n\n            public class BaseWithNullKeyProperty\n            {\n                [Key((string)null!)]\n                public string InheritedNullKey { get; set; } = string.Empty;\n            }\n            \"\"\";\n\n        string appSource = \"\"\"\n            #nullable enable\n            using MessagePack;\n            using Lib;\n\n            namespace App;\n\n            [MessagePackObject]\n            public sealed partial class Holder\n            {\n                [Key(0)]\n                public ItemNullKey<string> Member { get; set; }\n            }\n\n            [MessagePackObject]\n            public sealed partial class DerivedHolder : BaseWithNullKeyProperty\n            {\n                [Key(0)]\n                public int OwnKey { get; set; }\n            }\n            \"\"\";\n\n        (ImmutableArray<MetadataReference> baseReferences, MetadataReference libReference) = await CompileLibraryAsync(libSource);\n\n        CSharpCompilation appCompilation = CSharpCompilation.Create(\n            \"App\",\n            new[] { CSharpSyntaxTree.ParseText(appSource, new CSharpParseOptions(LanguageVersion.Latest)) },\n            baseReferences.Add(libReference),\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        ImmutableArray<Diagnostic> analyzerDiagnostics = await appCompilation\n            .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new MsgPack00xMessagePackAnalyzer()))\n            .GetAnalyzerDiagnosticsAsync();\n\n        Assert.DoesNotContain(analyzerDiagnostics, d => d.Id == \"AD0001\");\n        Assert.All(analyzerDiagnostics, d =>\n        {\n            Assert.True(d.Location.IsInSource);\n            Assert.NotNull(d.Location.SourceTree);\n            Assert.True(appCompilation.ContainsSyntaxTree(d.Location.SourceTree!));\n        });\n        Assert.Empty(analyzerDiagnostics);\n    }\n\n    private static async Task<(ImmutableArray<MetadataReference> References, MetadataReference LibReference)> CompileLibraryAsync(string libSource)\n    {\n        ImmutableArray<MetadataReference> net80Refs = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);\n        ImmutableArray<MetadataReference> baseReferences = net80Refs.AddRange(ReferencesHelper.GetReferences(ReferencesSet.MessagePack));\n\n        CSharpCompilation libCompilation = CSharpCompilation.Create(\n            \"Lib\",\n            new[] { CSharpSyntaxTree.ParseText(libSource, new CSharpParseOptions(LanguageVersion.Latest)) },\n            baseReferences,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        using var ms = new MemoryStream();\n        EmitResult emitResult = libCompilation.Emit(ms);\n        Assert.True(emitResult.Success, string.Join(Environment.NewLine, emitResult.Diagnostics));\n\n        return (baseReferences, MetadataReference.CreateFromImage(ms.ToArray()));\n    }\n}\n",
+          "pr_result": {
+            "build_ok": true,
+            "passed": 0,
+            "failed": 2,
+            "output_tail": "0 passed, 2 failed (of 2)\nLedger_2283_Objection2.MetadataPropertyWithoutKey_DoesNotThrowOrReportInvalidLocation: Assert.Empty() Failure: Collection was not empty\nCollection: [(15,45): error MsgPack004: Properties and fields of base types of MessagePackObject-attributed types require either KeyAttribute or IgnoreMemberAttribute: global::Lib.BaseWithMetadataProperty.InheritedNoKey]\nLedger_2283_Objection2.MetadataPropertyWithNullKey_GetPropertyIdentifierLocationNull_DoesNotThrowOrReportInvalidLocation: Assert.DoesNotContain() Failure: Filter matched in collection\n             ↓ (pos 0)\nCollection: [warning AD0001: Analyzer 'MessagePack.SourceGenerator.Analyzers.MsgPack00xMessagePackAnalyzer' threw an exception of type 'System.InvalidOperationException' with message 'Nullable object must have a value.'.\nException occurred with following context:\nCompilation: App\nISymbol: DerivedHolder (NamedType)\n\nSystem.InvalidOperationException: Nullable object must have a value.\n   at System.Nullable`1.get_Value()\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\\MessagePack.SourceGenerator\\CodeAnalysis\\TypeCollector.cs:line 1013\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectObject(INamedTypeSymb",
+            "duration_s": 9.882597000105307,
+            "green": false,
+            "red_for_real": true
+          },
+          "mutant_patch": "--- a/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs\n+++ b/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs\n@@ -1443,10 +1443,7 @@\n     /// </remarks>\n     private void ReportIfLocatedInCompilation(Action<Diagnostic> report, Diagnostic diagnostic)\n     {\n-        if (diagnostic.Location.IsInSource && this.compilation.ContainsSyntaxTree(diagnostic.Location.SourceTree))\n-        {\n-            report(diagnostic);\n-        }\n+        report(diagnostic);\n     }\n \n     private static Location? GetLocation(IParameterSymbol parameter) => parameter.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().GetLocation();\n",
+          "mutant_result": null,
+          "valid": false
+        },
+        {
+          "question": "¿Se produce IndexOutOfRangeException cuando un tipo [MessagePackObject] del ensamblado en compilación tiene un miembro de tipo genérico cerrado de referencia desde un ensamblado referenciado (por ejemplo List<Item<int>> o List<int>), en lugar de un tipo de valor genérico cerrado como Item<int>?",
+          "rationale": "CollectGeneric invoca GetObjectInfo para cualquier tipo genérico cerrado sobre un símbolo de metadatos, no solo para tipos de valor. El repro solo cubre Item<int> (tipo de valor) como miembro directo; no cubre tipos de referencia genéricos cerrados ni tipos genéricos cerrados usados como argumentos de otros tipos genéricos, que también carecen de sintaxis en la compilación actual.",
+          "test_name": "Ledger_2283_Objection3",
+          "test_code": "using System;\nusing System.IO;\nusing System.Linq;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing MessagePack.SourceGenerator;\nusing MessagePack.SourceGenerator.Analyzers;\nusing Microsoft.CodeAnalysis;\nusing Microsoft.CodeAnalysis.CSharp;\nusing Microsoft.CodeAnalysis.Diagnostics;\nusing Microsoft.CodeAnalysis.Emit;\nusing Microsoft.CodeAnalysis.Testing;\n\npublic class Ledger_2283_Objection3\n{\n    private const string LibSource = \"\"\"\nusing MessagePack;\n\nnamespace Lib;\n\n[MessagePackObject]\npublic partial struct Item<T>\n{\n    [Key(0)]\n    public T Value { get; set; }\n\n    [Key((string)null)]\n    public string InvalidKey { get; set; }\n}\n\n[MessagePackObject]\npublic partial class RefItem<T>\n{\n    [Key(0)]\n    public T Value { get; set; }\n\n    [Key((string)null)]\n    public string InvalidKey { get; set; }\n}\n\"\"\";\n\n    [Fact]\n    public async Task ClosedGenericCollectionWrappingMetadataGenericStructAndPrimitive_DoesNotCrashGeneratorOrAnalyzer()\n    {\n        string appSource = \"\"\"\nusing System.Collections.Generic;\nusing MessagePack;\nusing Lib;\n\nnamespace App;\n\n[MessagePackObject]\npublic sealed partial record Cmd([property: Key(0)] string Scope)\n{\n    [Key(1)]\n    public List<Item<int>> StructList { get; init; } = new();\n\n    [Key(2)]\n    public List<int> IntList { get; init; } = new();\n}\n\"\"\";\n\n        await VerifyAppCompilationAsync(appSource);\n    }\n\n    [Fact]\n    public async Task ClosedGenericReferenceTypeFromReferencedAssembly_DoesNotCrashGeneratorOrAnalyzer()\n    {\n        string appSource = \"\"\"\nusing System.Collections.Generic;\nusing MessagePack;\nusing Lib;\n\nnamespace App;\n\n[MessagePackObject]\npublic sealed partial record Cmd([property: Key(0)] string Scope)\n{\n    [Key(1)]\n    public RefItem<int> RefMember { get; init; } = new();\n\n    [Key(2)]\n    public List<RefItem<int>> RefList { get; init; } = new();\n}\n\"\"\";\n\n        await VerifyAppCompilationAsync(appSource);\n    }\n\n    private static async Task VerifyAppCompilationAsync(string appSource)\n    {\n        ImmutableArray<MetadataReference> frameworkRefs = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);\n        MetadataReference[] baseRefs = frameworkRefs.Concat(ReferencesHelper.GetReferences(ReferencesSet.MessagePack)).ToArray();\n\n        CSharpCompilation libCompilation = CSharpCompilation.Create(\n            \"Lib\",\n            new[] { CSharpSyntaxTree.ParseText(LibSource, new CSharpParseOptions(LanguageVersion.Latest)) },\n            baseRefs,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        using MemoryStream libStream = new();\n        EmitResult emitResult = libCompilation.Emit(libStream);\n        Assert.True(emitResult.Success, string.Join(Environment.NewLine, emitResult.Diagnostics));\n\n        MetadataReference libRef = MetadataReference.CreateFromImage(libStream.ToArray());\n        MetadataReference[] appRefs = baseRefs.Append(libRef).ToArray();\n\n        CSharpCompilation appCompilation = CSharpCompilation.Create(\n            \"App\",\n            new[] { CSharpSyntaxTree.ParseText(appSource, new CSharpParseOptions(LanguageVersion.Latest)) },\n            appRefs,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());\n        driver = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out Compilation outputCompilation, out ImmutableArray<Diagnostic> generatorDiagnostics);\n        GeneratorDriverRunResult runResult = driver.GetRunResult();\n\n        Assert.DoesNotContain(generatorDiagnostics, d => d.Id == \"CS8785\" || d.Severity >= DiagnosticSeverity.Warning);\n        Assert.DoesNotContain(runResult.Diagnostics, d => d.Id == \"CS8785\" || d.Severity >= DiagnosticSeverity.Warning);\n        Assert.All(runResult.Results, r => Assert.Null(r.Exception));\n        Assert.Contains(\n            runResult.Results.SelectMany(r => r.GeneratedSources),\n            s => s.HintName.Contains(\"GeneratedMessagePackResolver\", StringComparison.Ordinal));\n        Assert.DoesNotContain(outputCompilation.GetDiagnostics(), d => d.Severity == DiagnosticSeverity.Error);\n\n        ImmutableArray<Diagnostic> analyzerDiagnostics = await appCompilation\n            .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new MsgPack00xMessagePackAnalyzer()))\n            .GetAnalyzerDiagnosticsAsync();\n\n        Assert.DoesNotContain(analyzerDiagnostics, d => d.Id == \"AD0001\");\n        Assert.Empty(analyzerDiagnostics);\n    }\n}\n",
+          "pr_result": {
+            "build_ok": true,
+            "passed": 0,
+            "failed": 2,
+            "output_tail": "0 passed, 2 failed (of 2)\nLedger_2283_Objection3.ClosedGenericCollectionWrappingMetadataGenericStructAndPrimitive_DoesNotCrashGeneratorOrAnalyzer: Assert.DoesNotContain() Failure: Filter matched in collection\n             ↓ (pos 0)\nCollection: [warning CS8785: Generator 'MessagePackGenerator' failed to generate source. It will not contribute to the output and compilation errors may occur as a result. Exception was of type 'InvalidOperationException' with message 'Nullable object must have a value.'.\nSystem.InvalidOperationException: Nullable object must have a value.\n   at System.Nullable`1.get_Value()\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\\MessagePack.SourceGenerator\\CodeAnalysis\\TypeCollector.cs:line 1013\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectGeneric(INamedTypeSymbol type, ISymbol callerSymbol) in src\\Messa\nLedger_2283_Objection3.ClosedGenericReferenceTypeFromReferencedAssembly_DoesNotCrashGeneratorOrAnalyzer: Assert.DoesNotContain() Failure: Filter matched in collection\n             ↓ (pos 0)\nCollection: [warning CS8785: Generator 'MessagePackGenerator' failed to generate source. It will not contribute to the output and compilation errors may occur as a result. Exception was of type 'InvalidOperationException' with message 'Nullable object must have a value.'.\nSystem.InvalidOperationException: Nullable object must have a value.\n   at System.Nullable`1.get_Value()\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\\MessagePack.SourceGenerator\\CodeAnalysis\\TypeCollector.cs:line 1013\n   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectGeneric(INamedTypeSymbol type, ISymbol callerSymbol) in src\\Messa",
+            "duration_s": 10.801723200129345,
+            "green": false,
+            "red_for_real": true
+          },
+          "mutant_patch": "--- a/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs\n+++ b/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs\n@@ -1431,7 +1431,7 @@\n     /// </summary>\n     /// <param name=\"property\">The property symbol. It may be declared in metadata, in which case <see langword=\"null\" /> is returned.</param>\n     /// <returns>The location of the identifier, or <see langword=\"null\" /> if the property has no declaration in source.</returns>\n-    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) => (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();\n+    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) => (property.DeclaringSyntaxReferences[0].GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();\n \n     /// <summary>\n     /// Reports a diagnostic only when its location belongs to the compilation being analyzed.\n",
+          "mutant_result": null,
+          "valid": false
+        }
+      ]
+    },
+    {
+      "path": "tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs",
+      "verdict": "GREEN",
+      "reasons": [
+        "M4: en alcance, riesgo LOW, evidencia superada",
+        "test del cambio `LedgerIssue2283`: base rojo (2 fallan), PR verde (2 ok)",
+        "invarianza: determinista, 21 casos generales idénticos"
+      ],
+      "objections": []
+    }
+  ]
+}
