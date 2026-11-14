@@ -107,15 +107,18 @@ def build_evidence(
     base_rerun: Mapping[str, str],
     pr: Mapping[str, str],
     normalization: Normalization | None = None,
+    issue_id: str | None = None,
 ) -> InvarianceEvidence:
-    """La normalización solo se aplica al PR de los casos `general`: los casos del issue se comparan
-    en bruto, porque ahí es donde el cambio tiene que verse."""
+    """La normalización se aplica al PR de todo caso que NO sea del propio issue (`general` y casos de
+    otros issues): solo los casos del issue se comparan en bruto, porque ahí es donde el cambio tiene que verse."""
+    own_tag = f"issue-{issue_id}" if issue_id else None
     missing = [c.id for c in cases if not all(c.id in side for side in (base, base_rerun, pr))]
     if missing:
         raise InvarianceError(f"el probe no produjo salida para: {', '.join(missing)}")
 
     def to_case(case: CorpusCase) -> InvarianceCase:
-        norm = normalization if case.tag == "general" else None
+        is_own = case.tag == own_tag if own_tag else case.tag != "general"
+        norm = None if is_own else normalization
         return InvarianceCase(
             id=case.id,
             tag=case.tag,
@@ -170,7 +173,9 @@ def collect_invariance(settings: Settings, issue_id: str, corpus_dir: Path = COR
         project = build_probe(worktree)
         for label in runs:
             outputs[label] = run_probe(worktree, project, corpus_dir, out_root / label)
-    return build_evidence(cases, outputs["base"], outputs["base-rerun"], outputs["pr"], normalization_for(issue_id))
+    return build_evidence(
+        cases, outputs["base"], outputs["base-rerun"], outputs["pr"], normalization_for(issue_id), issue_id=issue_id
+    )
 
 
 __all__ = [

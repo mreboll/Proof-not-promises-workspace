@@ -200,16 +200,16 @@
         "tag": "issue-2129",
         "base_hash": "ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085",
         "base_hash_rerun": "ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085",
-        "pr_hash": "eba968694b0fd949c005d96232a6d45f4c78d9916377c1b332a829624efa135a",
-        "normalization": ""
+        "pr_hash": "ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085",
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2129-formatter-with-surrogate",
         "tag": "issue-2129",
         "base_hash": "45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a",
         "base_hash_rerun": "45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a",
-        "pr_hash": "49a5c76fc0f55003283ddddb6144aa49dbbdfeae850da9d37153766e1221ad6c",
-        "normalization": ""
+        "pr_hash": "45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a",
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2234-suppressed-duplicate-int-keys",
@@ -217,7 +217,7 @@
         "base_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
         "base_hash_rerun": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
         "pr_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
-        "normalization": ""
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2234-suppressed-duplicate-string-keys",
@@ -225,7 +225,7 @@
         "base_hash": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
         "base_hash_rerun": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
         "pr_hash": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
-        "normalization": ""
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2234-suppressed-missing-key",
@@ -233,7 +233,7 @@
         "base_hash": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
         "base_hash_rerun": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
         "pr_hash": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
-        "normalization": ""
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2234-suppressed-mixed-keys",
@@ -241,7 +241,7 @@
         "base_hash": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
         "base_hash_rerun": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
         "pr_hash": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
-        "normalization": ""
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2283-closed-generic-struct-from-metadata",
@@ -249,7 +249,7 @@
         "base_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
         "base_hash_rerun": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
         "pr_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
-        "normalization": ""
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2283-generic-record-struct-from-metadata",
@@ -257,7 +257,7 @@
         "base_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
         "base_hash_rerun": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
         "pr_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
-        "normalization": ""
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2283-unkeyed-member-in-metadata-generic",
@@ -265,7 +265,7 @@
         "base_hash": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
         "base_hash_rerun": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
         "pr_hash": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
-        "normalization": ""
+        "normalization": "removed [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] lines and their `#if !NETSTANDARD2_0 && !NETFRAMEWORK`/`#endif` guard blocks (feature #2297)"
       },
       {
         "id": "issue-2297-generated-code-excluded-from-coverage",

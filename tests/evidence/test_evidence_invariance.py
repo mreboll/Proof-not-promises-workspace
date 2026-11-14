@@ -131,6 +131,20 @@ def test_normalization_applies_to_general_pr_only_and_is_declared():
     assert ev.ok
 
 
+def test_normalization_also_applies_to_other_issues_cases():
+    """Bajo el PR de #2297, un caso de #2129 solo debe diferir por la transformación declarada."""
+    norm = normalization_for("2297")
+    base = {"own": GENERATED_BASE_REAL, "foreign": GENERATED_BASE_REAL}
+    pr = {"own": GENERATED_2297_REAL, "foreign": GENERATED_2297_REAL}
+    own, foreign = CorpusCase("own", "issue-2297"), CorpusCase("foreign", "issue-2129")
+
+    ev = build_evidence((own, foreign), base, dict(base), pr, norm, issue_id="2297")
+
+    own_case, foreign_case = ev.cases
+    assert own_case.pr_hash != own_case.base_hash and own_case.normalization == ""
+    assert foreign_case.pr_hash == foreign_case.base_hash and foreign_case.normalization != ""
+
+
 def test_missing_probe_output_raises():
     with pytest.raises(InvarianceError, match="int-keys"):
         build_evidence((G1,), {}, {}, {})
