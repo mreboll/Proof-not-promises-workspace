@@ -183,6 +183,12 @@ def render_report(report: Report, out_dir: Path) -> Path:
     return write_report(report, out_dir, models=models, issue_title=issue_title)
 
 
+TRANSLATED_NOTICE = (
+    "Text written by the models during this run (scope justifications, Prosecutor objections) was generated in Spanish "
+    "and has been machine-translated into English for this report. The original record is kept unchanged in the source JSON."
+)
+
+
 class Translation(BaseModel):
     items: list[str]
 
@@ -263,10 +269,7 @@ def main(argv: list[str]) -> Path:
     notice = ""
     if "--translate" in argv[1:]:
         report = translate_llm_text(report)
-        notice = (
-            "Text written by the models during this run (scope justifications, Prosecutor objections) was generated in Spanish "
-            "and has been machine-translated into English for this report. The original record is kept unchanged in the source JSON."
-        )
+        notice = TRANSLATED_NOTICE
     if "--recompute" in argv[1:]:
         report = recompute_verdicts(report)
     models, issue_title = _context(report.issue_id)

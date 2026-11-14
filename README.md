@@ -26,6 +26,10 @@ We ran it on the four real AI-written pull requests of the challenge (MessagePac
 - **#2129 — the AI's own test was wrong.** The system did not approve; the independent invariance oracle showed the
   feature works and pointed the human at the test.
 
+**See the reports.** Clone the repo and open [`demo/index.html`](demo/index.html) in a browser: one self-contained
+sign-off report per pull request, including the full #2283 runs (local dotnet and Modal) where the defect shows up.
+They are rebuilt from the recorded runs in `fixtures/` with `python -m ledger.report.demo`.
+
 ## How it works
 
 | Stage | Check | Models / tools |

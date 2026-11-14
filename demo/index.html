@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof, not promises: demo reports</title>
+<style>
+:root { --paper: #f6f4ef; --sheet: #fffdf9; --ink: #1c2330; --ink-2: #4a5363; --rule: #e3ded3; --accent: #2b4f8c; }
+@media (prefers-color-scheme: dark) { :root { --paper: #12151b; --sheet: #191d25; --ink: #e9ecf1; --ink-2: #a3acba; --rule: #2a303b; --accent: #8fb0ff; } }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 40px 16px 64px; }
+h1 { font: 600 30px/1.2 "Iowan Old Style", Charter, Georgia, serif; margin: 6px 0 8px; }
+.eyebrow { font: 600 11.5px/1.4 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.lede { color: var(--ink-2); }
+ul { list-style: none; padding: 0; }
+li { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; margin: 12px 0; }
+li a { font: 600 17px/1.35 "Iowan Old Style", Charter, Georgia, serif; color: var(--accent); }
+li p { margin: 6px 0 0; color: var(--ink-2); }
+.tag { font: 12px ui-monospace, Consolas, monospace; margin-left: 10px; color: var(--ink-2); }
+.tally { font: 12.5px ui-monospace, Consolas, monospace; }
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">Evidence Ledger · Tieto — Earned Trust in AI Code</div>
+<h1>Proof, not promises: demo reports</h1>
+<p class="lede">One sign-off report per real AI-written pull request. Each report says what is proven, what a human must read, and why.</p>
+<ul>
+<li><a href="2283-dotnet.html">#2283: Generator and analyzer crash with IndexOutOfRangeException on a closed generic struct from a referenced assembly</a><span class="tag">full run · local dotnet</span><p>Bug fix, full pipeline with real dotnet. The Prosecutor&#x27;s questions led to Defender tests that fail on the PR: the AI fix moves the crash instead of removing it, although its own test and the invariance check were green.</p><p class="tally">1 green · 2 yellow · 1 red</p></li>
+<li><a href="2283-modal.html">#2283: Generator and analyzer crash with IndexOutOfRangeException on a closed generic struct from a referenced assembly</a><span class="tag">full run · Modal sandboxes</span><p>Same PR, full pipeline with every piece of AI-written code run in network-less Modal sandboxes (11 min). Two of three objections closed by valid tests; one stays open, so the system refuses to decide.</p><p class="tally">1 green · 2 yellow · 1 red</p></li>
+<li><a href="2234.html">#2234: The analyzer does not work if SuppressSourceGeneration = true</a><span class="tag">stages 1–2 · fixtures</span><p>Bug fix from a one-sentence issue: the independent test also passes on base, and the invariance check shows the fix changes behaviour outside the issue. Red for two real reasons.</p><p class="tally">0 green · 2 yellow · 2 red</p></li>
+<li><a href="2297.html">#2297: Add ExcludeFromCodeCoverage attribute to generated code.</a><span class="tag">stages 1–2 · fixtures</span><p>Feature touching 237 files: the evidence approves 223 low-risk files unread, at most 14 need a human, and the scope check flags an unrequested change in TransformUtilities.cs. Declared normalization shown in the report.</p><p class="tally">223 green · 1 yellow · 13 red</p></li>
+<li><a href="2129.html">#2129: Feature Request: Allow generation of Formatter for a type in a referenced assembly</a><span class="tag">stages 1–2 · fixtures</span><p>Feature where the AI&#x27;s own change test was wrong: the system does not approve, and the independent invariance oracle shows no regressions, pointing the human at the test instead of the code.</p><p class="tally">0 green · 6 yellow · 22 red</p></li>
+</ul>
+</main>
+</body>
+</html>

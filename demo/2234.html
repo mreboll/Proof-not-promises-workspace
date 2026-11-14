@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence Ledger #2234</title>
+<style>
+/* Direction: a technical audit ledger. Serif for what is signed, mono for what is verified. */
+:root {
+  --paper: #f6f4ef; --sheet: #fffdf9; --ink: #1c2330; --ink-2: #4a5363; --rule: #e3ded3; --rule-2: #cfc8b9;
+  --code: #f1eee7; --accent: #2b4f8c;
+  --green: #1d7348; --green-bg: #e3f1e8; --amber: #8f5d00; --amber-bg: #fbf0d6; --red: #b42318; --red-bg: #fbe7e4;
+  --idle: #6b7280; --idle-bg: #eceae4;
+  --serif: "Iowan Old Style", "Charter", "Palatino Linotype", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #12151b; --sheet: #191d25; --ink: #e9ecf1; --ink-2: #a3acba; --rule: #2a303b; --rule-2: #39404d;
+    --code: #20252f; --accent: #8fb0ff;
+    --green: #5cc98b; --green-bg: #16301f; --amber: #e7b44c; --amber-bg: #33280f; --red: #ff8a7a; --red-bg: #3b1915;
+    --idle: #9aa3b2; --idle-bg: #232833;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.6 var(--sans); }
+main { max-width: 1120px; margin: 0 auto; padding: 40px 16px 72px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; }
+h1 { font-size: clamp(24px, 3.2vw, 34px); line-height: 1.2; margin: 6px 0 20px; }
+h2 { font-size: 21px; margin: 0 0 4px; }
+h3 { font-size: 16px; margin: 0 0 8px; }
+.lede { color: var(--ink-2); margin: 0 0 16px; font-size: 14px; }
+section { background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 24px; margin: 18px 0; }
+code, pre, .mono, .path, .hash { font-family: var(--mono); }
+pre { background: var(--code); border-radius: 8px; padding: 12px 14px; overflow-x: auto; white-space: pre; margin: 8px 0 0; max-height: 440px; font-size: 12.5px; line-height: 1.5; }
+details { margin-top: 10px; }
+summary { cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 500; }
+summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--rule); }
+th { font: 600 11px/1.4 var(--sans); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); }
+ul { margin: 6px 0 0; padding-left: 18px; }
+li { margin: 2px 0; }
+.eyebrow { font: 600 11.5px/1.4 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+.path { font-size: 12.5px; overflow-wrap: anywhere; }
+.hash { font-size: 12px; }
+.table-wrap { overflow-x: auto; }
+
+/* Header */
+.masthead { padding: 0 4px; }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px 20px; margin: 0;
+        padding: 14px 0 0; border-top: 1px solid var(--rule-2); }
+.meta dt { font: 600 11px/1.4 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.meta dd { margin: 2px 0 0; overflow-wrap: anywhere; font-size: 14px; }
+
+/* Decision */
+.decision { display: grid; grid-template-columns: auto 1fr; gap: 20px 28px; align-items: center; border-top: 5px solid var(--idle); }
+.decision.green { border-top-color: var(--green); } .decision.yellow { border-top-color: var(--amber); } .decision.red { border-top-color: var(--red); }
+.stamp { width: 112px; height: 112px; border-radius: 50%; border: 3px double currentColor; display: grid; place-items: center;
+         text-align: center; font: 700 12px/1.25 var(--sans); letter-spacing: .1em; text-transform: uppercase; padding: 10px; transform: rotate(-6deg); }
+.decision.green .stamp { color: var(--green); } .decision.yellow .stamp { color: var(--amber); } .decision.red .stamp { color: var(--red); } .decision.none .stamp { color: var(--idle); }
+.decision h2 { font-size: 26px; }
+.bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--idle-bg); margin: 14px 0 10px; gap: 2px; }
+.bar span { min-width: 6px; }
+.bar .GREEN { background: var(--green); } .bar .YELLOW { background: var(--amber); } .bar .RED { background: var(--red); }
+.tiles { display: flex; gap: 22px; flex-wrap: wrap; }
+.tile { display: flex; align-items: baseline; gap: 8px; }
+.tile .n { font: 700 28px/1 var(--serif); }
+.tile.GREEN .n { color: var(--green); } .tile.YELLOW .n { color: var(--amber); } .tile.RED .n { color: var(--red); }
+.tile .lbl { font-size: 13px; color: var(--ink-2); }
+
+/* Funnel */
+.funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 0; overflow: hidden; }
+.stage { padding: 20px 22px; position: relative; }
+.stage + .stage { border-left: 1px solid var(--rule); }
+.stage + .stage::before { content: ""; position: absolute; left: -7px; top: 26px; width: 12px; height: 12px; background: var(--sheet);
+                          border-top: 1px solid var(--rule); border-right: 1px solid var(--rule); transform: rotate(45deg); }
+.stage .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.stage .tag { font: 700 12px/1 var(--mono); padding: 5px 7px; border-radius: 6px; background: var(--code); color: var(--ink-2); }
+.stage .name { font: 600 16px/1.2 var(--serif); }
+.stage .dot { margin-left: auto; width: 10px; height: 10px; border-radius: 50%; background: var(--idle); }
+.stage.pass .dot { background: var(--green); } .stage.fail .dot { background: var(--red); } .stage.done .dot { background: var(--accent); }
+.stage ul { list-style: none; padding: 0; margin: 0; font-size: 13.5px; color: var(--ink-2); }
+
+/* Pills and cards */
+.pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font: 600 12px/1.5 var(--sans); white-space: nowrap; vertical-align: 1px; }
+.pill.GREEN, .pill.green { background: var(--green-bg); color: var(--green); }
+.pill.YELLOW, .pill.yellow { background: var(--amber-bg); color: var(--amber); }
+.pill.RED, .pill.red { background: var(--red-bg); color: var(--red); }
+.pill.muted, .pill.none { background: var(--idle-bg); color: var(--ink-2); }
+.card { border: 1px solid var(--rule); border-left: 4px solid var(--rule-2); border-radius: 10px; padding: 14px 16px; margin: 12px 0; background: var(--sheet); }
+.card.RED { border-left-color: var(--red); } .card.YELLOW { border-left-color: var(--amber); } .card.GREEN { border-left-color: var(--green); }
+.card .first { font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.grid2 > .card { margin: 0; border-left-width: 1px; }
+.note { border-left: 3px solid var(--amber); padding: 6px 12px; background: var(--amber-bg); border-radius: 0 8px 8px 0; font-size: 13px; margin: 10px 0 0; }
+.note.red { border-left-color: var(--red); background: var(--red-bg); }
+
+/* Cross-examination as a transcript */
+.turn .speaker { font: 700 11px/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+.turn .q { font: 500 16px/1.5 var(--serif); margin: 2px 0 6px; }
+.turn .answer { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule-2); }
+
+/* Sign-off */
+.sign { white-space: pre-wrap; background: var(--code); border: 1px dashed var(--rule-2); border-radius: 10px; padding: 18px; font: 13px/1.8 var(--mono); }
+
+@media (max-width: 720px) {
+  section { padding: 18px; }
+  .decision { grid-template-columns: 1fr; }
+  .stamp { width: 92px; height: 92px; font-size: 11px; }
+  .funnel { grid-template-columns: 1fr; }
+  .stage + .stage { border-left: 0; border-top: 1px solid var(--rule); }
+  .stage + .stage::before { display: none; }
+}
+@media print {
+  :root { --paper: #fff; --sheet: #fff; --ink: #000; --code: #f4f4f4; }
+  body { font-size: 10.5pt; } main { padding: 0; max-width: none; }
+  section { break-inside: avoid; border-color: #bbb; }
+  pre { max-height: none; white-space: pre-wrap; }
+  .stamp { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .stamp { transform: none; } }
+</style>
+</head>
+<body>
+<main>
+
+<header class="masthead">
+  <div class="eyebrow">Evidence Ledger · Tieto — Earned Trust in AI Code</div>
+  <h1>#2234: The analyzer does not work if SuppressSourceGeneration = true</h1>
+  <dl class="meta">
+    <div><dt>Requirement</dt><dd>Issue #2234 (bugfix)</dd></div>
+    <div><dt>Evaluated branch</dt><dd class="mono small">ju26-issue-2234</dd></div>
+    <div><dt>Base</dt><dd class="mono small">origin/ju26-issue-2234~1</dd></div>
+    <div><dt>PR</dt><dd class="mono small">origin/ju26-issue-2234</dd></div>
+    <div><dt>Generated (UTC)</dt><dd>2026-11-14T04:36:14+00:00</dd></div>
+    <div><dt>Files in the diff</dt><dd>4</dd></div>
+  </dl>
+</header>
+
+<p class="note" role="note">Stages 1 and 2 are real (static risk rules, Gemini scope triage, change test and generation invariance run with dotnet). Stage 3 (cross-examination) was not run for this report, so high-risk files stay red: without it the system refuses to decide. The #2283 reports show a full run.</p>
+<section class="decision red" aria-label="System decision">
+  <div class="stamp" aria-hidden="true">Audit</div>
+  <div>
+    <div class="eyebrow">System decision</div>
+    <h2>Manual audit required</h2>
+    <p class="lede">Some fragments are red: review those lines by hand before approving.</p>
+    <div class="bar" role="img" aria-label="0 green, 2 yellow, 2 red">
+<span class="YELLOW" style="flex: 2"></span><span class="RED" style="flex: 2"></span>    </div>
+    <div class="tiles">
+      <div class="tile GREEN"><div class="n" data-count="GREEN">0</div><div class="lbl">Green</div></div>
+      <div class="tile YELLOW"><div class="n" data-count="YELLOW">2</div><div class="lbl">Yellow</div></div>
+      <div class="tile RED"><div class="n" data-count="RED">2</div><div class="lbl">Red</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="funnel" class="funnel" aria-label="Verification funnel">
+  <div class="stage done">
+    <div class="head"><span class="tag">T3</span><span class="name">Triage</span><span class="dot" aria-hidden="true"></span></div>
+    <ul><li>4 files</li><li>3 out of scope</li><li>1 high risk</li></ul>
+  </div>
+  <div class="stage fail">
+    <div class="head"><span class="tag">T1</span><span class="name">Evidence</span><span class="dot" aria-hidden="true"></span></div>
+    <ul><li>change test failed</li><li>invariance failed</li></ul>
+  </div>
+  <div class="stage idle">
+    <div class="head"><span class="tag">T2</span><span class="name">Cross-examination</span><span class="dot" aria-hidden="true"></span></div>
+    <ul><li>no objections</li></ul>
+  </div>
+</section>
+
+<section id="must-read">
+  <h2>What you need to read</h2>
+  <p class="lede">Only these fragments need human eyes. Everything else is backed by executable tests.</p>
+  <div class="card YELLOW">
+    <span class="pill YELLOW">Yellow</span>
+    <span class="path">README.md</span>
+    <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The issue reports a bug where the analyzer does not work when SuppressSourceGeneration is true, but does not request documentation or README updates.</li></ul>
+  </div>
+  <div class="card RED">
+    <span class="pill RED">Red</span>
+    <span class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</span>
+    <ul class="small"><li class="first">M1: out of the issue&#39;s scope and high risk</li><li>R-MED-01: production code in src/ (private/internal logic)</li><li>R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</li></ul>
+  </div>
+  <div class="card YELLOW">
+    <span class="pill YELLOW">Yellow</span>
+    <span class="path">tests/MessagePack.SourceGenerator.ExecutionTests/SuppressedSourceGenerationTests.cs</span>
+    <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The test checks runtime serialization and that source generation is suppressed, rather than verifying analyzer behavior or diagnostics when SuppressSourceGeneration is true.</li></ul>
+  </div>
+  <div class="card RED">
+    <span class="pill RED">Red</span>
+    <span class="path">tests/MessagePack.SourceGenerator.Tests/SuppressSourceGenerationAnalyzerTests.cs</span>
+    <ul class="small"><li class="first">M3: executable evidence fails or is missing</li><li>change test `LedgerIssue2234AnalyzerSuppressSourceGeneration`: base green (2 passed), PR green (2 passed) → does not reproduce the bug on base</li><li>output changes outside the issue&#39;s scope in: general-duplicate-int-keys-not-suppressed</li></ul>
+  </div>
+</section>
+
+<section id="files">
+  <h2>Files in the diff</h2>
+  <p class="lede">Risk comes from static rules (no LLM); scope is judged against the literal issue text.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>File</th><th>Scope</th><th>Risk</th><th>Verdict</th><th>Why</th></tr></thead>
+    <tbody>
+    <tr>
+      <td class="path">README.md</td>
+      <td>OUT</td>
+      <td>LOW</td>
+      <td><span class="pill YELLOW">Yellow</span></td>
+      <td class="small">
+<strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The issue reports a bug where the analyzer does not work when SuppressSourceGeneration is true, but does not request documentation or README updates.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
+    </tr>
+    <tr>
+      <td class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</td>
+      <td>OUT</td>
+      <td>HIGH</td>
+      <td><span class="pill RED">Red</span></td>
+      <td class="small">
+<strong>M1: out of the issue&#39;s scope and high risk</strong><br><span class="muted">Scope:</span> The changes in TypeCollector.cs handle duplicate keys and mixed string/int keys, which is unrelated to the issue of the analyzer not working when SuppressSourceGeneration is set to true.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
+    </tr>
+    <tr>
+      <td class="path">tests/MessagePack.SourceGenerator.ExecutionTests/SuppressedSourceGenerationTests.cs</td>
+      <td>OUT</td>
+      <td>LOW</td>
+      <td><span class="pill YELLOW">Yellow</span></td>
+      <td class="small">
+<strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The test checks runtime serialization and that source generation is suppressed, rather than verifying analyzer behavior or diagnostics when SuppressSourceGeneration is true.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
+    </tr>
+    <tr>
+      <td class="path">tests/MessagePack.SourceGenerator.Tests/SuppressSourceGenerationAnalyzerTests.cs</td>
+      <td>IN</td>
+      <td>LOW</td>
+      <td><span class="pill RED">Red</span></td>
+      <td class="small">
+<strong>M3: executable evidence fails or is missing</strong><br><span class="muted">Scope:</span> This new test file directly tests and verifies analyzer functionality when SuppressSourceGeneration is set to true, as reported in the issue.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Executable evidence</h2>
+  <p class="lede">Trust comes only from tests that run: a test written without seeing the diff, and a comparison of the generator output between base and PR.</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>Change test</h3>
+      <div class="small muted">Written only from the issue text, without seeing the diff.</div>
+      <p class="mono small">LedgerIssue2234AnalyzerSuppressSourceGeneration</p>
+      <p>Base: <span class="pill yellow">green · 2 passed</span>
+         PR: <span class="pill green">green · 2 passed</span>
+         <span class="pill red">failed</span></p>
+<p class="note">The test also passes on base: it does not reproduce the bug, so it does not count as evidence.</p>      <details><summary>Test code</summary><pre>using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
+using MessagePack.SourceGenerator;
+using MessagePack.SourceGenerator.Analyzers;
+using Xunit;
+
+public class LedgerIssue2234AnalyzerSuppressSourceGeneration
+{
+    [Fact]
+    public async Task AnalyzerReportsDuplicateKeyWhenSourceGenerationIsSuppressed()
+    {
+        const string source = &#34;&#34;&#34;
+            using MessagePack;
+
+            namespace TempProject
+            {
+                [MessagePackObject(SuppressSourceGeneration = true)]
+                public class MyObject
+                {
+                    [Key(0)]
+                    public int First { get; set; }
+
+                    [Key(0)]
+                    public int Second { get; set; }
+                }
+            }
+            &#34;&#34;&#34;;
+
+        ImmutableArray&lt;Diagnostic&gt; analyzerDiagnostics = await GetAnalyzerDiagnosticsAsync(source);
+        var msgPackDiagnostics = analyzerDiagnostics.Where(static d =&gt; d.Id.StartsWith(&#34;MsgPack&#34;)).ToImmutableArray();
+
+        Assert.True(msgPackDiagnostics.Length &gt; 0, &#34;The analyzer did not report any MsgPack diagnostics for a type with SuppressSourceGeneration = true.&#34;);
+    }
+
+    [Fact]
+    public async Task AnalyzerReportsNothingForValidTypeWhenSourceGenerationIsSuppressed()
+    {
+        const string source = &#34;&#34;&#34;
+            using MessagePack;
+
+            namespace TempProject
+            {
+                [MessagePackObject(SuppressSourceGeneration = true)]
+                public class MyObject
+                {
+                    [Key(0)]
+                    public int First { get; set; }
+
+                    [Key(1)]
+                    public int Second { get; set; }
+                }
+            }
+            &#34;&#34;&#34;;
+
+        ImmutableArray&lt;Diagnostic&gt; analyzerDiagnostics = await GetAnalyzerDiagnosticsAsync(source);
+        var msgPackDiagnostics = analyzerDiagnostics.Where(static d =&gt; d.Id.StartsWith(&#34;MsgPack&#34;)).ToImmutableArray();
+
+        Assert.Empty(msgPackDiagnostics);
+    }
+
+    private static async Task&lt;ImmutableArray&lt;Diagnostic&gt;&gt; GetAnalyzerDiagnosticsAsync(string source)
+    {
+        var parseOptions = new CSharpParseOptions(LanguageVersion.Latest);
+        var syntaxTree = CSharpSyntaxTree.ParseText(source, parseOptions);
+
+        var references = ReferencesHelper.GetReferences(ReferencesSet.MessagePack)
+            .Concat(await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None));
+
+        var compilation = CSharpCompilation.Create(
+            &#34;TestAssembly&#34;,
+            new[] { syntaxTree },
+            references,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation output, out var _);
+
+        return await output
+            .WithAnalyzers(ImmutableArray.Create&lt;DiagnosticAnalyzer&gt;(new MsgPack00xMessagePackAnalyzer()))
+            .GetAnalyzerDiagnosticsAsync();
+    }
+}</pre></details>
+<details><summary>Output on base</summary><pre>2 passed, 0 failed (of 2)</pre></details>      <details><summary>Output on PR</summary><pre>2 passed, 0 failed (of 2)</pre></details>
+    </div>
+    <div class="card">
+      <h3>Generation invariance</h3>
+      <p>
+        <span class="pill green">deterministic base</span>
+        <span class="pill red">1 changes outside the issue</span>
+      </p>
+      <p class="small muted">21 general cases compared by SHA-256 (base ×2 and PR). Issue cases may change; general cases must not.</p>
+      <p class="note red"><strong>The PR changes the output in cases the issue does not touch:</strong> <span class="mono">general-duplicate-int-keys-not-suppressed</span>. Even if the triage marks the files as in scope, the PR does more than the issue asks for.</p>
+    </div>
+  </div>
+  <details><summary>Hashes per case (31)</summary>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Case</th><th>Tag</th><th>Base</th><th>Base (rerun)</th><th>PR</th><th>Status</th></tr></thead>
+    <tbody>
+    <tr>
+      <td class="mono small">general-collections</td><td class="small">general</td>
+      <td class="hash" title="7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28">7654617729b1</td>
+      <td class="hash" title="7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28">7654617729b1</td>
+      <td class="hash" title="7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28">7654617729b1</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-constructor</td><td class="small">general</td>
+      <td class="hash" title="b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed">b728925274c0</td>
+      <td class="hash" title="b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed">b728925274c0</td>
+      <td class="hash" title="b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed">b728925274c0</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-duplicate-int-keys-not-suppressed</td><td class="small">general</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td class="hash" title="af93e70de06a5286b51406847a046445e380d0f920cf459b27ca4bf74d286251">af93e70de06a</td>
+      <td><span class="pill red">unexpected change</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-enum</td><td class="small">general</td>
+      <td class="hash" title="38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07">38c7c338ffaa</td>
+      <td class="hash" title="38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07">38c7c338ffaa</td>
+      <td class="hash" title="38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07">38c7c338ffaa</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-generic-class</td><td class="small">general</td>
+      <td class="hash" title="8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a">8f1d5f9de4bf</td>
+      <td class="hash" title="8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a">8f1d5f9de4bf</td>
+      <td class="hash" title="8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a">8f1d5f9de4bf</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-generic-from-same-compilation</td><td class="small">general</td>
+      <td class="hash" title="3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f">3beb8e536476</td>
+      <td class="hash" title="3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f">3beb8e536476</td>
+      <td class="hash" title="3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f">3beb8e536476</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-generic-with-constraints</td><td class="small">general</td>
+      <td class="hash" title="416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b">416d1f74039f</td>
+      <td class="hash" title="416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b">416d1f74039f</td>
+      <td class="hash" title="416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b">416d1f74039f</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-ignore-member</td><td class="small">general</td>
+      <td class="hash" title="cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968">cafaeed79269</td>
+      <td class="hash" title="cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968">cafaeed79269</td>
+      <td class="hash" title="cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968">cafaeed79269</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-inheritance</td><td class="small">general</td>
+      <td class="hash" title="dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93">dbc9028604b5</td>
+      <td class="hash" title="dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93">dbc9028604b5</td>
+      <td class="hash" title="dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93">dbc9028604b5</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-init-only</td><td class="small">general</td>
+      <td class="hash" title="f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009">f6b6329a1fa3</td>
+      <td class="hash" title="f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009">f6b6329a1fa3</td>
+      <td class="hash" title="f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009">f6b6329a1fa3</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-int-keys</td><td class="small">general</td>
+      <td class="hash" title="7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9">7b01595063d7</td>
+      <td class="hash" title="7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9">7b01595063d7</td>
+      <td class="hash" title="7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9">7b01595063d7</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-keyasname</td><td class="small">general</td>
+      <td class="hash" title="325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d">325daca8d535</td>
+      <td class="hash" title="325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d">325daca8d535</td>
+      <td class="hash" title="325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d">325daca8d535</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-missing-key-in-source</td><td class="small">general</td>
+      <td class="hash" title="7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0">7c8ddebe412d</td>
+      <td class="hash" title="7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0">7c8ddebe412d</td>
+      <td class="hash" title="7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0">7c8ddebe412d</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-nested-types</td><td class="small">general</td>
+      <td class="hash" title="17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29">17621e544c6d</td>
+      <td class="hash" title="17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29">17621e544c6d</td>
+      <td class="hash" title="17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29">17621e544c6d</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-nullable</td><td class="small">general</td>
+      <td class="hash" title="b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa">b2bfaadca297</td>
+      <td class="hash" title="b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa">b2bfaadca297</td>
+      <td class="hash" title="b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa">b2bfaadca297</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-private-members</td><td class="small">general</td>
+      <td class="hash" title="8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910">8bac39b81972</td>
+      <td class="hash" title="8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910">8bac39b81972</td>
+      <td class="hash" title="8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910">8bac39b81972</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-record</td><td class="small">general</td>
+      <td class="hash" title="f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46">f5d7882efe4a</td>
+      <td class="hash" title="f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46">f5d7882efe4a</td>
+      <td class="hash" title="f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46">f5d7882efe4a</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-resolver-attribute</td><td class="small">general</td>
+      <td class="hash" title="c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15">c5713d6122f9</td>
+      <td class="hash" title="c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15">c5713d6122f9</td>
+      <td class="hash" title="c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15">c5713d6122f9</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-string-keys</td><td class="small">general</td>
+      <td class="hash" title="62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d">62548088b848</td>
+      <td class="hash" title="62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d">62548088b848</td>
+      <td class="hash" title="62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d">62548088b848</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-struct</td><td class="small">general</td>
+      <td class="hash" title="7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15">7a70f2de5294</td>
+      <td class="hash" title="7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15">7a70f2de5294</td>
+      <td class="hash" title="7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15">7a70f2de5294</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-union</td><td class="small">general</td>
+      <td class="hash" title="d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661">d838b525a3dc</td>
+      <td class="hash" title="d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661">d838b525a3dc</td>
+      <td class="hash" title="d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661">d838b525a3dc</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2129-formatter-for-external-type</td><td class="small">issue-2129</td>
+      <td class="hash" title="ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085">ae913e4f7816</td>
+      <td class="hash" title="ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085">ae913e4f7816</td>
+      <td class="hash" title="ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085">ae913e4f7816</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2129-formatter-with-surrogate</td><td class="small">issue-2129</td>
+      <td class="hash" title="45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a">45cb4768434a</td>
+      <td class="hash" title="45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a">45cb4768434a</td>
+      <td class="hash" title="45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a">45cb4768434a</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2234-suppressed-duplicate-int-keys</td><td class="small">issue-2234</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td class="hash" title="912821a65350bf92f4a8c948b2505aa4fb6e8bdd6e060f21fae3b3d05ab3b7b9">912821a65350</td>
+      <td><span class="pill yellow">expected change</span></td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2234-suppressed-duplicate-string-keys</td><td class="small">issue-2234</td>
+      <td class="hash" title="b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d">b05370a0f1ac</td>
+      <td class="hash" title="b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d">b05370a0f1ac</td>
+      <td class="hash" title="ca6f0d4db07bea1a2e20264de03c93b4987f45f6a689ffc5d37adbbe06375ee4">ca6f0d4db07b</td>
+      <td><span class="pill yellow">expected change</span></td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2234-suppressed-missing-key</td><td class="small">issue-2234</td>
+      <td class="hash" title="a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c">a0c8a7a4c018</td>
+      <td class="hash" title="a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c">a0c8a7a4c018</td>
+      <td class="hash" title="a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c">a0c8a7a4c018</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2234-suppressed-mixed-keys</td><td class="small">issue-2234</td>
+      <td class="hash" title="866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b">866ec3112a14</td>
+      <td class="hash" title="866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b">866ec3112a14</td>
+      <td class="hash" title="aba6a8e20911e891c953b5ac7f3756dbae03959e11cd201dc4e92cd3939aaa5f">aba6a8e20911</td>
+      <td><span class="pill yellow">expected change</span></td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2283-closed-generic-struct-from-metadata</td><td class="small">issue-2283</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2283-generic-record-struct-from-metadata</td><td class="small">issue-2283</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2283-unkeyed-member-in-metadata-generic</td><td class="small">issue-2283</td>
+      <td class="hash" title="ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570">ce8e281bf15e</td>
+      <td class="hash" title="ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570">ce8e281bf15e</td>
+      <td class="hash" title="ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570">ce8e281bf15e</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2297-generated-code-excluded-from-coverage</td><td class="small">issue-2297</td>
+      <td class="hash" title="636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717">636b9d9b7576</td>
+      <td class="hash" title="636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717">636b9d9b7576</td>
+      <td class="hash" title="636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717">636b9d9b7576</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    </tbody>
+  </table></div>
+  </details>
+</section>
+
+<section>
+  <h2>Cross-examination: Prosecutor vs Defender</h2>
+  <p class="lede">Only for in-scope, high-risk fragments. The Defender cannot argue: an objection is closed only by a test that passes on the PR and fails against a mutant that breaks that case on purpose.</p>
+  <p class="muted">There were no objections to examine.</p>
+</section>
+
+<section>
+  <h2>Which model played each role</h2>
+  <p class="lede">Configuration when this report was generated. If the Stage 2 evidence is reused from another run (fixtures), the model that produced it is recorded with it.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Role</th><th>Model</th><th>Task</th></tr></thead>
+    <tbody>
+    <tr><td class="mono small">flash</td><td class="mono small">gemini-3.8-flash</td><td class="small">Per-file IN/OUT scope triage</td></tr>
+    <tr><td class="mono small">pro</td><td class="mono small">nvidia/nemotron-3.5-super-vl-120b-a12b</td><td class="small">Independent change test, Defender and mutants</td></tr>
+    <tr><td class="mono small">fiscal</td><td class="mono small">— (Stage 3 not run)</td><td class="small">Prosecutor: cross-examination objections</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small muted">Risk is decided by static rules, without an LLM. The models only classify scope and produce tests and mutants; no model approves anything by argument.</p>
+</section>
+
+<section>
+  <h2>Sign-off</h2>
+  <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
+  <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
+Requirement / Issue ID: #2234 (bugfix) | Evaluated branch: ju26-issue-2234 | Base: origin/ju26-issue-2234~1
+Auto-verified claims (Green): 0/4 | Reviewed manually (Yellow/Red): 4/4
+Approved by (full name): ______________________  Role: _________________
+Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
+</section>
+
+</main>
+</body>
+</html>

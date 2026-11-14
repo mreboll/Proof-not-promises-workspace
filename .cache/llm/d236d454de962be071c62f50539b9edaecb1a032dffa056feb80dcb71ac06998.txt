@@ -1,0 +1,14 @@
+{
+  "items": [
+    "The change adds documentation in the README.md file regarding generic types from referenced assemblies, which is not requested in the bug report.",
+    "The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the bug report about the IndexOutOfRangeException exception.",
+    "The change in TypeCollector.cs fixes the IndexOutOfRangeException exception by safely accessing DeclaringSyntaxReferences for types originating from referenced assemblies.",
+    "The change adds unit tests to verify that the presence of closed generic structs in referenced assemblies does not cause errors in the generator and analyzer, fulfilling the bug report.",
+    "Does GetObjectInfo still throw IndexOutOfRangeException when a closed generic value type defined in a referenced assembly triggers one of the diagnostic branches that still index DeclaringSyntaxReferences[0] directly (lines 735, 1009, and 1101 of the issue), for example a member without [Key] or both keys null in that metadata type?",
+    "The diff only replaces direct access at two diagnostic sites and wraps reportDiagnostic in ReportIfLocatedInCompilation, but does not remove the unguarded direct accesses inside GetObjectInfo pointed out in the issue. The exception occurs when constructing the diagnostic, before the location filter can act. The LedgerIssue2283 change test does not cover those alternative branches of GetObjectInfo.",
+    "Does Diagnostic.Create throw an exception (or produce an invalid location) when GetPropertyIdentifierLocation returns null for a property declared in metadata without [Key] inside a [MessagePackObject] type of the assembly being compiled?",
+    "GetPropertyIdentifierLocation returns null for metadata symbols. That null is passed to Diagnostic.Create before invoking ReportIfLocatedInCompilation; if Diagnostic.Create does not accept null, the analyzer crashes with ArgumentNullException instead of discarding the diagnostic. The change test does not cover metadata members lacking a key.",
+    "Does IndexOutOfRangeException occur when a [MessagePackObject] type of the assembly being compiled has a member of a closed generic reference type from a referenced assembly (for example List<Item<int>> or List<int>), instead of a closed generic value type like Item<int>?",
+    "CollectGeneric invokes GetObjectInfo for any closed generic type on a metadata symbol, not just for value types. The repro only covers Item<int> (value type) as a direct member; it does not cover closed generic reference types or closed generic types used as arguments of other generic types, which also lack syntax in the current compilation."
+  ]
+}

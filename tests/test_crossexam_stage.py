@@ -35,8 +35,18 @@ def wired(monkeypatch):
     return calls
 
 
-def judge(ct=CT, inv=INV):
-    return {v.path: v for v in stage.judge_issue("2283", TRIAGE, ct, inv, FakeTestRunner(), load_settings())}
+class StubRunner:
+    """Un runner "real" para estos tests: cross_examine está sustituido, así que nunca se llama."""
+
+    def run_tests(self, side, test_code, test_name):
+        raise AssertionError("no debería ejecutarse")
+
+    def run_against_mutant(self, side, mutant_patch, test_code, test_name):
+        raise AssertionError("no debería ejecutarse")
+
+
+def judge(ct=CT, inv=INV, runner=None):
+    return {v.path: v for v in stage.judge_issue("2283", TRIAGE, ct, inv, runner or StubRunner(), load_settings())}
 
 
 def test_only_in_high_is_cross_examined_and_gets_a_verdict(wired):
@@ -74,6 +84,13 @@ def test_missing_repo_refuses_with_the_reason(monkeypatch, wired):
     monkeypatch.setattr(stage, "load_diff", no_repo)
     v = judge()[HIGH.path]
     assert v.verdict is Verdict.RED and any("No encuentro el repo" in r for r in v.reasons)
+
+
+def test_fake_runner_never_validates_objections(wired):
+    """Con FakeTestRunner ningún test se ejecuta de verdad: la Etapa 3 no corre y el informe lo dice."""
+    v = judge(runner=FakeTestRunner())[HIGH.path]
+    assert wired == [] and v.verdict is Verdict.RED and v.reasons[0].startswith("M7")
+    assert any("real test runner" in r for r in v.reasons)
 
 
 def test_pipeline_stage3_delegates_to_judge_issue(monkeypatch):

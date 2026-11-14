@@ -12,6 +12,7 @@ from __future__ import annotations
 from ledger import llm
 from ledger.config import Settings
 from ledger.crossexam.loop import cross_examine
+from ledger.fakes import FakeTestRunner
 from ledger.models import ChangeTestEvidence, FileTriage, FragmentVerdict, InvarianceEvidence, Risk, Scope, TestRunner
 from ledger.triage.diff import load_diff, read_file_at
 from ledger.triage.scope import Complete, load_issue_text
@@ -42,7 +43,10 @@ def judge_issue(
     targets = [t for t in triage if _needs_crossexam(t)] if evidence_ok else []
 
     issue_text, diffs, setup_error = "", {}, ""
-    if targets:
+    if targets and isinstance(runner, FakeTestRunner):
+        # Con el runner falso ningún test se ejecuta: "validar" objeciones así sería aprobar sin prueba.
+        setup_error = "Stage 3 needs a real test runner (dotnet or Modal); the fake runner cannot validate any test"
+    elif targets:
         try:
             issue_text = load_issue_text(settings, issue_id)
             diffs = {fd.path: fd for fd in load_diff(settings, issue_id)}

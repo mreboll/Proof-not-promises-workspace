@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence Ledger #2283</title>
+<style>
+/* Direction: a technical audit ledger. Serif for what is signed, mono for what is verified. */
+:root {
+  --paper: #f6f4ef; --sheet: #fffdf9; --ink: #1c2330; --ink-2: #4a5363; --rule: #e3ded3; --rule-2: #cfc8b9;
+  --code: #f1eee7; --accent: #2b4f8c;
+  --green: #1d7348; --green-bg: #e3f1e8; --amber: #8f5d00; --amber-bg: #fbf0d6; --red: #b42318; --red-bg: #fbe7e4;
+  --idle: #6b7280; --idle-bg: #eceae4;
+  --serif: "Iowan Old Style", "Charter", "Palatino Linotype", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #12151b; --sheet: #191d25; --ink: #e9ecf1; --ink-2: #a3acba; --rule: #2a303b; --rule-2: #39404d;
+    --code: #20252f; --accent: #8fb0ff;
+    --green: #5cc98b; --green-bg: #16301f; --amber: #e7b44c; --amber-bg: #33280f; --red: #ff8a7a; --red-bg: #3b1915;
+    --idle: #9aa3b2; --idle-bg: #232833;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.6 var(--sans); }
+main { max-width: 1120px; margin: 0 auto; padding: 40px 16px 72px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; }
+h1 { font-size: clamp(24px, 3.2vw, 34px); line-height: 1.2; margin: 6px 0 20px; }
+h2 { font-size: 21px; margin: 0 0 4px; }
+h3 { font-size: 16px; margin: 0 0 8px; }
+.lede { color: var(--ink-2); margin: 0 0 16px; font-size: 14px; }
+section { background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 24px; margin: 18px 0; }
+code, pre, .mono, .path, .hash { font-family: var(--mono); }
+pre { background: var(--code); border-radius: 8px; padding: 12px 14px; overflow-x: auto; white-space: pre; margin: 8px 0 0; max-height: 440px; font-size: 12.5px; line-height: 1.5; }
+details { margin-top: 10px; }
+summary { cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 500; }
+summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--rule); }
+th { font: 600 11px/1.4 var(--sans); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); }
+ul { margin: 6px 0 0; padding-left: 18px; }
+li { margin: 2px 0; }
+.eyebrow { font: 600 11.5px/1.4 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+.path { font-size: 12.5px; overflow-wrap: anywhere; }
+.hash { font-size: 12px; }
+.table-wrap { overflow-x: auto; }
+
+/* Header */
+.masthead { padding: 0 4px; }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px 20px; margin: 0;
+        padding: 14px 0 0; border-top: 1px solid var(--rule-2); }
+.meta dt { font: 600 11px/1.4 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.meta dd { margin: 2px 0 0; overflow-wrap: anywhere; font-size: 14px; }
+
+/* Decision */
+.decision { display: grid; grid-template-columns: auto 1fr; gap: 20px 28px; align-items: center; border-top: 5px solid var(--idle); }
+.decision.green { border-top-color: var(--green); } .decision.yellow { border-top-color: var(--amber); } .decision.red { border-top-color: var(--red); }
+.stamp { width: 112px; height: 112px; border-radius: 50%; border: 3px double currentColor; display: grid; place-items: center;
+         text-align: center; font: 700 12px/1.25 var(--sans); letter-spacing: .1em; text-transform: uppercase; padding: 10px; transform: rotate(-6deg); }
+.decision.green .stamp { color: var(--green); } .decision.yellow .stamp { color: var(--amber); } .decision.red .stamp { color: var(--red); } .decision.none .stamp { color: var(--idle); }
+.decision h2 { font-size: 26px; }
+.bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--idle-bg); margin: 14px 0 10px; gap: 2px; }
+.bar span { min-width: 6px; }
+.bar .GREEN { background: var(--green); } .bar .YELLOW { background: var(--amber); } .bar .RED { background: var(--red); }
+.tiles { display: flex; gap: 22px; flex-wrap: wrap; }
+.tile { display: flex; align-items: baseline; gap: 8px; }
+.tile .n { font: 700 28px/1 var(--serif); }
+.tile.GREEN .n { color: var(--green); } .tile.YELLOW .n { color: var(--amber); } .tile.RED .n { color: var(--red); }
+.tile .lbl { font-size: 13px; color: var(--ink-2); }
+
+/* Funnel */
+.funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 0; overflow: hidden; }
+.stage { padding: 20px 22px; position: relative; }
+.stage + .stage { border-left: 1px solid var(--rule); }
+.stage + .stage::before { content: ""; position: absolute; left: -7px; top: 26px; width: 12px; height: 12px; background: var(--sheet);
+                          border-top: 1px solid var(--rule); border-right: 1px solid var(--rule); transform: rotate(45deg); }
+.stage .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.stage .tag { font: 700 12px/1 var(--mono); padding: 5px 7px; border-radius: 6px; background: var(--code); color: var(--ink-2); }
+.stage .name { font: 600 16px/1.2 var(--serif); }
+.stage .dot { margin-left: auto; width: 10px; height: 10px; border-radius: 50%; background: var(--idle); }
+.stage.pass .dot { background: var(--green); } .stage.fail .dot { background: var(--red); } .stage.done .dot { background: var(--accent); }
+.stage ul { list-style: none; padding: 0; margin: 0; font-size: 13.5px; color: var(--ink-2); }
+
+/* Pills and cards */
+.pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font: 600 12px/1.5 var(--sans); white-space: nowrap; vertical-align: 1px; }
+.pill.GREEN, .pill.green { background: var(--green-bg); color: var(--green); }
+.pill.YELLOW, .pill.yellow { background: var(--amber-bg); color: var(--amber); }
+.pill.RED, .pill.red { background: var(--red-bg); color: var(--red); }
+.pill.muted, .pill.none { background: var(--idle-bg); color: var(--ink-2); }
+.card { border: 1px solid var(--rule); border-left: 4px solid var(--rule-2); border-radius: 10px; padding: 14px 16px; margin: 12px 0; background: var(--sheet); }
+.card.RED { border-left-color: var(--red); } .card.YELLOW { border-left-color: var(--amber); } .card.GREEN { border-left-color: var(--green); }
+.card .first { font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.grid2 > .card { margin: 0; border-left-width: 1px; }
+.note { border-left: 3px solid var(--amber); padding: 6px 12px; background: var(--amber-bg); border-radius: 0 8px 8px 0; font-size: 13px; margin: 10px 0 0; }
+.note.red { border-left-color: var(--red); background: var(--red-bg); }
+
+/* Cross-examination as a transcript */
+.turn .speaker { font: 700 11px/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+.turn .q { font: 500 16px/1.5 var(--serif); margin: 2px 0 6px; }
+.turn .answer { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule-2); }
+
+/* Sign-off */
+.sign { white-space: pre-wrap; background: var(--code); border: 1px dashed var(--rule-2); border-radius: 10px; padding: 18px; font: 13px/1.8 var(--mono); }
+
+@media (max-width: 720px) {
+  section { padding: 18px; }
+  .decision { grid-template-columns: 1fr; }
+  .stamp { width: 92px; height: 92px; font-size: 11px; }
+  .funnel { grid-template-columns: 1fr; }
+  .stage + .stage { border-left: 0; border-top: 1px solid var(--rule); }
+  .stage + .stage::before { display: none; }
+}
+@media print {
+  :root { --paper: #fff; --sheet: #fff; --ink: #000; --code: #f4f4f4; }
+  body { font-size: 10.5pt; } main { padding: 0; max-width: none; }
+  section { break-inside: avoid; border-color: #bbb; }
+  pre { max-height: none; white-space: pre-wrap; }
+  .stamp { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .stamp { transform: none; } }
+</style>
+</head>
+<body>
+<main>
+
+<header class="masthead">
+  <div class="eyebrow">Evidence Ledger · Tieto — Earned Trust in AI Code</div>
+  <h1>#2283: Generator and analyzer crash with IndexOutOfRangeException on a closed generic struct from a referenced assembly</h1>
+  <dl class="meta">
+    <div><dt>Requirement</dt><dd>Issue #2283 (bugfix)</dd></div>
+    <div><dt>Evaluated branch</dt><dd class="mono small">ju26-issue-2283</dd></div>
+    <div><dt>Base</dt><dd class="mono small">origin/ju26-issue-2283~1</dd></div>
+    <div><dt>PR</dt><dd class="mono small">origin/ju26-issue-2283</dd></div>
+    <div><dt>Generated (UTC)</dt><dd>2026-11-14T01:56:16+00:00</dd></div>
+    <div><dt>Files in the diff</dt><dd>4</dd></div>
+  </dl>
+</header>
+
+<p class="note" role="note">Text written by the models during this run (scope justifications, Prosecutor objections) was generated in Spanish and has been machine-translated into English for this report. The original record is kept unchanged in the source JSON.</p>
+<section class="decision red" aria-label="System decision">
+  <div class="stamp" aria-hidden="true">Audit</div>
+  <div>
+    <div class="eyebrow">System decision</div>
+    <h2>Manual audit required</h2>
+    <p class="lede">Some fragments are red: review those lines by hand before approving.</p>
+    <div class="bar" role="img" aria-label="1 green, 2 yellow, 1 red">
+<span class="GREEN" style="flex: 1"></span><span class="YELLOW" style="flex: 2"></span><span class="RED" style="flex: 1"></span>    </div>
+    <div class="tiles">
+      <div class="tile GREEN"><div class="n" data-count="GREEN">1</div><div class="lbl">Green</div></div>
+      <div class="tile YELLOW"><div class="n" data-count="YELLOW">2</div><div class="lbl">Yellow</div></div>
+      <div class="tile RED"><div class="n" data-count="RED">1</div><div class="lbl">Red</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="funnel" class="funnel" aria-label="Verification funnel">
+  <div class="stage done">
+    <div class="head"><span class="tag">T3</span><span class="name">Triage</span><span class="dot" aria-hidden="true"></span></div>
+    <ul><li>4 files</li><li>2 out of scope</li><li>1 high risk</li></ul>
+  </div>
+  <div class="stage pass">
+    <div class="head"><span class="tag">T1</span><span class="name">Evidence</span><span class="dot" aria-hidden="true"></span></div>
+    <ul><li>change test passed</li><li>invariance passed</li></ul>
+  </div>
+  <div class="stage fail">
+    <div class="head"><span class="tag">T2</span><span class="name">Cross-examination</span><span class="dot" aria-hidden="true"></span></div>
+    <ul><li>3 objections</li><li>1 closed with a valid test</li><li>2 possible defects in the PR</li></ul>
+  </div>
+</section>
+
+<section id="must-read">
+  <h2>What you need to read</h2>
+  <p class="lede">Only these fragments need human eyes. Everything else is backed by executable tests.</p>
+  <div class="card YELLOW">
+    <span class="pill YELLOW">Yellow</span>
+    <span class="path">README.md</span>
+    <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change adds documentation in the README.md file regarding generic types from referenced assemblies, which is not requested in the bug report.</li></ul>
+  </div>
+  <div class="card YELLOW">
+    <span class="pill YELLOW">Yellow</span>
+    <span class="path">doc/analyzers/MsgPack004.md</span>
+    <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the bug report about the IndexOutOfRangeException exception.</li></ul>
+  </div>
+  <div class="card RED">
+    <span class="pill RED">Red</span>
+    <span class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</span>
+    <ul class="small"><li class="first">M7: 2 unresolved objection(s): the system refuses to decide</li><li>objection “Does Diagnostic.Create throw an exception (or produce an invalid location) when GetPropertyIdentifierLocation returns null for a property declared in metadata without [Key] inside a [MessagePackObject] type of the assembly being compiled?”: the Defender&#39;s test fails on the PR → possible defect in the PR, check the test output</li><li>objection “Does IndexOutOfRangeException occur when a [MessagePackObject] type of the assembly being compiled has a member of a closed generic reference type from a referenced assembly (for example List&lt;Item&lt;int&gt;&gt; or List&lt;int&gt;), instead of a closed generic value type like Item&lt;int&gt;?”: the Defender&#39;s test fails on the PR → possible defect in the PR, check the test output</li><li>change test `LedgerIssue2283`: base red (2 failed), PR green (2 passed)</li><li>invariance: deterministic, 21 general cases identical</li></ul>
+  </div>
+</section>
+
+<section id="files">
+  <h2>Files in the diff</h2>
+  <p class="lede">Risk comes from static rules (no LLM); scope is judged against the literal issue text.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>File</th><th>Scope</th><th>Risk</th><th>Verdict</th><th>Why</th></tr></thead>
+    <tbody>
+    <tr>
+      <td class="path">README.md</td>
+      <td>OUT</td>
+      <td>LOW</td>
+      <td><span class="pill YELLOW">Yellow</span></td>
+      <td class="small">
+<strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change adds documentation in the README.md file regarding generic types from referenced assemblies, which is not requested in the bug report.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
+    </tr>
+    <tr>
+      <td class="path">doc/analyzers/MsgPack004.md</td>
+      <td>OUT</td>
+      <td>LOW</td>
+      <td><span class="pill YELLOW">Yellow</span></td>
+      <td class="small">
+<strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the bug report about the IndexOutOfRangeException exception.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
+    </tr>
+    <tr>
+      <td class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</td>
+      <td>IN</td>
+      <td>HIGH</td>
+      <td><span class="pill RED">Red</span></td>
+      <td class="small">
+<strong>M7: 2 unresolved objection(s): the system refuses to decide</strong><br><span class="muted">Scope:</span> The change in TypeCollector.cs fixes the IndexOutOfRangeException exception by safely accessing DeclaringSyntaxReferences for types originating from referenced assemblies.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+  <details><summary>1 green file</summary>  <div class="table-wrap">
+  <table>
+    <thead><tr><th>File</th><th>Scope</th><th>Risk</th><th>Verdict</th><th>Why</th></tr></thead>
+    <tbody>
+    <tr>
+      <td class="path">tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs</td>
+      <td>IN</td>
+      <td>LOW</td>
+      <td><span class="pill GREEN">Green</span></td>
+      <td class="small">
+<strong>M4: in scope, LOW risk, evidence passed</strong><br><span class="muted">Scope:</span> The change adds unit tests to verify that the presence of closed generic structs in referenced assemblies does not cause errors in the generator and analyzer, fulfilling the bug report.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+</details>
+</section>
+
+<section>
+  <h2>Executable evidence</h2>
+  <p class="lede">Trust comes only from tests that run: a test written without seeing the diff, and a comparison of the generator output between base and PR.</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>Change test</h3>
+      <div class="small muted">Written only from the issue text, without seeing the diff.</div>
+      <p class="mono small">LedgerIssue2283</p>
+      <p>Base: <span class="pill red">red · 2 failed</span>
+         PR: <span class="pill green">green · 2 passed</span>
+         <span class="pill green">passed</span></p>
+      <details><summary>Test code</summary><pre>using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MessagePack.SourceGenerator;
+using MessagePack.SourceGenerator.Analyzers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Testing;
+
+public class LedgerIssue2283
+{
+    private const string LibSource = &#34;&#34;&#34;
+        using MessagePack;
+
+        namespace Lib;
+
+        [MessagePackObject]
+        public partial record struct Item&lt;T&gt;([property: Key(0)] string Key);
+        &#34;&#34;&#34;;
+
+    private const string AppSource = &#34;&#34;&#34;
+        using MessagePack;
+        using Lib;
+
+        namespace App;
+
+        [MessagePackObject]
+        public sealed partial record Cmd([property: Key(0)] string Scope)
+        {
+            [Key(1)]
+            public Item&lt;int&gt; Member { get; init; }
+        }
+        &#34;&#34;&#34;;
+
+    private static async Task&lt;CSharpCompilation&gt; CreateAppCompilationAsync()
+    {
+        ImmutableArray&lt;MetadataReference&gt; net80Refs = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);
+        IEnumerable&lt;MetadataReference&gt; baseReferences = net80Refs.Concat(ReferencesHelper.GetReferences(ReferencesSet.MessagePack));
+        CSharpParseOptions parseOptions = new CSharpParseOptions(LanguageVersion.Latest);
+
+        CSharpCompilation libCompilation = CSharpCompilation.Create(
+            &#34;Lib&#34;,
+            new[] { CSharpSyntaxTree.ParseText(LibSource, parseOptions) },
+            baseReferences,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        GeneratorDriver libDriver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());
+        libDriver = libDriver.RunGeneratorsAndUpdateCompilation(libCompilation, out Compilation libOutputCompilation, out ImmutableArray&lt;Diagnostic&gt; libGenDiagnostics);
+        Assert.DoesNotContain(libGenDiagnostics, d =&gt; d.Id == &#34;CS8785&#34; || d.Severity == DiagnosticSeverity.Error);
+
+        using MemoryStream libStream = new MemoryStream();
+        EmitResult libEmitResult = libOutputCompilation.Emit(libStream);
+        Assert.True(libEmitResult.Success, string.Join(Environment.NewLine, libEmitResult.Diagnostics));
+
+        MetadataReference libReference = MetadataReference.CreateFromImage(libStream.ToArray());
+        IEnumerable&lt;MetadataReference&gt; appReferences = baseReferences.Append(libReference);
+
+        return CSharpCompilation.Create(
+            &#34;App&#34;,
+            new[] { CSharpSyntaxTree.ParseText(AppSource, parseOptions) },
+            appReferences,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+    }
+
+    [Fact]
+    public async Task GeneratorSucceedsOnClosedGenericStructFromReferencedAssembly()
+    {
+        CSharpCompilation appCompilation = await CreateAppCompilationAsync();
+
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());
+        driver = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out Compilation outputCompilation, out ImmutableArray&lt;Diagnostic&gt; generatorDiagnostics);
+        GeneratorDriverRunResult runResult = driver.GetRunResult();
+
+        foreach (GeneratorRunResult result in runResult.Results)
+        {
+            Assert.Null(result.Exception);
+        }
+
+        Assert.DoesNotContain(generatorDiagnostics, d =&gt; d.Id == &#34;CS8785&#34; || d.Severity == DiagnosticSeverity.Error);
+        Assert.Contains(
+            runResult.Results.SelectMany(r =&gt; r.GeneratedSources),
+            s =&gt; s.SourceText.ToString().Contains(&#34;GeneratedMessagePackResolver&#34;, StringComparison.Ordinal));
+
+        ImmutableArray&lt;Diagnostic&gt; compilationErrors = outputCompilation
+            .GetDiagnostics()
+            .Where(d =&gt; d.Severity == DiagnosticSeverity.Error)
+            .ToImmutableArray();
+        Assert.Empty(compilationErrors);
+    }
+
+    [Fact]
+    public async Task AnalyzerDoesNotCrashOnClosedGenericStructFromReferencedAssembly()
+    {
+        CSharpCompilation appCompilation = await CreateAppCompilationAsync();
+
+        ImmutableArray&lt;Diagnostic&gt; analyzerDiagnostics = await appCompilation
+            .WithAnalyzers(ImmutableArray.Create&lt;DiagnosticAnalyzer&gt;(new MsgPack00xMessagePackAnalyzer()))
+            .GetAnalyzerDiagnosticsAsync();
+
+        Assert.DoesNotContain(analyzerDiagnostics, d =&gt; d.Id == &#34;AD0001&#34;);
+        Assert.DoesNotContain(analyzerDiagnostics, d =&gt; d.Severity == DiagnosticSeverity.Error);
+    }
+}
+</pre></details>
+<details><summary>Output on base</summary><pre>0 passed, 2 failed (of 2)
+LedgerIssue2283.GeneratorSucceedsOnClosedGenericStructFromReferencedAssembly: Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at System.Collections.Immutable.ImmutableArray`1.get_Item(Int32 index)
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\MessagePack.SourceGenerator\CodeAnalysis\TypeCollector.cs:line 1075
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectGeneric(INamedTypeSymbol type, ISymbol callerSymbol) in src\MessagePack.SourceGenerator\CodeAnalysis\TypeCollector.cs:line 651
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectCore(ITypeSymbol typeSymbol, ISymbol callerSymbol) in src\MessagePack.SourceGenerator\CodeAnalysis\TypeCollector.cs:l
+LedgerIssue2283.AnalyzerDoesNotCrashOnClosedGenericStructFromReferencedAssembly: Assert.DoesNotContain() Failure: Filter matched in collection
+             ↓ (pos 0)
+Collection: [warning AD0001: Analyzer &#39;MessagePack.SourceGenerator.Analyzers.MsgPack00xMessagePackAnalyzer&#39; threw an exception of type &#39;System.IndexOutOfRangeException&#39; with message &#39;Index was outside the bounds of the array.&#39;.
+Exception occurred with following context:
+Compilation: App
+ISymbol: Cmd (NamedType)
+
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at System.Collections.Immutable.ImmutableArray`1.get_Item(Int32 index)
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\MessagePack.SourceGenerator\CodeAnalysis\TypeCollector.cs:line 1075
+   at MessagePack.SourceGenerator.CodeAnalysis.</pre></details>      <details><summary>Output on PR</summary><pre>2 passed, 0 failed (of 2)</pre></details>
+    </div>
+    <div class="card">
+      <h3>Generation invariance</h3>
+      <p>
+        <span class="pill green">deterministic base</span>
+        <span class="pill green">0 changes outside the issue</span>
+      </p>
+      <p class="small muted">21 general cases compared by SHA-256 (base ×2 and PR). Issue cases may change; general cases must not.</p>
+    </div>
+  </div>
+  <details><summary>Hashes per case (29)</summary>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Case</th><th>Tag</th><th>Base</th><th>Base (rerun)</th><th>PR</th><th>Status</th></tr></thead>
+    <tbody>
+    <tr>
+      <td class="mono small">general-collections</td><td class="small">general</td>
+      <td class="hash" title="7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28">7654617729b1</td>
+      <td class="hash" title="7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28">7654617729b1</td>
+      <td class="hash" title="7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28">7654617729b1</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-constructor</td><td class="small">general</td>
+      <td class="hash" title="b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed">b728925274c0</td>
+      <td class="hash" title="b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed">b728925274c0</td>
+      <td class="hash" title="b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed">b728925274c0</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-duplicate-int-keys-not-suppressed</td><td class="small">general</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-enum</td><td class="small">general</td>
+      <td class="hash" title="38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07">38c7c338ffaa</td>
+      <td class="hash" title="38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07">38c7c338ffaa</td>
+      <td class="hash" title="38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07">38c7c338ffaa</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-generic-class</td><td class="small">general</td>
+      <td class="hash" title="8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a">8f1d5f9de4bf</td>
+      <td class="hash" title="8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a">8f1d5f9de4bf</td>
+      <td class="hash" title="8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a">8f1d5f9de4bf</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-generic-from-same-compilation</td><td class="small">general</td>
+      <td class="hash" title="3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f">3beb8e536476</td>
+      <td class="hash" title="3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f">3beb8e536476</td>
+      <td class="hash" title="3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f">3beb8e536476</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-generic-with-constraints</td><td class="small">general</td>
+      <td class="hash" title="416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b">416d1f74039f</td>
+      <td class="hash" title="416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b">416d1f74039f</td>
+      <td class="hash" title="416d1f74039ff70934d7225ecfbaa90e1e9244df16aca6ad103365f61522d68b">416d1f74039f</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-ignore-member</td><td class="small">general</td>
+      <td class="hash" title="cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968">cafaeed79269</td>
+      <td class="hash" title="cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968">cafaeed79269</td>
+      <td class="hash" title="cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968">cafaeed79269</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-inheritance</td><td class="small">general</td>
+      <td class="hash" title="dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93">dbc9028604b5</td>
+      <td class="hash" title="dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93">dbc9028604b5</td>
+      <td class="hash" title="dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93">dbc9028604b5</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-init-only</td><td class="small">general</td>
+      <td class="hash" title="f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009">f6b6329a1fa3</td>
+      <td class="hash" title="f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009">f6b6329a1fa3</td>
+      <td class="hash" title="f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009">f6b6329a1fa3</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-int-keys</td><td class="small">general</td>
+      <td class="hash" title="7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9">7b01595063d7</td>
+      <td class="hash" title="7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9">7b01595063d7</td>
+      <td class="hash" title="7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9">7b01595063d7</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-keyasname</td><td class="small">general</td>
+      <td class="hash" title="325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d">325daca8d535</td>
+      <td class="hash" title="325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d">325daca8d535</td>
+      <td class="hash" title="325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d">325daca8d535</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-missing-key-in-source</td><td class="small">general</td>
+      <td class="hash" title="7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0">7c8ddebe412d</td>
+      <td class="hash" title="7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0">7c8ddebe412d</td>
+      <td class="hash" title="7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0">7c8ddebe412d</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-nested-types</td><td class="small">general</td>
+      <td class="hash" title="17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29">17621e544c6d</td>
+      <td class="hash" title="17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29">17621e544c6d</td>
+      <td class="hash" title="17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29">17621e544c6d</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-nullable</td><td class="small">general</td>
+      <td class="hash" title="b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa">b2bfaadca297</td>
+      <td class="hash" title="b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa">b2bfaadca297</td>
+      <td class="hash" title="b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa">b2bfaadca297</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-private-members</td><td class="small">general</td>
+      <td class="hash" title="8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910">8bac39b81972</td>
+      <td class="hash" title="8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910">8bac39b81972</td>
+      <td class="hash" title="8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910">8bac39b81972</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-record</td><td class="small">general</td>
+      <td class="hash" title="f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46">f5d7882efe4a</td>
+      <td class="hash" title="f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46">f5d7882efe4a</td>
+      <td class="hash" title="f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46">f5d7882efe4a</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-resolver-attribute</td><td class="small">general</td>
+      <td class="hash" title="c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15">c5713d6122f9</td>
+      <td class="hash" title="c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15">c5713d6122f9</td>
+      <td class="hash" title="c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15">c5713d6122f9</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-string-keys</td><td class="small">general</td>
+      <td class="hash" title="62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d">62548088b848</td>
+      <td class="hash" title="62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d">62548088b848</td>
+      <td class="hash" title="62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d">62548088b848</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-struct</td><td class="small">general</td>
+      <td class="hash" title="7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15">7a70f2de5294</td>
+      <td class="hash" title="7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15">7a70f2de5294</td>
+      <td class="hash" title="7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15">7a70f2de5294</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">general-union</td><td class="small">general</td>
+      <td class="hash" title="d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661">d838b525a3dc</td>
+      <td class="hash" title="d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661">d838b525a3dc</td>
+      <td class="hash" title="d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661">d838b525a3dc</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2234-suppressed-duplicate-int-keys</td><td class="small">issue-2234</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td class="hash" title="01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a">01d977cc4b16</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2234-suppressed-duplicate-string-keys</td><td class="small">issue-2234</td>
+      <td class="hash" title="b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d">b05370a0f1ac</td>
+      <td class="hash" title="b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d">b05370a0f1ac</td>
+      <td class="hash" title="b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d">b05370a0f1ac</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2234-suppressed-missing-key</td><td class="small">issue-2234</td>
+      <td class="hash" title="a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c">a0c8a7a4c018</td>
+      <td class="hash" title="a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c">a0c8a7a4c018</td>
+      <td class="hash" title="a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c">a0c8a7a4c018</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2234-suppressed-mixed-keys</td><td class="small">issue-2234</td>
+      <td class="hash" title="866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b">866ec3112a14</td>
+      <td class="hash" title="866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b">866ec3112a14</td>
+      <td class="hash" title="866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b">866ec3112a14</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2283-closed-generic-struct-from-metadata</td><td class="small">issue-2283</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td class="hash" title="2287d29fe7bd917554f482b5938c70d0c33170fcd947a0146cabbff53966cc9d">2287d29fe7bd</td>
+      <td><span class="pill yellow">expected change</span></td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2283-generic-record-struct-from-metadata</td><td class="small">issue-2283</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td class="hash" title="90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3">90b24678e89b</td>
+      <td class="hash" title="6c6d528d89bb9fc45e0072a73c99b8bcd4253292cd0afe7d2937e463304f836b">6c6d528d89bb</td>
+      <td><span class="pill yellow">expected change</span></td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2283-unkeyed-member-in-metadata-generic</td><td class="small">issue-2283</td>
+      <td class="hash" title="ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570">ce8e281bf15e</td>
+      <td class="hash" title="ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570">ce8e281bf15e</td>
+      <td class="hash" title="b6d36cbcf45ef1c156864095b430dc4ba3dbd7c29d2c7056fbd61b51f1bd0805">b6d36cbcf45e</td>
+      <td><span class="pill yellow">expected change</span></td>
+    </tr>
+    <tr>
+      <td class="mono small">issue-2297-generated-code-excluded-from-coverage</td><td class="small">issue-2297</td>
+      <td class="hash" title="636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717">636b9d9b7576</td>
+      <td class="hash" title="636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717">636b9d9b7576</td>
+      <td class="hash" title="636b9d9b757688eb05f7a5abcbb41c319b4114fae5f32875aaca40dbbc776717">636b9d9b7576</td>
+      <td><span class="pill green">identical</span>
+</td>
+    </tr>
+    </tbody>
+  </table></div>
+  </details>
+</section>
+
+<section>
+  <h2>Cross-examination: Prosecutor vs Defender</h2>
+  <p class="lede">Only for in-scope, high-risk fragments. The Defender cannot argue: an objection is closed only by a test that passes on the PR and fails against a mutant that breaks that case on purpose.</p>
+  <h3 class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</h3>
+  <div class="card turn GREEN">
+    <div class="speaker">Prosecutor · nvidia/nemotron-3.5-super-vl-120b-a12b</div>
+    <p class="q"><strong>Prosecutor 1:</strong> Does GetObjectInfo still throw IndexOutOfRangeException when a closed generic value type defined in a referenced assembly triggers one of the diagnostic branches that still index DeclaringSyntaxReferences[0] directly (lines 735, 1009, and 1101 of the issue), for example a member without [Key] or both keys null in that metadata type?</p>
+<p class="small muted">The diff only replaces direct access at two diagnostic sites and wraps reportDiagnostic in ReportIfLocatedInCompilation, but does not remove the unguarded direct accesses inside GetObjectInfo pointed out in the issue. The exception occurs when constructing the diagnostic, before the location filter can act. The LedgerIssue2283 change test does not cover those alternative branches of GetObjectInfo.</p>    <div class="answer">
+      <div class="speaker">Defender · gemini-4-hydrogen · may answer only with a test</div>
+      <p class="small">Defender: <span class="mono">Ledger_2283_Objection1</span>
+        · PR <span class="pill green">green · 2 passed</span>
+        · mutant <span class="pill red">red · 1 failed</span>
+        · <span class="pill green">objection covered: valid test</span>
+</p>
+<details><summary>Defender's test</summary><pre>using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MessagePack.SourceGenerator;
+using MessagePack.SourceGenerator.Analyzers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Testing;
+
+public class Ledger_2283_Objection1
+{
+    [Fact]
+    public async Task ClosedGenericStructFromReferencedAssembly_MemberWithoutKey_DoesNotThrow()
+    {
+        string libSource = &#34;&#34;&#34;
+            using MessagePack;
+
+            namespace Lib
+            {
+                [MessagePackObject]
+                public partial struct ItemWithoutKey&lt;T&gt;
+                {
+                    public T Value { get; set; }
+                }
+
+                [MessagePackObject]
+                public partial record struct RecordItemWithoutKey&lt;T&gt;
+                {
+                    public T Value { get; set; }
+                }
+            }
+            &#34;&#34;&#34;;
+
+        string appSource = &#34;&#34;&#34;
+            using MessagePack;
+            using Lib;
+
+            namespace App
+            {
+                [MessagePackObject]
+                public sealed partial record Cmd([property: Key(0)] string Scope)
+                {
+                    [Key(1)]
+                    public ItemWithoutKey&lt;int&gt; StructMember { get; init; }
+
+                    [Key(2)]
+                    public RecordItemWithoutKey&lt;string&gt; RecordStructMember { get; init; }
+                }
+            }
+            &#34;&#34;&#34;;
+
+        await AssertGeneratorAndAnalyzerSucceedAsync(libSource, appSource);
+    }
+
+    [Fact]
+    public async Task ClosedGenericStructFromReferencedAssembly_BothStringAndIntKeyNull_DoesNotThrow()
+    {
+        string libSource = &#34;&#34;&#34;
+            using MessagePack;
+
+            namespace Lib
+            {
+                [MessagePackObject]
+                public partial struct ItemWithNullKey&lt;T&gt;
+                {
+                    [Key((string)null)]
+                    public T Value { get; set; }
+                }
+
+                [MessagePackObject]
+                public partial record struct RecordItemWithNullKey&lt;T&gt;
+                {
+                    [Key((string)null)]
+                    public T Value { get; set; }
+                }
+            }
+            &#34;&#34;&#34;;
+
+        string appSource = &#34;&#34;&#34;
+            using MessagePack;
+            using Lib;
+
+            namespace App
+            {
+                [MessagePackObject]
+                public sealed partial record Cmd([property: Key(0)] string Scope)
+                {
+                    [Key(1)]
+                    public ItemWithNullKey&lt;int&gt; StructMember { get; init; }
+
+                    [Key(2)]
+                    public RecordItemWithNullKey&lt;string&gt; RecordStructMember { get; init; }
+                }
+            }
+            &#34;&#34;&#34;;
+
+        await AssertGeneratorAndAnalyzerSucceedAsync(libSource, appSource);
+    }
+
+    private static async Task AssertGeneratorAndAnalyzerSucceedAsync(string libSource, string appSource)
+    {
+        ImmutableArray&lt;MetadataReference&gt; netReferences = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);
+        ImmutableArray&lt;MetadataReference&gt; baseReferences = netReferences.AddRange(ReferencesHelper.GetReferences(ReferencesSet.MessagePack));
+
+        var parseOptions = new CSharpParseOptions(LanguageVersion.Latest);
+
+        CSharpCompilation libCompilation = CSharpCompilation.Create(
+            &#34;Lib&#34;,
+            new[] { CSharpSyntaxTree.ParseText(libSource, parseOptions) },
+            baseReferences,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        using var libStream = new MemoryStream();
+        var emitResult = libCompilation.Emit(libStream);
+        Assert.True(emitResult.Success, string.Join(Environment.NewLine, emitResult.Diagnostics));
+
+        MetadataReference libReference = MetadataReference.CreateFromImage(libStream.ToArray());
+
+        CSharpCompilation appCompilation = CSharpCompilation.Create(
+            &#34;App&#34;,
+            new[] { CSharpSyntaxTree.ParseText(appSource, parseOptions) },
+            baseReferences.Add(libReference),
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());
+        driver = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out Compilation outputCompilation, out ImmutableArray&lt;Diagnostic&gt; generatorDiagnostics);
+        GeneratorDriverRunResult runResult = driver.GetRunResult();
+
+        Assert.DoesNotContain(generatorDiagnostics, d =&gt; d.Id == &#34;CS8785&#34;);
+        Assert.DoesNotContain(runResult.Diagnostics, d =&gt; d.Id == &#34;CS8785&#34;);
+        Assert.All(runResult.Results, r =&gt; Assert.Null(r.Exception));
+
+        var generatedSources = runResult.Results.SelectMany(r =&gt; r.GeneratedSources).ToList();
+        Assert.NotEmpty(generatedSources);
+        Assert.Contains(generatedSources, s =&gt; s.SourceText.ToString().Contains(&#34;GeneratedMessagePackResolver&#34;, StringComparison.Ordinal));
+        Assert.DoesNotContain(outputCompilation.GetDiagnostics(), d =&gt; d.Severity == DiagnosticSeverity.Error);
+
+        ImmutableArray&lt;Diagnostic&gt; analyzerDiagnostics = await appCompilation
+            .WithAnalyzers(ImmutableArray.Create&lt;DiagnosticAnalyzer&gt;(new MsgPack00xMessagePackAnalyzer()))
+            .GetAnalyzerDiagnosticsAsync();
+
+        Assert.DoesNotContain(analyzerDiagnostics, d =&gt; d.Id == &#34;AD0001&#34;);
+        Assert.All(analyzerDiagnostics, d =&gt; Assert.True(d.Location.IsInSource, $&#34;Unexpected non-source diagnostic: {d}&#34;));
+    }
+}
+</pre></details><details><summary>Mutant</summary><pre>--- a/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs
++++ b/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs
+@@ -1431,7 +1431,7 @@
+     /// &lt;/summary&gt;
+     /// &lt;param name=&#34;property&#34;&gt;The property symbol. It may be declared in metadata, in which case &lt;see langword=&#34;null&#34; /&gt; is returned.&lt;/param&gt;
+     /// &lt;returns&gt;The location of the identifier, or &lt;see langword=&#34;null&#34; /&gt; if the property has no declaration in source.&lt;/returns&gt;
+-    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) =&gt; (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();
++    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) =&gt; (property.DeclaringSyntaxReferences[0].GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();
+ 
+     /// &lt;summary&gt;
+     /// Reports a diagnostic only when its location belongs to the compilation being analyzed.
+</pre></details>    </div>
+  </div>
+  <div class="card turn RED">
+    <div class="speaker">Prosecutor · nvidia/nemotron-3.5-super-vl-120b-a12b</div>
+    <p class="q"><strong>Prosecutor 2:</strong> Does Diagnostic.Create throw an exception (or produce an invalid location) when GetPropertyIdentifierLocation returns null for a property declared in metadata without [Key] inside a [MessagePackObject] type of the assembly being compiled?</p>
+<p class="small muted">GetPropertyIdentifierLocation returns null for metadata symbols. That null is passed to Diagnostic.Create before invoking ReportIfLocatedInCompilation; if Diagnostic.Create does not accept null, the analyzer crashes with ArgumentNullException instead of discarding the diagnostic. The change test does not cover metadata members lacking a key.</p>    <div class="answer">
+      <div class="speaker">Defender · gemini-4-hydrogen · may answer only with a test</div>
+      <p class="small">Defender: <span class="mono">Ledger_2283_Objection2</span>
+        · PR <span class="pill red">red · 2 failed</span>
+        · mutant <span class="pill muted">not run</span>
+        · <span class="pill red">fails on the PR: possible defect</span>
+</p>
+      <p class="note red"><strong>The Defender's test compiles and fails on the PR:</strong> the Prosecutor may be right and the defect may be in the code, not in the test. Check the output.</p>
+      <details open><summary>Test output on the PR</summary><pre>0 passed, 2 failed (of 2)
+Ledger_2283_Objection2.MetadataPropertyWithoutKey_DoesNotThrowOrReportInvalidLocation: Assert.Empty() Failure: Collection was not empty
+Collection: [(15,45): error MsgPack004: Properties and fields of base types of MessagePackObject-attributed types require either KeyAttribute or IgnoreMemberAttribute: global::Lib.BaseWithMetadataProperty.InheritedNoKey]
+Ledger_2283_Objection2.MetadataPropertyWithNullKey_GetPropertyIdentifierLocationNull_DoesNotThrowOrReportInvalidLocation: Assert.DoesNotContain() Failure: Filter matched in collection
+             ↓ (pos 0)
+Collection: [warning AD0001: Analyzer &#39;MessagePack.SourceGenerator.Analyzers.MsgPack00xMessagePackAnalyzer&#39; threw an exception of type &#39;System.InvalidOperationException&#39; with message &#39;Nullable object must have a value.&#39;.
+Exception occurred with following context:
+Compilation: App
+ISymbol: DerivedHolder (NamedType)
+
+System.InvalidOperationException: Nullable object must have a value.
+   at System.Nullable`1.get_Value()
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\MessagePack.SourceGenerator\CodeAnalysis\TypeCollector.cs:line 1013
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectObject(INamedTypeSymb</pre></details>
+<details><summary>Defender's test</summary><pre>using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MessagePack.SourceGenerator;
+using MessagePack.SourceGenerator.Analyzers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Testing;
+
+public class Ledger_2283_Objection2
+{
+    [Fact]
+    public async Task MetadataPropertyWithoutKey_DoesNotThrowOrReportInvalidLocation()
+    {
+        string libSource = &#34;&#34;&#34;
+            #nullable enable
+            using MessagePack;
+
+            namespace Lib;
+
+            [MessagePackObject]
+            public partial struct ItemNoKey&lt;T&gt;
+            {
+                public T Value { get; set; }
+            }
+
+            public class BaseWithMetadataProperty
+            {
+                public string InheritedNoKey { get; set; } = string.Empty;
+            }
+            &#34;&#34;&#34;;
+
+        string appSource = &#34;&#34;&#34;
+            #nullable enable
+            using MessagePack;
+            using Lib;
+
+            namespace App;
+
+            [MessagePackObject]
+            public sealed partial class Holder
+            {
+                [Key(0)]
+                public ItemNoKey&lt;int&gt; Member { get; set; }
+            }
+
+            [MessagePackObject]
+            public sealed partial class DerivedHolder : BaseWithMetadataProperty
+            {
+                [Key(0)]
+                public int OwnKey { get; set; }
+            }
+            &#34;&#34;&#34;;
+
+        (ImmutableArray&lt;MetadataReference&gt; baseReferences, MetadataReference libReference) = await CompileLibraryAsync(libSource);
+
+        CSharpCompilation appCompilation = CSharpCompilation.Create(
+            &#34;App&#34;,
+            new[] { CSharpSyntaxTree.ParseText(appSource, new CSharpParseOptions(LanguageVersion.Latest)) },
+            baseReferences.Add(libReference),
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());
+        driver = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out _, out ImmutableArray&lt;Diagnostic&gt; generatorDiagnostics);
+        GeneratorDriverRunResult runResult = driver.GetRunResult();
+
+        Assert.Empty(generatorDiagnostics);
+        Assert.Empty(runResult.Diagnostics);
+        Assert.All(runResult.Results, r =&gt; Assert.Null(r.Exception));
+        Assert.NotEmpty(runResult.Results.SelectMany(r =&gt; r.GeneratedSources));
+
+        ImmutableArray&lt;Diagnostic&gt; analyzerDiagnostics = await appCompilation
+            .WithAnalyzers(ImmutableArray.Create&lt;DiagnosticAnalyzer&gt;(new MsgPack00xMessagePackAnalyzer()))
+            .GetAnalyzerDiagnosticsAsync();
+
+        Assert.DoesNotContain(analyzerDiagnostics, d =&gt; d.Id == &#34;AD0001&#34;);
+        Assert.All(analyzerDiagnostics, d =&gt;
+        {
+            Assert.True(d.Location.IsInSource);
+            Assert.NotNull(d.Location.SourceTree);
+            Assert.True(appCompilation.ContainsSyntaxTree(d.Location.SourceTree!));
+        });
+        Assert.Empty(analyzerDiagnostics);
+    }
+
+    [Fact]
+    public async Task MetadataPropertyWithNullKey_GetPropertyIdentifierLocationNull_DoesNotThrowOrReportInvalidLocation()
+    {
+        string libSource = &#34;&#34;&#34;
+            #nullable enable
+            using MessagePack;
+
+            namespace Lib;
+
+            [MessagePackObject]
+            public partial struct ItemNullKey&lt;T&gt;
+            {
+                [Key((string)null!)]
+                public T Value { get; set; }
+            }
+
+            public class BaseWithNullKeyProperty
+            {
+                [Key((string)null!)]
+                public string InheritedNullKey { get; set; } = string.Empty;
+            }
+            &#34;&#34;&#34;;
+
+        string appSource = &#34;&#34;&#34;
+            #nullable enable
+            using MessagePack;
+            using Lib;
+
+            namespace App;
+
+            [MessagePackObject]
+            public sealed partial class Holder
+            {
+                [Key(0)]
+                public ItemNullKey&lt;string&gt; Member { get; set; }
+            }
+
+            [MessagePackObject]
+            public sealed partial class DerivedHolder : BaseWithNullKeyProperty
+            {
+                [Key(0)]
+                public int OwnKey { get; set; }
+            }
+            &#34;&#34;&#34;;
+
+        (ImmutableArray&lt;MetadataReference&gt; baseReferences, MetadataReference libReference) = await CompileLibraryAsync(libSource);
+
+        CSharpCompilation appCompilation = CSharpCompilation.Create(
+            &#34;App&#34;,
+            new[] { CSharpSyntaxTree.ParseText(appSource, new CSharpParseOptions(LanguageVersion.Latest)) },
+            baseReferences.Add(libReference),
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        ImmutableArray&lt;Diagnostic&gt; analyzerDiagnostics = await appCompilation
+            .WithAnalyzers(ImmutableArray.Create&lt;DiagnosticAnalyzer&gt;(new MsgPack00xMessagePackAnalyzer()))
+            .GetAnalyzerDiagnosticsAsync();
+
+        Assert.DoesNotContain(analyzerDiagnostics, d =&gt; d.Id == &#34;AD0001&#34;);
+        Assert.All(analyzerDiagnostics, d =&gt;
+        {
+            Assert.True(d.Location.IsInSource);
+            Assert.NotNull(d.Location.SourceTree);
+            Assert.True(appCompilation.ContainsSyntaxTree(d.Location.SourceTree!));
+        });
+        Assert.Empty(analyzerDiagnostics);
+    }
+
+    private static async Task&lt;(ImmutableArray&lt;MetadataReference&gt; References, MetadataReference LibReference)&gt; CompileLibraryAsync(string libSource)
+    {
+        ImmutableArray&lt;MetadataReference&gt; net80Refs = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);
+        ImmutableArray&lt;MetadataReference&gt; baseReferences = net80Refs.AddRange(ReferencesHelper.GetReferences(ReferencesSet.MessagePack));
+
+        CSharpCompilation libCompilation = CSharpCompilation.Create(
+            &#34;Lib&#34;,
+            new[] { CSharpSyntaxTree.ParseText(libSource, new CSharpParseOptions(LanguageVersion.Latest)) },
+            baseReferences,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        using var ms = new MemoryStream();
+        EmitResult emitResult = libCompilation.Emit(ms);
+        Assert.True(emitResult.Success, string.Join(Environment.NewLine, emitResult.Diagnostics));
+
+        return (baseReferences, MetadataReference.CreateFromImage(ms.ToArray()));
+    }
+}
+</pre></details><details><summary>Mutant</summary><pre>--- a/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs
++++ b/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs
+@@ -1443,10 +1443,7 @@
+     /// &lt;/remarks&gt;
+     private void ReportIfLocatedInCompilation(Action&lt;Diagnostic&gt; report, Diagnostic diagnostic)
+     {
+-        if (diagnostic.Location.IsInSource &amp;&amp; this.compilation.ContainsSyntaxTree(diagnostic.Location.SourceTree))
+-        {
+-            report(diagnostic);
+-        }
++        report(diagnostic);
+     }
+ 
+     private static Location? GetLocation(IParameterSymbol parameter) =&gt; parameter.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().GetLocation();
+</pre></details>    </div>
+  </div>
+  <div class="card turn RED">
+    <div class="speaker">Prosecutor · nvidia/nemotron-3.5-super-vl-120b-a12b</div>
+    <p class="q"><strong>Prosecutor 3:</strong> Does IndexOutOfRangeException occur when a [MessagePackObject] type of the assembly being compiled has a member of a closed generic reference type from a referenced assembly (for example List&lt;Item&lt;int&gt;&gt; or List&lt;int&gt;), instead of a closed generic value type like Item&lt;int&gt;?</p>
+<p class="small muted">CollectGeneric invokes GetObjectInfo for any closed generic type on a metadata symbol, not just for value types. The repro only covers Item&lt;int&gt; (value type) as a direct member; it does not cover closed generic reference types or closed generic types used as arguments of other generic types, which also lack syntax in the current compilation.</p>    <div class="answer">
+      <div class="speaker">Defender · gemini-4-hydrogen · may answer only with a test</div>
+      <p class="small">Defender: <span class="mono">Ledger_2283_Objection3</span>
+        · PR <span class="pill red">red · 2 failed</span>
+        · mutant <span class="pill muted">not run</span>
+        · <span class="pill red">fails on the PR: possible defect</span>
+</p>
+      <p class="note red"><strong>The Defender's test compiles and fails on the PR:</strong> the Prosecutor may be right and the defect may be in the code, not in the test. Check the output.</p>
+      <details open><summary>Test output on the PR</summary><pre>0 passed, 2 failed (of 2)
+Ledger_2283_Objection3.ClosedGenericCollectionWrappingMetadataGenericStructAndPrimitive_DoesNotCrashGeneratorOrAnalyzer: Assert.DoesNotContain() Failure: Filter matched in collection
+             ↓ (pos 0)
+Collection: [warning CS8785: Generator &#39;MessagePackGenerator&#39; failed to generate source. It will not contribute to the output and compilation errors may occur as a result. Exception was of type &#39;InvalidOperationException&#39; with message &#39;Nullable object must have a value.&#39;.
+System.InvalidOperationException: Nullable object must have a value.
+   at System.Nullable`1.get_Value()
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\MessagePack.SourceGenerator\CodeAnalysis\TypeCollector.cs:line 1013
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectGeneric(INamedTypeSymbol type, ISymbol callerSymbol) in src\Messa
+Ledger_2283_Objection3.ClosedGenericReferenceTypeFromReferencedAssembly_DoesNotCrashGeneratorOrAnalyzer: Assert.DoesNotContain() Failure: Filter matched in collection
+             ↓ (pos 0)
+Collection: [warning CS8785: Generator &#39;MessagePackGenerator&#39; failed to generate source. It will not contribute to the output and compilation errors may occur as a result. Exception was of type &#39;InvalidOperationException&#39; with message &#39;Nullable object must have a value.&#39;.
+System.InvalidOperationException: Nullable object must have a value.
+   at System.Nullable`1.get_Value()
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.GetObjectInfo(INamedTypeSymbol formattedType, ISymbol callerSymbol) in src\MessagePack.SourceGenerator\CodeAnalysis\TypeCollector.cs:line 1013
+   at MessagePack.SourceGenerator.CodeAnalysis.TypeCollector.CollectGeneric(INamedTypeSymbol type, ISymbol callerSymbol) in src\Messa</pre></details>
+<details><summary>Defender's test</summary><pre>using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MessagePack.SourceGenerator;
+using MessagePack.SourceGenerator.Analyzers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Testing;
+
+public class Ledger_2283_Objection3
+{
+    private const string LibSource = &#34;&#34;&#34;
+using MessagePack;
+
+namespace Lib;
+
+[MessagePackObject]
+public partial struct Item&lt;T&gt;
+{
+    [Key(0)]
+    public T Value { get; set; }
+
+    [Key((string)null)]
+    public string InvalidKey { get; set; }
+}
+
+[MessagePackObject]
+public partial class RefItem&lt;T&gt;
+{
+    [Key(0)]
+    public T Value { get; set; }
+
+    [Key((string)null)]
+    public string InvalidKey { get; set; }
+}
+&#34;&#34;&#34;;
+
+    [Fact]
+    public async Task ClosedGenericCollectionWrappingMetadataGenericStructAndPrimitive_DoesNotCrashGeneratorOrAnalyzer()
+    {
+        string appSource = &#34;&#34;&#34;
+using System.Collections.Generic;
+using MessagePack;
+using Lib;
+
+namespace App;
+
+[MessagePackObject]
+public sealed partial record Cmd([property: Key(0)] string Scope)
+{
+    [Key(1)]
+    public List&lt;Item&lt;int&gt;&gt; StructList { get; init; } = new();
+
+    [Key(2)]
+    public List&lt;int&gt; IntList { get; init; } = new();
+}
+&#34;&#34;&#34;;
+
+        await VerifyAppCompilationAsync(appSource);
+    }
+
+    [Fact]
+    public async Task ClosedGenericReferenceTypeFromReferencedAssembly_DoesNotCrashGeneratorOrAnalyzer()
+    {
+        string appSource = &#34;&#34;&#34;
+using System.Collections.Generic;
+using MessagePack;
+using Lib;
+
+namespace App;
+
+[MessagePackObject]
+public sealed partial record Cmd([property: Key(0)] string Scope)
+{
+    [Key(1)]
+    public RefItem&lt;int&gt; RefMember { get; init; } = new();
+
+    [Key(2)]
+    public List&lt;RefItem&lt;int&gt;&gt; RefList { get; init; } = new();
+}
+&#34;&#34;&#34;;
+
+        await VerifyAppCompilationAsync(appSource);
+    }
+
+    private static async Task VerifyAppCompilationAsync(string appSource)
+    {
+        ImmutableArray&lt;MetadataReference&gt; frameworkRefs = await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None);
+        MetadataReference[] baseRefs = frameworkRefs.Concat(ReferencesHelper.GetReferences(ReferencesSet.MessagePack)).ToArray();
+
+        CSharpCompilation libCompilation = CSharpCompilation.Create(
+            &#34;Lib&#34;,
+            new[] { CSharpSyntaxTree.ParseText(LibSource, new CSharpParseOptions(LanguageVersion.Latest)) },
+            baseRefs,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        using MemoryStream libStream = new();
+        EmitResult emitResult = libCompilation.Emit(libStream);
+        Assert.True(emitResult.Success, string.Join(Environment.NewLine, emitResult.Diagnostics));
+
+        MetadataReference libRef = MetadataReference.CreateFromImage(libStream.ToArray());
+        MetadataReference[] appRefs = baseRefs.Append(libRef).ToArray();
+
+        CSharpCompilation appCompilation = CSharpCompilation.Create(
+            &#34;App&#34;,
+            new[] { CSharpSyntaxTree.ParseText(appSource, new CSharpParseOptions(LanguageVersion.Latest)) },
+            appRefs,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());
+        driver = driver.RunGeneratorsAndUpdateCompilation(appCompilation, out Compilation outputCompilation, out ImmutableArray&lt;Diagnostic&gt; generatorDiagnostics);
+        GeneratorDriverRunResult runResult = driver.GetRunResult();
+
+        Assert.DoesNotContain(generatorDiagnostics, d =&gt; d.Id == &#34;CS8785&#34; || d.Severity &gt;= DiagnosticSeverity.Warning);
+        Assert.DoesNotContain(runResult.Diagnostics, d =&gt; d.Id == &#34;CS8785&#34; || d.Severity &gt;= DiagnosticSeverity.Warning);
+        Assert.All(runResult.Results, r =&gt; Assert.Null(r.Exception));
+        Assert.Contains(
+            runResult.Results.SelectMany(r =&gt; r.GeneratedSources),
+            s =&gt; s.HintName.Contains(&#34;GeneratedMessagePackResolver&#34;, StringComparison.Ordinal));
+        Assert.DoesNotContain(outputCompilation.GetDiagnostics(), d =&gt; d.Severity == DiagnosticSeverity.Error);
+
+        ImmutableArray&lt;Diagnostic&gt; analyzerDiagnostics = await appCompilation
+            .WithAnalyzers(ImmutableArray.Create&lt;DiagnosticAnalyzer&gt;(new MsgPack00xMessagePackAnalyzer()))
+            .GetAnalyzerDiagnosticsAsync();
+
+        Assert.DoesNotContain(analyzerDiagnostics, d =&gt; d.Id == &#34;AD0001&#34;);
+        Assert.Empty(analyzerDiagnostics);
+    }
+}
+</pre></details><details><summary>Mutant</summary><pre>--- a/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs
++++ b/src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs
+@@ -1431,7 +1431,7 @@
+     /// &lt;/summary&gt;
+     /// &lt;param name=&#34;property&#34;&gt;The property symbol. It may be declared in metadata, in which case &lt;see langword=&#34;null&#34; /&gt; is returned.&lt;/param&gt;
+     /// &lt;returns&gt;The location of the identifier, or &lt;see langword=&#34;null&#34; /&gt; if the property has no declaration in source.&lt;/returns&gt;
+-    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) =&gt; (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();
++    private static Location? GetPropertyIdentifierLocation(IPropertySymbol property) =&gt; (property.DeclaringSyntaxReferences[0].GetSyntax() as PropertyDeclarationSyntax)?.Identifier.GetLocation();
+ 
+     /// &lt;summary&gt;
+     /// Reports a diagnostic only when its location belongs to the compilation being analyzed.
+</pre></details>    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Which model played each role</h2>
+  <p class="lede">Configuration when this report was generated. If the Stage 2 evidence is reused from another run (fixtures), the model that produced it is recorded with it.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Role</th><th>Model</th><th>Task</th></tr></thead>
+    <tbody>
+    <tr><td class="mono small">flash</td><td class="mono small">gemini-3.5-flash</td><td class="small">Per-file IN/OUT scope triage</td></tr>
+    <tr><td class="mono small">pro</td><td class="mono small">gemini-4-hydrogen</td><td class="small">Independent change test, Defender and mutants</td></tr>
+    <tr><td class="mono small">fiscal</td><td class="mono small">nvidia/nemotron-3.5-super-vl-120b-a12b</td><td class="small">Prosecutor: cross-examination objections</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small muted">Risk is decided by static rules, without an LLM. The models only classify scope and produce tests and mutants; no model approves anything by argument.</p>
+</section>
+
+<section>
+  <h2>Sign-off</h2>
+  <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
+  <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
+Requirement / Issue ID: #2283 (bugfix) | Evaluated branch: ju26-issue-2283 | Base: origin/ju26-issue-2283~1
+Auto-verified claims (Green): 1/4 | Reviewed manually (Yellow/Red): 3/4
+Approved by (full name): ______________________  Role: _________________
+Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
+</section>
+
+</main>
+</body>
+</html>
