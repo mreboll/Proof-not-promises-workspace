@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El archivo añade pruebas que verifican la serialización, deserialización y registro en el resolver de formateadores generados para tipos externos, tal como solicita la incidencia."
+}

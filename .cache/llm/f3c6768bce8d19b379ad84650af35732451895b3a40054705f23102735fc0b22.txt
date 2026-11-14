@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio define el nuevo atributo `GeneratedMessagePackFormatterAttribute` con la propiedad `SurrogateType`, el cual fue explícitamente solicitado y acordado en la discusión de la incidencia para generar formateadores de tipos en ensamblados externos."
+}

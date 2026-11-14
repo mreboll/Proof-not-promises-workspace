@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El issue no solicita documentación ni actualizaciones al README para esta funcionalidad."
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Modifica la plantilla de generación para permitir que la clase generada sea parcial cuando es declarada por el usuario, tal como se solicita en la propuesta del issue."
+}

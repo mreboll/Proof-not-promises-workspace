@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio evita que las clases marcadas con [GeneratedMessagePackFormatter] se interpreten como formateadores escritos a mano, lo cual es necesario para soportar la generación de formateadores solicitada en la incidencia."
+}

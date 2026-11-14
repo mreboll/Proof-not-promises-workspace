@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio adapta la plantilla del formateador para emitir una clase parcial cuando el formateador es declarado por el usuario, lo cual forma parte del soporte solicitado para clases parciales con [GeneratedMessagePackFormatter]."
+}

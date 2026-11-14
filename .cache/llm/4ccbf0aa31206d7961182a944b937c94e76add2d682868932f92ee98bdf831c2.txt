@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El archivo corresponde a la documentación de una regla de analizador, lo cual representa documentación no solicitada en la descripción de la propuesta del issue."
+}

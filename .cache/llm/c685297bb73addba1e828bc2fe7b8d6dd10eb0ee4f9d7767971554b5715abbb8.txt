@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Implementa el recolector de modelos de serialización para clases parciales con el atributo `[GeneratedMessagePackFormatter]` solicitado en la incidencia, admitiendo tanto modo sin contrato como tipos subrogados."
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Introduce el tipo de datos necesario en el generador de código para representar la solicitud de un formateador generado mediante el atributo solicitado en la propuesta y discusión del issue."
+}

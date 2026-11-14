@@ -24,6 +24,8 @@ Son acumulables con el reto principal. Están ordenados por **valor esperado ÷ 
 
 ---
 
+Los textos listos para pegar en los formularios de Gemini y NVIDIA están en [bounty-forms.md](bounty-forms.md).
+
 ## 1. Gemini API
 
 - **Uso visible:** en el informe, cada pieza de evidencia indica el modelo que la produjo (test del cambio: `GEMINI_MODEL_PRO`).

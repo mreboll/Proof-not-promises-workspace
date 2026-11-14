@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El archivo crea un proyecto de prueba que modela la biblioteca externa sin dependencias para verificar la generación de formateadores solicitada en el issue."
+}

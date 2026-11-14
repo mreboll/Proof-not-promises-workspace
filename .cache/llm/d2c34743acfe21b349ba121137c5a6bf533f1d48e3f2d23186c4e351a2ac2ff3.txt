@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El archivo agrega documentación sobre una nueva regla de analizador, lo cual no fue solicitado en la descripción de la incidencia."
+}

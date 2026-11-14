@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El archivo agrega pruebas unitarias para la funcionalidad solicitada de generar formateadores de MessagePack mediante el atributo [GeneratedMessagePackFormatter] y tipos subrogados (surrogates)."
+}

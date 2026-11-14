@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio en la plantilla permite que la clase del formateador generado sea parcial si es declarada por el usuario, cumpliendo con la propuesta de usar clases parciales para generar formateadores de tipos externos."
+}

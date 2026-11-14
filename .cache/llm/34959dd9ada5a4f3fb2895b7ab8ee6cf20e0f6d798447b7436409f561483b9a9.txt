@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Agrega la propiedad `IsUserDeclaredFormatter` para rastrear las clases de formateador parciales marcadas con `[GeneratedMessagePackFormatter]`, lo cual es necesario para la funcionalidad solicitada en el issue."
+}
