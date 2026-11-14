@@ -1,0 +1,1 @@
+{"scope": "IN", "justification": "El cambio sustituye la indexación directa DeclaringSyntaxReferences[0] por FirstOrDefault y agrega ReportIfLocatedInCompilation para evitar IndexOutOfRangeException y reportes inválidos en tipos metadata, solucionando el fallo descrito."}

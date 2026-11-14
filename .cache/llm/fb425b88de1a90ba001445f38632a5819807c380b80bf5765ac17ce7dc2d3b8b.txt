@@ -1,0 +1,1 @@
+{"scope":"OUT","justification":"El cambio añade documentación al README sobre tipos genéricos desde ensamblados referenciados, pero el issue no solicita documentación; es un informe de error y la corrección no requiere añadir notas al README."}

@@ -1,0 +1,1 @@
+{"scope":"IN","justification":"La prueba agrega casos de prueba que verifican que el generador y el analizador manejen tipos genéricos cerrados de un ensamblado referenciado sin bloquearse, abordando el problema #2283."}

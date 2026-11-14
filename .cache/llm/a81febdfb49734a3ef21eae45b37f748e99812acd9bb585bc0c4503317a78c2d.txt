@@ -1,0 +1,1 @@
+{"scope":"OUT","justification":"El cambio solo añade documentación sobre el alcance del analizador y no aborda la excepción IndexOutOfRangeException que es el problema descrito en la incidencia."}

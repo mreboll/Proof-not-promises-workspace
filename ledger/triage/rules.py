@@ -20,6 +20,7 @@ from ledger.models import Risk
 from ledger.triage.diff import FileDiff
 
 _SRC_CS = r"^src/.*\.cs$"
+SNAPSHOT_PATH = r"^tests/.*/Resources/.*\.g\.cs$"  # también lo usa scope.py para no gastar LLM
 
 
 @dataclass(frozen=True)
@@ -43,7 +44,7 @@ RULES: tuple[Rule, ...] = (
     Rule("R-LOW-02", Risk.LOW, "documentación .md", path_regex=r"\.md$"),
     Rule("R-LOW-03", Risk.LOW, "proyecto .csproj", path_regex=r"\.csproj$"),
     Rule("R-LOW-04", Risk.LOW, ".editorconfig", path_regex=r"(^|/)\.editorconfig$"),
-    Rule("R-LOW-05", Risk.LOW, "snapshot de código generado (Resources/**.g.cs)", path_regex=r"^tests/.*/Resources/.*\.g\.cs$"),
+    Rule("R-LOW-05", Risk.LOW, "snapshot de código generado (Resources/**.g.cs)", path_regex=SNAPSHOT_PATH),
     Rule("R-MED-01", Risk.MED, "código de producción en src/ (lógica private/internal)", path_regex=r"^src/.*\.(cs|tt)$"),
     Rule(
         "R-HIGH-01",
