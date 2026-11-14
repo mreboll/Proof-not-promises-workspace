@@ -196,6 +196,22 @@
         "normalization": ""
       },
       {
+        "id": "issue-2129-formatter-for-external-type",
+        "tag": "issue-2129",
+        "base_hash": "ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085",
+        "base_hash_rerun": "ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085",
+        "pr_hash": "ae913e4f781666f8b34ca709ade66507896b17d01d7e4d7ea6e590cc4e2e2085",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2129-formatter-with-surrogate",
+        "tag": "issue-2129",
+        "base_hash": "45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a",
+        "base_hash_rerun": "45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a",
+        "pr_hash": "45cb4768434a698e40c017d7771194b199b1f9e670bece7619fc17452ed27c1a",
+        "normalization": ""
+      },
+      {
         "id": "issue-2234-suppressed-duplicate-int-keys",
         "tag": "issue-2234",
         "base_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
