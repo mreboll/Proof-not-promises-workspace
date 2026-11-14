@@ -2,8 +2,9 @@
 
 > **Para quien retome el proyecto (persona o sesión nueva de IA):** lee este documento entero antes de tocar nada.
 > Resume dónde está todo, qué se ha hecho, qué se ha medido, qué falta y cómo hacerlo. Los detalles viven en los
-> documentos enlazados; este es el mapa. Estado a **14/11/2026, ~07:15**. Desde ahora se trabaja **desde un solo
-> sitio** (ya no hay reparto Línea A / Línea B).
+> documentos enlazados; este es el mapa. Estado a **14/11/2026, ~07:35**, al cerrar la sesión de trabajo de la
+> antigua Línea A. Desde ahora se trabaja **desde un solo sitio** (ya no hay reparto Línea A / Línea B).
+> **El prompt para arrancar una sesión nueva está al final (§12).**
 
 ---
 
@@ -29,14 +30,19 @@ Repo público: `github.com/mreboll/Proof-not-promises`.
 | Pipeline de punta a punta (T3 → T1 → T2 → informe) | ✅ con dotnet local y con Modal |
 | Evidencia real de los 4 issues | ✅ `fixtures/evidence_<id>.json` (#2129 pendiente de regenerar con `issue_id`) |
 | Informe estrella de #2283 (crash desplazado) | ✅ `demo/2283-dotnet.html` |
-| Etapa 3 en paralelo con Modal | ✅ código y tests (`0f24606`); ⏳ **medición y llevar a `main`** |
+| Etapa 3 en paralelo con Modal | ✅ código y tests (`0f24606`, caché atómica `c259b8f`); ❌ **nunca ejecutada en real** (Pendiente 2); falta llevarla a `main` |
 | Concept Card, README público, guiones, formularios | ✅ borradores revisados; falta pasada final de quien presenta |
 | Vídeo y pitch | ❌ guiones listos, falta grabar/ensayar |
 | CI | ⚠️ `runs-on: craci` se queda en cola; sin runner CRACI activo |
-| Tests | ✅ **295 en verde**, sin red ni claves (`.venv/Scripts/python -m pytest -q`, ~65 s) |
+| Tests | ✅ **296 en verde**, sin red ni claves (`.venv/Scripts/python -m pytest -q`, ~65 s) |
 
-**Ramas:** `main` = `d6a553b` (todo excepto `0f24606` y este documento). `a/evidence` = `main` + `0f24606` + este
-documento. `b/triage-report` = igual que `main` (B no tiene nada sin subir). **Pendiente 1** las unifica.
+**Ramas:** `main` = `d6a553b`. **`a/evidence` es la más completa**: `main` + el paralelismo (`0f24606`), la caché
+atómica (`20028e1`, `c259b8f`), este documento y la herramienta de medición (`c2eb91e`) y una lección (`ca02baf`); va
+6 commits por delante y contiene todo `main`. `b/triage-report` = `main` (B no tiene nada sin subir). El
+**Pendiente 1** las unifica en `main`.
+
+**Fuera del repo:** 115 respuestas del LLM sin seguimiento en `.cache/llm/` de la máquina de A (de las ejecuciones en
+Modal); la demo no las necesita. Los resultados de las mediciones canceladas quedaron en una carpeta temporal y no valen.
 
 ## 3. Cómo funciona (mapa del código)
 
@@ -136,26 +142,26 @@ LEDGER_RUNNER=modal .venv/Scripts/python -m ledger run --issue 2283        # rea
 
 ## 8. Pendientes, en orden (con instrucciones)
 
-**1. Unificar en `main`: `0f24606` + escritura atómica de la caché del LLM.**
-Con la Etapa 3 en paralelo, un hilo puede leer un fichero de `.cache/llm/` a medio escribir. En `ledger/llm.py`, al
-final de `complete`, sustituir la escritura directa por:
-```python
-tmp = cache_file.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
-tmp.write_text(text, encoding="utf-8")
-os.replace(tmp, cache_file)  # atómico en el mismo sistema de ficheros
+**1. Unificar en `main`.** La escritura atómica de la caché que pedía B ya está hecha (`c259b8f`, robusta en Windows:
+`os.replace` reintenta si otro hilo tiene el fichero abierto). Solo falta:
+```bash
+git fetch origin && git checkout main && git merge --ff-only origin/a/evidence && git push origin main
 ```
-Test primero (varios hilos escribiendo y leyendo el mismo prompt: todas las lecturas validan). Después:
-`git checkout main && git merge --ff-only a/evidence && git push origin main`, y trabajar desde `main` en adelante.
+y trabajar desde `main` en adelante (se pueden borrar después las ramas `a/evidence` y `b/triage-report`).
 
-**2. Medir la Etapa 3 en paralelo (dato para el formulario de Modal).** Hay que esperar a que termine la tanda en
-curso (§10). Medición justa, **con la caché del LLM vacía** en las dos versiones (si no, el LLM tarda 0 y solo se
-mide Modal). Herramienta: `python -m ledger.evidence.measure <issue> <seq|par> <out_dir>` (caché nueva por modo;
-`seq` fuerza `ModalTestRunner.parallel_safe = False`; guarda tiempo total, pico real de sandboxes
-(`modal_runner.sandbox_stats()`), objeciones válidas y veredictos en `<out_dir>/<issue>-<modo>/summary.json`).
-Ejecutar, **uno detrás de otro** (en paralelo competirían por la cuota de Gemini): #2283 `seq`, #2283 `par`,
-#2297 `par`. Envolverlos en `timeout 7200`. Luego actualizar `docs/bounty-form-modal.md`, `docs/numeros-evidencia.md` y la
-tabla de costes de `docs/concept-card.md` con **el pico real**, no el tope. Si aparecen 429 de Gemini, bajar
-`LEDGER_MAX_CONCURRENT_GEMINI` (por defecto 8).
+**2. Validar la Etapa 3 en paralelo en una ejecución REAL (imprescindible antes de presentarla).** Solo está probada
+con tests simulados. Una ejecución con Modal, Gemini y Nemotron reales puede destapar errores 429 de Gemini con 8
+peticiones a la vez, problemas con muchos sandboxes simultáneos o condiciones de carrera.
+```bash
+LEDGER_RUNNER=modal GEMINI_MODEL_PRO=gemini-4-hydrogen timeout 7200 .venv/Scripts/python -m ledger.evidence.measure 2283 par <carpeta-temporal>
+```
+(~5–8 min estimados; caché del LLM nueva, así que mide el tiempo real). Guarda tiempo total, **pico real de sandboxes**
+(`modal_runner.sandbox_stats()`), objeciones válidas y veredictos en `<carpeta>/2283-par/summary.json`. Referencia
+"antes": #2283 en Modal en secuencia tardó **11 min** (con parte de la caché caliente). Si se quiere el ejemplo grande
+para el pitch: `measure 2297 par` (estimado 10–20 min, frente a >1 h en secuencia). La medición `seq` con caché vacía es
+opcional (comparación más limpia). Después, actualizar `docs/bounty-form-modal.md`, `docs/numeros-evidencia.md` y la
+tabla de costes de `docs/concept-card.md` con **el pico real**, no el tope. Si aparecen 429, bajar
+`LEDGER_MAX_CONCURRENT_GEMINI` (por defecto 8). Ejecutar las mediciones **una detrás de otra**, nunca a la vez.
 
 **3. Fixture de #2129 con `issue_id` y regenerar la demo.**
 ```bash
@@ -205,17 +211,18 @@ comprobar el índice con `git stash list`).
 - **Contratos compartidos:** `ledger/models.py` es inmutable (pydantic frozen); `TestRunner` es un Protocol. Cambiarlos
   rompe fixtures y tests de las dos partes.
 
-## 10. Tanda en curso al escribir esto (rellenar cuando termine)
+## 10. Ejecuciones en Modal de #2234, #2297 y #2129 (cerrado)
 
-Lanzada desde esta sesión con `LEDGER_RUNNER=modal`, Defensor/mutantes `gemini-4-hydrogen`, Fiscal Nemotron, **Etapa 3
-en secuencia** (código anterior a `0f24606`), tope de 2 h por issue. Los informes se copian a
-`<scratchpad>/out-modal/` y hay que subirlos como `fixtures/report_<id>_modal.json`.
+Se lanzaron con `LEDGER_RUNNER=modal`, Defensor/mutantes `gemini-4-hydrogen`, Fiscal Nemotron y la Etapa 3 **en
+secuencia** (código anterior a `0f24606`). Resultado:
 
-| Issue | Inicio | Fin | Tiempo | Resultado |
-|---|---|---|---|---|
-| #2234 | 06:03 | 06:07 | 3,5 min | ✅ `fixtures/report_2234_modal.json`: `TypeCollector.cs` RED (evidencia de la Etapa 2 en rojo, sin Etapa 3) |
-| #2297 | 06:34 | _pendiente_ | _pendiente_ | _pendiente_ — sirve de "antes" aproximado (parte de la caché ya caliente) |
-| #2129 | _pendiente_ | _pendiente_ | _pendiente_ | _pendiente_ |
+| Issue | Tiempo | Resultado |
+|---|---|---|
+| #2234 | 3,5 min | ✅ `fixtures/report_2234_modal.json`: `TypeCollector.cs` RED (la evidencia de la Etapa 2 falla, así que no hay Etapa 3) |
+| #2297 | **cancelada** tras ~1 h | En secuencia interroga 12 ficheros de riesgo alto: más de 1 h. Se canceló para priorizar el paralelismo; su tiempo no servía de referencia (reaprovechaba caché de un intento anterior) |
+| #2129 | no llegó a ejecutarse | La demo enseña #2129 sin Etapa 3, que es suficiente: lo importante de #2129 es la Etapa 2 |
+
+Las mediciones con caché vacía (§8, Pendiente 2) también se cancelaron sin resultados válidos.
 
 ## 11. Índice de documentos
 
@@ -233,3 +240,44 @@ en secuencia** (código anterior a `0f24606`), tope de 2 h por issue. Los inform
 | `docs/decision-log.md` · `docs/lessons-log.md` | Decisiones (D1–D14) y fallos reales de la IA |
 | `docs/TECH-CHALLENGES.md` | Bounties: requisitos y prioridades |
 | `fixtures/` | Evidencia, triajes, informes reales y bench (lo que usa la demo) |
+
+## 12. Prompt para arrancar una sesión nueva
+
+Copiar y pegar tal cual en una sesión nueva de Claude Code abierta en la carpeta del repo (`tieto-ledger`):
+
+```text
+Retomamos el proyecto "Proof, not promises" (Junction 2026, reto de Tieto "Earned Trust in AI Code").
+Ya no hay reparto por personas: trabajamos todo desde un solo sitio.
+
+Antes de nada, lee docs/PROJECT-CONTEXT.md entero: es el documento de traspaso con el estado, el mapa del código,
+los comandos, los resultados medidos, los pendientes en orden y las trampas conocidas. Si necesitas detalle de
+triaje, interrogatorio, veredictos o informe, lee docs/HANDOFF-B.md. No re-derives lo que ya está decidido ahí
+(docs/decision-log.md) salvo que encuentres un fallo real.
+
+Entorno: Windows 11, Python en .venv (.venv/Scripts/python), .NET SDK 8.0.4xx, el repo del reto en
+../junction26-messagepack-csharp, claves en .env (no se sube). Modal ya tiene token; el workspace tiene un tope de
+uso de 30 $ (los créditos gratis): no lo cambies.
+
+Reglas de trabajo:
+- Comprueba primero que todo está en verde: .venv/Scripts/python -m pytest -q (296 tests, sin red ni claves).
+- TDD donde haya lógica: el test primero y velo fallar. No hagas commit si algún test falla: comprueba el resultado
+  de pytest antes de commitear, no encadenes "pytest | tail && git commit".
+- Cada fallo real de una IA (también tuyo) va como una línea a docs/lessons-log.md, con la capa que lo paró.
+- No toques ledger/models.py (contratos inmutables) sin explicar antes por qué.
+- Pídeme confirmación antes de borrar algo, de hacer push a main o de cualquier acción difícil de deshacer.
+- Las ejecuciones largas (pipeline completo, mediciones) en segundo plano, envueltas en timeout, y nunca dos a la vez
+  contra Modal/Gemini. No ejecutes nunca el pipeline completo con el runner local en paralelo.
+- Modelos que funcionan: gemini-4-hydrogen (pro), gemini-3.8-flash (flash), Nemotron
+  nvidia/nemotron-3.5-super-vl-120b-a12b (fiscal). gemini-2.5-* da 404. LEDGER_NVIDIA_FOR_ALL siempre a 0.
+
+Empieza por los pendientes de la sección 8, en orden:
+1. Unificar a/evidence en main (fast-forward) — pídeme el OK antes del push a main.
+2. Validar la Etapa 3 en paralelo con una ejecución real en Modal (ledger.evidence.measure 2283 par) y actualizar
+   con el pico real de sandboxes docs/bounty-form-modal.md, docs/numeros-evidencia.md y docs/concept-card.md.
+3. Regenerar el fixture de #2129 con issue_id y la demo (ledger.report.demo).
+4. CI: decidir CRACI o ubuntu-latest.
+Después, ayudar con el vídeo (2:00) y el pitch (3:00) usando docs/pitch-script.md, y con los formularios.
+
+Al terminar cada pendiente, actualiza docs/PROJECT-CONTEXT.md (estado y pendientes) para que siga siendo el
+documento de traspaso, y dime en una línea qué queda.
+```
