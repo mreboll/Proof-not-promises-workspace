@@ -19,8 +19,10 @@ We ran it on the four real AI-written pull requests of the challenge (MessagePac
   with the exact failing test.
 - **#2234 — RED for two real reasons.** The one-sentence issue produced a test that also passes on base, and the
   invariance check shows the fix changes behaviour **outside** the issue.
-- **#2297 — 237 files.** Static rules clear 223 low-risk files; generated code is identical everywhere after one
-  **declared** normalization (the feature adds an attribute to all generated code), shown in the report.
+- **#2297 — 237 files.** At most 14 need human eyes: static rules rank 223 files as low risk and the passing evidence
+  approves them unread. Generated code is identical everywhere after one **declared** normalization (the feature adds
+  an attribute to all generated code), shown in the report. The scope check flagged one unrequested change:
+  `TransformUtilities.cs` alters line breaks in generated code, which the issue never asks for.
 - **#2129 — the AI's own test was wrong.** The system did not approve; the independent invariance oracle showed the
   feature works and pointed the human at the test.
 

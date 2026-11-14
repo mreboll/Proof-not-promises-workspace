@@ -17,7 +17,7 @@ Qué tener abierto:
 | 1:14 | **Change test**: base en rojo, PR en verde | "A model that never saw the fix wrote this test from the issue alone. It fails on the base and passes on the PR: the bug is reproduced and fixed." |
 | 1:21 | **Generation invariance**: tabla de hashes iguales | "Thirty-one snippets through the generator, base twice, PR once, in isolated processes. Outside the issue, every hash is identical." |
 | 1:28 | **Cross-examination**: objeción en rojo, "possible PR defect" | "Then the Prosecutor asks what the tests missed. The Defender must answer with a test, and here the test fails on the PR: the AI fix only moved the crash." |
-| 1:37 | **Sign-off** + cifra de 237 ficheros | "So the system refuses to sign. And on the 237-file PR, static rules clear 223 low-risk files; only 14 get deeper scrutiny." |
+| 1:37 | **Sign-off** + cifra de 237 ficheros | "So the system refuses to sign. And on the 237-file PR, the evidence approves 223 low-risk files unread; at most 14 need a human, and one of them is a change nobody asked for." |
 
 > Si sobra un segundo, en 1:21: "All AI-written code ran in network-less Modal sandboxes."
 

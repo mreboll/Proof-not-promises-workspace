@@ -45,8 +45,11 @@ without reading every line?"**
   approved it.
 - **#2234 (bug fix):** RED, for two real reasons: the one-sentence issue produced a test that also passes on base,
   and the invariance shows the fix changes behaviour **outside** the issue (duplicate keys without the option).
-- **#2297 (feature, 237 files):** 223 files cleared by static rules as low risk; invariance identical everywhere
-  except its own case, after one **declared** normalization shown in the report.
+- **#2297 (feature, 237 files):** static rules rank 223 in-scope files as low risk (222 of them generated snapshots,
+  scoped by rule with no LLM call), and the passing evidence approves them without anyone reading them; invariance
+  identical everywhere except its own case, after one **declared** normalization shown in the report. The scope check
+  also caught an **unrequested change**: `TransformUtilities.cs` alters line breaks in the generated code, which the
+  issue never asks for (out of scope, high risk → red).
 - **#2129 (feature):** the AI's own test was wrong (false red); the independent invariance oracle showed the feature
   worked and pointed the human at the test.
 
@@ -61,9 +64,10 @@ without reading every line?"**
 | Scope triage of a 237-file PR | 57 s, 15 Gemini calls |
 | Modal compute for the whole hackathon | **$0.21** in credits |
 
-Against that: on the 237-file PR, static rules clear **223** low-risk files; **12** high-risk files go through
-executable evidence and cross-examination, and only the **2** out-of-scope files go straight to a human (one
-yellow, one red). On #2283 the human gets **one unresolved question with the exact failing test**. We did not
+Against that: on the 237-file PR, static rules rank **223** files as low risk and the passing evidence approves them
+unread; **12** high-risk files go to cross-examination and stay with a human until every objection is closed by a
+valid test; the **2** out-of-scope files go straight to a human (one yellow, one red). At most **14 of 237** files
+need human eyes. On #2283 the human gets **the unresolved questions with the exact failing tests**. We did not
 measure reviewer time; we measured where the reading goes.
 
 ## Limits (honest)
