@@ -37,9 +37,11 @@ They are rebuilt from the recorded runs in `fixtures/` with `python -m ledger.re
 | **T3 · Scope & risk** | Each file: in or out of the issue's scope × risk from static, auditable rules | Gemini flash + rules |
 | **T1 · Executable evidence** | **Change test** written from the issue alone (never the diff): red on base, green on PR. **Generation invariance**: 31 snippets through the source generator in two isolated processes, base run twice; outside the issue, generated code and diagnostics must hash identically | Gemini / Nemotron · .NET 8 · Modal |
 | **T2 · Cross-examination** | Up to 3 objections per high-risk file; each closes only with a test that passes on the PR **and fails against a mutant** | Nemotron (Prosecutor) vs Gemini (Defender) |
+| **Trust · Track record** | Trust is earned per area from signed changes and withdrawn after an escape (green goes back to a human). Every report lists a deterministic sample of green files for a human to spot-check | Rules + `trust/track_record.json`, written only by people |
 
 All AI-written code (change tests, Defender tests, mutants) can run in **Modal Sandboxes with no network**:
-base, PR and mutant in parallel take 28 s vs 63 s sequential on a laptop, for $0.21 of compute during the whole hackathon.
+base, PR and mutant in parallel take 28 s vs 63 s sequential on a laptop; the 237-file PR runs end to end in 14–20 min
+(over 1 h sequentially), for $2.86 of compute during the whole hackathon.
 
 ## Try it
 
@@ -59,6 +61,8 @@ python -m ledger run --issue 2283                        # full pipeline with do
 LEDGER_RUNNER=modal python -m ledger run --issue 2283     # AI-written code in network-less Modal Sandboxes
 python -m ledger.evidence.regen --issue 2283              # regenerate the evidence, with provenance
 python -m ledger.evidence.bench --issue 2283              # Modal (parallel) vs local (sequential)
+python -m ledger.trust status                             # trust per area: escapes per approved file, how they were found
+python -m ledger.trust record-change out/report-2283.json --owner "Full Name"   # after signing
 ```
 
 ## Read more

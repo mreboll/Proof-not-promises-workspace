@@ -24,6 +24,8 @@ from typing import Any, Callable
 from ledger.config import PROJECT_ROOT, get_issue, load_settings
 from ledger.models import ChangeTestEvidence, FileTriage, InvarianceEvidence, Report, Verdict
 from ledger.report.render import TRANSLATED_NOTICE, _context, recompute_verdicts, render_html, translate_llm_text
+from ledger.trust.policy import apply_trust
+from ledger.trust.record import load_record
 from ledger.verdict import decide
 
 FIXTURES = PROJECT_ROOT / "fixtures"
@@ -112,12 +114,12 @@ def from_fixtures(issue_id: str) -> Report:
 
 def _report(d: DemoSpec, translate: Callable[..., Report]) -> tuple[Report, str]:
     if not d.recorded:
-        return from_fixtures(d.issue_id), FIXTURE_NOTICE
+        return apply_trust(from_fixtures(d.issue_id), load_record()), FIXTURE_NOTICE
     report = Report.model_validate(_load(d.recorded))
     notice = ""
     if d.translate:
         report, notice = translate(report), TRANSLATED_NOTICE
-    return recompute_verdicts(report), notice
+    return apply_trust(recompute_verdicts(report), load_record()), notice
 
 
 def _index(rows: list[tuple[DemoSpec, Report, str]]) -> str:

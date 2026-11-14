@@ -3,8 +3,7 @@
 **Risk-Scoped Evidence Ledger** · Junction 2026 · Tieto challenge *Earned Trust in AI Code*
 Tested on four real AI-written pull requests to MessagePack-CSharp (#2283, #2234, #2129, #2297).
 
-> **Borrador de la Línea A.** Los números son reales (fuentes en `docs/numeros-evidencia.md`); el texto de
-> negocio (problema, quién firma, ahorro) está para que lo ajuste quien lleve la Concept Card.
+Every number on this card was measured on real runs; sources in `docs/numeros-evidencia.md`.
 
 ## The problem
 
@@ -38,14 +37,25 @@ approves. When it cannot prove something, it **refuses to decide** and says exac
 | **Confidence** | There is no self-reported confidence. "Confidence" is the state of the evidence: proven, contradicted, or missing | A confidence number without evidence behind it |
 | **Quality** | Generation invariance guards everything outside the issue; Prosecutor and Defender come from different model families so their blind spots do not align | One model grading its own homework |
 
-## How trust is earned over time (designed; the reference implements the per-change part)
+## How trust is earned over time (implemented: `ledger/trust/`, decision D17)
 
-1. **A named owner signs every change**, using the three lists the report generates (checked / not checked / residual risk).
-2. **Humans spot-check the AI reviewer:** a random sample of green files is read in full each week; anything the ledger
-   missed is logged as an *escape*, like the entries in `docs/lessons-log.md`.
-3. **Trust is per area and comes from track record.** An area (for example `src/MessagePack.SourceGenerator/**`) earns
-   lighter checks only after N changes with no escapes; one escape sends it back to full cross-examination.
-4. **Measure outcomes, not activity:** reverts, incidents and escapes per area, never "reviews done".
+1. **A named owner signs every change**, using the three lists the report generates (checked / not checked / residual
+   risk). `python -m ledger.trust record-change <report> --owner "Full Name"` refuses an empty name: no unowned merge.
+2. **Humans spot-check the AI reviewer.** Every report lists green files to read in full: 20 % of each area's green
+   files on probation, 5 % once trust is earned, at least 1 and at most 3 per area (a sample, not a full read). The
+   sample is picked by a hash of issue and path, so neither the AI nor the signer chooses it, and an auditor can
+   recompute it. Whatever the reader finds is recorded with `record-escape`.
+3. **Trust is per area and comes from track record** (`trust/track_record.json`, versioned in the repo). An area is the
+   file's directory, three levels deep: a fixed rule, not a model's call. It starts on *probation*, is *earned* after 5
+   clean signed changes, and is *withdrawn* by one escape: green files there go back to a human (verdict T1) until 5
+   clean changes are signed again.
+4. **Measure outcomes, not activity:** `python -m ledger.trust status` shows, per area, escapes per approved file and
+   how each was found (spot-check, revert, incident, rerun), never "reviews done".
+
+**Real data, nothing invented.** The record holds one escape, and it is ours: in one of the #2283 runs, all three
+objections were closed and the evidence approved `TypeCollector.cs`, although that AI fix only moves the crash
+(`fixtures/measure_2283_par_overlap_a.json`). Trust in `src/MessagePack.SourceGenerator/CodeAnalysis` is therefore
+withdrawn, and that same green would now go to a human. No change is recorded as signed, because no human has signed one yet.
 
 ## Technology considerations
 
@@ -54,9 +64,12 @@ approves. When it cannot prove something, it **refuses to decide** and says exac
 - **Frontend:** the same funnel applies with a different oracle: visual snapshots and accessibility checks of base vs
   PR, with a declared list of screens the issue is allowed to change.
 - **Security:** AI-written tests are untrusted code, so they run in network-less sandboxes (Modal). Issue text and
-  diffs reach the models as delimited, untrusted data. Memory-unsafe code (`unsafe`, `Span<T>`, `stackalloc`) and
-  public signatures are high risk by rule, so they are never approved without cross-examination; in a product with
-  auth or crypto code, those paths go into the same rule table.
+  diffs reach the models as delimited, untrusted data. By rule, high risk (never approved without cross-examination)
+  covers memory-unsafe code (`unsafe`, `Span<T>`, `stackalloc`), public signatures, and security-sensitive code for a
+  deserializer: resolving types by name (`Type.GetType`, `Assembly.Load`, `Activator.CreateInstance`, the classic
+  "typeless" attack vector), `MessagePackSecurity` settings, `BinaryFormatter`, `Process.Start`, crypto, `Marshal`, and
+  security or typeless code paths (R-HIGH-04/05). None of the four sample PRs touches them, so they change no result
+  shown here.
 
 ## The funnel
 

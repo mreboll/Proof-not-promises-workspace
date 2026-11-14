@@ -14,6 +14,8 @@ from pathlib import Path
 
 from ledger.config import PROJECT_ROOT, Settings, get_issue
 from ledger.crossexam.concurrency import parallel_enabled
+from ledger.trust.policy import apply_trust
+from ledger.trust.record import load_record
 from ledger.models import (
     ChangeTestEvidence,
     FileTriage,
@@ -116,4 +118,5 @@ def run(issue_id: str, settings: Settings, runner: TestRunner, *, use_fixtures: 
         invariance=invariance,
         verdicts=verdicts,
     )
-    return render_report(report, settings.out_dir)
+    # El historial de confianza (D17): lo verde de un área con la confianza retirada tras un escape lo lee una persona.
+    return render_report(apply_trust(report, load_record()), settings.out_dir)

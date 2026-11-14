@@ -147,3 +147,44 @@ def test_real_2129_touches_public_api_in_annotations():
     got = {f.path: assess_risk(f) for f in load_diff(_settings, "2129")}
     attrs = got["src/MessagePack.Annotations/Attributes.cs"]
     assert attrs.risk is Risk.HIGH and attrs.touches_public_api
+
+
+# --------------------------------------------------------------------------- seguridad (D18)
+
+
+@pytest.mark.parametrize("line", [
+    "    var t = Type.GetType(typeName, throwOnError: true);",
+    "    var asm = Assembly.Load(bytes);",
+    "    return Activator.CreateInstance(t);",
+    "    options = options.WithSecurity(MessagePackSecurity.UntrustedData);",
+    "    var f = new BinaryFormatter();",
+    "    Process.Start(\"sh\");",
+    "    using var aes = System.Security.Cryptography.Aes.Create();",
+    "    Marshal.Copy(src, dst, 0, n);",
+])
+def test_r_high_04_security_sensitive_api(line):
+    a = assess_risk(fd("src/MessagePack/Formatters/X.cs", added=(line,)))
+    assert a.risk is Risk.HIGH
+    assert "R-HIGH-04" in {h.split(":")[0] for h in a.rule_hits}
+
+
+def test_r_high_04_ignores_comments_strings_and_tests():
+    assert "R-HIGH-04" not in ids("src/MessagePack/X.cs", added=("    // Type.GetType is dangerous",))
+    assert "R-HIGH-04" not in ids("src/MessagePack/X.cs", added=('    var s = "Process.Start";',))
+    assert "R-HIGH-04" not in ids("tests/MessagePack.Tests/X.cs", added=("    Type.GetType(n);",))
+
+
+@pytest.mark.parametrize("path", ["src/MessagePack/MessagePackSecurity.cs", "src/MessagePack/Formatters/TypelessFormatter.cs"])
+def test_r_high_05_security_paths(path):
+    a = assess_risk(fd(path, added=("    var a = 1;",)))
+    assert a.risk is Risk.HIGH and "R-HIGH-05" in {h.split(":")[0] for h in a.rule_hits}
+
+
+@pytest.mark.parametrize("path", ["src/MessagePack/Typeless/Foo.cs", "src/MessagePack/Security/Y.cs"])
+def test_r_high_05_matches_security_directories_too(path):
+    assert "R-HIGH-05" in ids(path, added=("    var a = 1;",))
+
+
+@pytest.mark.parametrize("line", ["    Process.Start (\"sh\");", "    Assembly.Load (bytes);", "    Type.GetType (n);"])
+def test_r_high_04_tolerates_a_space_before_the_parenthesis(line):
+    assert "R-HIGH-04" in ids("src/MessagePack/X.cs", added=(line,))

@@ -1222,20 +1222,47 @@ public sealed partial record Cmd([property: Key(0)] string Scope)
   <p class="small muted">Risk is decided by static rules, without an LLM. The models only classify scope and produce tests and mutants; no model approves anything by argument.</p>
 </section>
 
+<section id="trust">
+  <h2>Trust track record and spot-checks</h2>
+  <p class="lede">Trust is earned per area from what happened after earlier sign-offs, and withdrawn after an escape. A human
+  spot-checks a deterministic sample of green files, so the AI reviewer is checked too.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Area</th><th>Trust</th><th>Clean signed changes since last escape</th><th>Escapes</th></tr></thead>
+    <tbody>
+    <tr><td class="mono small">.</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">doc/analyzers</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">src/MessagePack.SourceGenerator/CodeAnalysis</td><td>withdrawn</td><td>0</td>
+      <td class="small">#2283 (rerun): a parallel run closed all 3 objections and approved TypeCollector.cs, although the AI fix only moves the crash (IndexOutOfRange -&gt; InvalidOperation, reproduced with GeneratorProbe)</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.Tests</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3>Spot-checks: read these green files in full</h3>
+  <ul class="small"><li><span class="mono">tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs</span> <span class="muted">(tests/MessagePack.SourceGenerator.Tests, probation)</span></li></ul>
+  <p class="small muted">Found something the evidence missed? Record it, and trust in that area is withdrawn:
+  <span class="mono">python -m ledger.trust record-escape --issue 2283 --path &lt;file&gt; --found-by spot-check --description "..."</span>.
+  After signing: <span class="mono">python -m ledger.trust record-change out/report-2283.json --owner "Full Name"</span>.</p>
+</section>
+
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
   <h3>What was checked, and by what</h3>
   <ul class="small"><li>Scope and risk of 4 files: risk by static rules (no model), scope by gemini-3.5-flash against the literal issue text (2 out of scope, 1 high risk).</li><li>Change test `LedgerIssue2283`, written by gemini-4-hydrogen from the issue only (never saw the diff): red on base, green on PR.</li><li>Generation invariance (generated code + diagnostics, base and PR in isolated processes): 21/21 cases outside the issue identical; base deterministic on rerun.</li><li>Cross-examination: 2 of 3 objections closed by a test that passes on the PR and fails against a mutant (Prosecutor nvidia/nemotron-3.5-super-vl-120b-a12b, Defender gemini-4-hydrogen).</li></ul>
   <h3>What was NOT checked, and why</h3>
-  <ul class="small"><li>src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>  Open question on src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: When GetObjectInfo processes a closed generic value type from a referenced assembly and reaches a direct DeclaringSyntaxReferences[0] indexing site other than the two property-diagnostic sites edited in the diff (the issue cites lines 735, 1009, and 1101), does the analyzer or generator still throw IndexOutOfRangeException?</li><li>1 green file not read and not individually tested: approved by the shared evidence above.</li></ul>
+  <ul class="small"><li>README.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>doc/analyzers/MsgPack004.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>  Open question on src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: When GetObjectInfo processes a closed generic value type from a referenced assembly and reaches a direct DeclaringSyntaxReferences[0] indexing site other than the two property-diagnostic sites edited in the diff (the issue cites lines 735, 1009, and 1101), does the analyzer or generator still throw IndexOutOfRangeException?</li><li>1 green file not read and not individually tested: approved by the shared evidence above.</li></ul>
   <h3>Residual risk I accept</h3>
-  <ul class="small"><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li><li>1 open objection: if I approve, I accept that these questions stay unanswered.</li></ul>
+  <ul class="small"><li>Spot-checks assigned (1, read each in full before signing to check the AI reviewer): tests/MessagePack.SourceGenerator.Tests/GenericsFormatterTests.cs. Anything they reveal that the evidence missed is recorded as an escape.</li><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li><li>1 open objection: if I approve, I accept that these questions stay unanswered.</li></ul>
   <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
   <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
 Requirement / Issue ID: #2283 (bugfix) | Evaluated branch: ju26-issue-2283 | Base: origin/ju26-issue-2283~1
 Auto-verified claims (Green): 1/4 | Reviewed manually (Yellow/Red): 3/4
 Approved by (full name): ______________________  Role: _________________
+Spot-checks read in full: ____ of 1 | Escapes found and recorded: ____
 I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>

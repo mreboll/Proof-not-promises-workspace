@@ -136,7 +136,7 @@ li { margin: 2px 0; }
     <div><dt>Evaluated branch</dt><dd class="mono small">ju26-issue-2234</dd></div>
     <div><dt>Base</dt><dd class="mono small">origin/ju26-issue-2234~1</dd></div>
     <div><dt>PR</dt><dd class="mono small">origin/ju26-issue-2234</dd></div>
-    <div><dt>Generated (UTC)</dt><dd>2026-11-14T05:45:58+00:00</dd></div>
+    <div><dt>Generated (UTC)</dt><dd>2026-11-14T08:49:40+00:00</dd></div>
     <div><dt>Files in the diff</dt><dd>4</dd></div>
   </dl>
 </header>
@@ -628,13 +628,38 @@ public class LedgerIssue2234AnalyzerSuppressSourceGeneration
   <p class="small muted">Risk is decided by static rules, without an LLM. The models only classify scope and produce tests and mutants; no model approves anything by argument.</p>
 </section>
 
+<section id="trust">
+  <h2>Trust track record and spot-checks</h2>
+  <p class="lede">Trust is earned per area from what happened after earlier sign-offs, and withdrawn after an escape. A human
+  spot-checks a deterministic sample of green files, so the AI reviewer is checked too.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Area</th><th>Trust</th><th>Clean signed changes since last escape</th><th>Escapes</th></tr></thead>
+    <tbody>
+    <tr><td class="mono small">.</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">src/MessagePack.SourceGenerator/CodeAnalysis</td><td>withdrawn</td><td>0</td>
+      <td class="small">#2283 (rerun): a parallel run closed all 3 objections and approved TypeCollector.cs, although the AI fix only moves the crash (IndexOutOfRange -&gt; InvalidOperation, reproduced with GeneratorProbe)</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.ExecutionTests</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.Tests</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3>Spot-checks: read these green files in full</h3>
+<p class="small">No green files to sample.</p>  <p class="small muted">Found something the evidence missed? Record it, and trust in that area is withdrawn:
+  <span class="mono">python -m ledger.trust record-escape --issue 2234 --path &lt;file&gt; --found-by spot-check --description "..."</span>.
+  After signing: <span class="mono">python -m ledger.trust record-change out/report-2234.json --owner "Full Name"</span>.</p>
+</section>
+
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
   <h3>What was checked, and by what</h3>
   <ul class="small"><li>Scope and risk of 4 files: risk by static rules (no model), scope by gemini-3.8-flash against the literal issue text (3 out of scope, 1 high risk).</li><li>Change test `LedgerIssue2234AnalyzerSuppressSourceGeneration`, written by nvidia/nemotron-3.5-super-vl-120b-a12b from the issue only (never saw the diff): did NOT go red on base and green on PR.</li><li>Generation invariance (generated code + diagnostics, base and PR in isolated processes): 26/27 cases outside the issue identical; base deterministic on rerun.</li></ul>
   <h3>What was NOT checked, and why</h3>
-  <ul class="small"><li>src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: out of the issue&#39;s scope and high risk; no evidence can approve an unrequested change.</li><li>tests/MessagePack.SourceGenerator.Tests/SuppressSourceGenerationAnalyzerTests.cs: the executable evidence failed or is missing.</li></ul>
+  <ul class="small"><li>README.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: out of the issue&#39;s scope and high risk; no evidence can approve an unrequested change.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/SuppressedSourceGenerationTests.cs: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>tests/MessagePack.SourceGenerator.Tests/SuppressSourceGenerationAnalyzerTests.cs: the executable evidence failed or is missing.</li></ul>
   <h3>Residual risk I accept</h3>
   <ul class="small"><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li></ul>
   <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
@@ -642,6 +667,7 @@ public class LedgerIssue2234AnalyzerSuppressSourceGeneration
 Requirement / Issue ID: #2234 (bugfix) | Evaluated branch: ju26-issue-2234 | Base: origin/ju26-issue-2234~1
 Auto-verified claims (Green): 0/4 | Reviewed manually (Yellow/Red): 4/4
 Approved by (full name): ______________________  Role: _________________
+Spot-checks read in full: ____ of 0 | Escapes found and recorded: ____
 I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>

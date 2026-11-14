@@ -136,7 +136,7 @@ li { margin: 2px 0; }
     <div><dt>Evaluated branch</dt><dd class="mono small">ju26-issue-2129</dd></div>
     <div><dt>Base</dt><dd class="mono small">origin/ju26-issue-2129~1</dd></div>
     <div><dt>PR</dt><dd class="mono small">origin/ju26-issue-2129</dd></div>
-    <div><dt>Generated (UTC)</dt><dd>2026-11-14T05:45:58+00:00</dd></div>
+    <div><dt>Generated (UTC)</dt><dd>2026-11-14T08:49:40+00:00</dd></div>
     <div><dt>Files in the diff</dt><dd>28</dd></div>
   </dl>
 </header>
@@ -980,13 +980,54 @@ partial class GeneratedMessagePackResolver : MsgPack::IFormatterResolver
   <p class="small muted">Risk is decided by static rules, without an LLM. The models only classify scope and produce tests and mutants; no model approves anything by argument.</p>
 </section>
 
+<section id="trust">
+  <h2>Trust track record and spot-checks</h2>
+  <p class="lede">Trust is earned per area from what happened after earlier sign-offs, and withdrawn after an escape. A human
+  spot-checks a deterministic sample of green files, so the AI reviewer is checked too.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Area</th><th>Trust</th><th>Clean signed changes since last escape</th><th>Escapes</th></tr></thead>
+    <tbody>
+    <tr><td class="mono small">.</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">doc/analyzers</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">src/MessagePack.Annotations</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">src/MessagePack.SourceGenerator</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">src/MessagePack.SourceGenerator/Analyzers</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">src/MessagePack.SourceGenerator/CodeAnalysis</td><td>withdrawn</td><td>0</td>
+      <td class="small">#2283 (rerun): a parallel run closed all 3 objections and approved TypeCollector.cs, although the AI fix only moves the crash (IndexOutOfRange -&gt; InvalidOperation, reproduced with GeneratorProbe)</td></tr>
+    <tr><td class="mono small">src/MessagePack.SourceGenerator/Transforms</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">src/MessagePack.SourceGenerator/Utils</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.ExecutionTests</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.ExternalTypes</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.MapModeExecutionTests</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.Tests</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3>Spot-checks: read these green files in full</h3>
+<p class="small">No green files to sample.</p>  <p class="small muted">Found something the evidence missed? Record it, and trust in that area is withdrawn:
+  <span class="mono">python -m ledger.trust record-escape --issue 2129 --path &lt;file&gt; --found-by spot-check --description "..."</span>.
+  After signing: <span class="mono">python -m ledger.trust record-change out/report-2129.json --owner "Full Name"</span>.</p>
+</section>
+
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
   <h3>What was checked, and by what</h3>
   <ul class="small"><li>Scope and risk of 28 files: risk by static rules (no model), scope by gemini-3.8-flash against the literal issue text (6 out of scope, 9 high risk).</li><li>Change test `LedgerIssue2129`, written by gemini-3.8-flash from the issue only (never saw the diff): NOT green on PR.</li><li>Generation invariance (generated code + diagnostics, base and PR in isolated processes): 21/21 cases outside the issue identical; base deterministic on rerun.</li></ul>
   <h3>What was NOT checked, and why</h3>
-  <ul class="small"><li>src/MessagePack.Annotations/Attributes.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/AnalyzerReleases.Unshipped.md: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Analyzers/MsgPack00xMessagePackAnalyzer.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterCollector.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterRequest.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/ObjectSerializationInfo.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/GeneratorUtilities.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/MessagePackGenerator.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Utils/Constants.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypes.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypesTests.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/MessagePack.SourceGenerator.ExecutionTests.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPerson.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPoint.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalWidget.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/MessagePack.SourceGenerator.ExternalTypes.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.MapModeExecutionTests/MessagePack.SourceGenerator.MapModeExecutionTests.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.Tests/GeneratedMessagePackFormatterTests.cs: the executable evidence failed or is missing.</li></ul>
+  <ul class="small"><li>README.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>doc/analyzers/MsgPack019.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>doc/analyzers/MsgPack020.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>doc/analyzers/MsgPack021.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>doc/analyzers/MsgPack022.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>doc/analyzers/index.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>src/MessagePack.Annotations/Attributes.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/AnalyzerReleases.Unshipped.md: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Analyzers/MsgPack00xMessagePackAnalyzer.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterCollector.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterRequest.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/ObjectSerializationInfo.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/GeneratorUtilities.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/MessagePackGenerator.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Utils/Constants.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypes.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypesTests.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/MessagePack.SourceGenerator.ExecutionTests.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPerson.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPoint.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalWidget.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/MessagePack.SourceGenerator.ExternalTypes.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.MapModeExecutionTests/MessagePack.SourceGenerator.MapModeExecutionTests.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.Tests/GeneratedMessagePackFormatterTests.cs: the executable evidence failed or is missing.</li></ul>
   <h3>Residual risk I accept</h3>
   <ul class="small"><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li></ul>
   <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
@@ -994,6 +1035,7 @@ partial class GeneratedMessagePackResolver : MsgPack::IFormatterResolver
 Requirement / Issue ID: #2129 (feature) | Evaluated branch: ju26-issue-2129 | Base: origin/ju26-issue-2129~1
 Auto-verified claims (Green): 0/28 | Reviewed manually (Yellow/Red): 28/28
 Approved by (full name): ______________________  Role: _________________
+Spot-checks read in full: ____ of 0 | Escapes found and recorded: ____
 I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>

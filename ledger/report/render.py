@@ -16,6 +16,8 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pydantic import BaseModel
 
 from ledger.report.signoff import signoff
+from ledger.trust.policy import AreaTrust, area_of, area_trust, spot_checks
+from ledger.trust.record import TrackRecord, load_record
 from ledger.models import ChangeTestEvidence, ChangeType, FragmentVerdict, Report, Risk, Scope, TestRunResult, Verdict
 
 TEMPLATES = Path(__file__).parent / "templates"
@@ -123,7 +125,12 @@ def funnel(report: Report) -> list[dict[str, str]]:
     return [stage1, stage2, stage3]
 
 
-def render_html(report: Report, *, models: dict[str, str], issue_title: str, notice: str = "") -> str:
+def _trust_areas(report: Report, record: TrackRecord) -> list[AreaTrust]:
+    return [area_trust(record, area) for area in sorted({area_of(v.path) for v in report.verdicts})]
+
+
+def render_html(report: Report, *, models: dict[str, str], issue_title: str, notice: str = "", record: TrackRecord | None = None) -> str:
+    record = load_record() if record is None else record
     verdict_by_path = {v.path: v for v in report.verdicts}
     rows = [(t, verdict_by_path.get(t.path)) for t in report.triage]
     green_rows = [(t, v) for t, v in rows if v is not None and v.verdict is Verdict.GREEN]
@@ -154,7 +161,9 @@ def render_html(report: Report, *, models: dict[str, str], issue_title: str, not
         run_class=run_class,
         base_view=base_view(report.change_test),
         normalizations=_normalizations(report),
-        signoff=signoff(report, models),
+        signoff=signoff(report, models, record=record),
+        trust_areas=_trust_areas(report, record),
+        spot=spot_checks(report, record),
     )
 
 

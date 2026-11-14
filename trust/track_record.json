@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "kind": "escape",
+      "issue_id": "2283",
+      "date": "2026-11-14",
+      "area": "src/MessagePack.SourceGenerator/CodeAnalysis",
+      "path": "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs",
+      "found_by": "rerun",
+      "description": "a parallel run closed all 3 objections and approved TypeCollector.cs, although the AI fix only moves the crash (IndexOutOfRange -> InvalidOperation, reproduced with GeneratorProbe)",
+      "source": "fixtures/measure_2283_par_overlap_a.json; demo/2283-dotnet.html"
+    }
+  ]
+}

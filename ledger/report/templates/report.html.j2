@@ -339,6 +339,30 @@ li { margin: 2px 0; }
   <p class="small muted">Risk is decided by static rules, without an LLM. The models only classify scope and produce tests and mutants; no model approves anything by argument.</p>
 </section>
 
+<section id="trust">
+  <h2>Trust track record and spot-checks</h2>
+  <p class="lede">Trust is earned per area from what happened after earlier sign-offs, and withdrawn after an escape. A human
+  spot-checks a deterministic sample of green files, so the AI reviewer is checked too.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Area</th><th>Trust</th><th>Clean signed changes since last escape</th><th>Escapes</th></tr></thead>
+    <tbody>
+    {% for a in trust_areas %}
+    <tr><td class="mono small">{{ a.area }}</td><td>{{ a.level.value }}</td><td>{{ a.clean_since_escape }}</td>
+      <td class="small">{% if a.escapes %}{% for e in a.escapes %}#{{ e.issue_id }} ({{ e.found_by }}): {{ e.description }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}none{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <h3>Spot-checks: read these green files in full</h3>
+  {% if spot %}
+  <ul class="small">{% for s in spot %}<li><span class="mono">{{ s.path }}</span> <span class="muted">({{ s.area }}, {{ s.level.value }})</span></li>{% endfor %}</ul>
+  {% else %}<p class="small">No green files to sample.</p>{% endif %}
+  <p class="small muted">Found something the evidence missed? Record it, and trust in that area is withdrawn:
+  <span class="mono">python -m ledger.trust record-escape --issue {{ r.issue_id }} --path &lt;file&gt; --found-by spot-check --description "..."</span>.
+  After signing: <span class="mono">python -m ledger.trust record-change out/report-{{ r.issue_id }}.json --owner "Full Name"</span>.</p>
+</section>
+
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
@@ -355,6 +379,7 @@ li { margin: 2px 0; }
 Requirement / Issue ID: #{{ r.issue_id }} ({{ r.change_type.value }}) | Evaluated branch: {{ r.branch }} | Base: {{ r.base_commit }}
 Auto-verified claims (Green): {{ counts[Verdict.GREEN] }}/{{ total }} | Reviewed manually (Yellow/Red): {{ counts[Verdict.YELLOW] + counts[Verdict.RED] }}/{{ total }}
 Approved by (full name): ______________________  Role: _________________
+Spot-checks read in full: ____ of {{ spot | length }} | Escapes found and recorded: ____
 I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>

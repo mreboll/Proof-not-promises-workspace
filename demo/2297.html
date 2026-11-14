@@ -136,7 +136,7 @@ li { margin: 2px 0; }
     <div><dt>Evaluated branch</dt><dd class="mono small">ju26-issue-2297</dd></div>
     <div><dt>Base</dt><dd class="mono small">origin/ju26-issue-2297~1</dd></div>
     <div><dt>PR</dt><dd class="mono small">origin/ju26-issue-2297</dd></div>
-    <div><dt>Generated (UTC)</dt><dd>2026-11-14T05:45:58+00:00</dd></div>
+    <div><dt>Generated (UTC)</dt><dd>2026-11-14T08:49:40+00:00</dd></div>
     <div><dt>Files in the diff</dt><dd>237</dd></div>
   </dl>
 </header>
@@ -2524,20 +2524,47 @@ Not found: &#34;ExcludeFromCodeCoverage&#34;</pre></details>      <details><summ
   <p class="small muted">Risk is decided by static rules, without an LLM. The models only classify scope and produce tests and mutants; no model approves anything by argument.</p>
 </section>
 
+<section id="trust">
+  <h2>Trust track record and spot-checks</h2>
+  <p class="lede">Trust is earned per area from what happened after earlier sign-offs, and withdrawn after an escape. A human
+  spot-checks a deterministic sample of green files, so the AI reviewer is checked too.</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Area</th><th>Trust</th><th>Clean signed changes since last escape</th><th>Escapes</th></tr></thead>
+    <tbody>
+    <tr><td class="mono small">.</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">src/MessagePack.SourceGenerator/Transforms</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.Tests</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    <tr><td class="mono small">tests/MessagePack.SourceGenerator.Tests/Resources</td><td>probation</td><td>0</td>
+      <td class="small">none</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3>Spot-checks: read these green files in full</h3>
+  <ul class="small"><li><span class="mono">tests/MessagePack.SourceGenerator.Tests/CodeCoverageExclusionTests.cs</span> <span class="muted">(tests/MessagePack.SourceGenerator.Tests, probation)</span></li><li><span class="mono">tests/MessagePack.SourceGenerator.Tests/Resources/Generics_Constraints_Multiple/Formatters.MessagePack.GeneratedMessagePackResolver.TempProject.MyGenericObjectFormatter`4.g.cs</span> <span class="muted">(tests/MessagePack.SourceGenerator.Tests/Resources, probation)</span></li><li><span class="mono">tests/MessagePack.SourceGenerator.Tests/Resources/EnumFormatter(NestingClass, False)/MessagePack.GeneratedMessagePackResolver.g.cs</span> <span class="muted">(tests/MessagePack.SourceGenerator.Tests/Resources, probation)</span></li><li><span class="mono">tests/MessagePack.SourceGenerator.Tests/Resources/GenericCustomFormatter/MessagePack.GeneratedMessagePackResolver.g.cs</span> <span class="muted">(tests/MessagePack.SourceGenerator.Tests/Resources, probation)</span></li></ul>
+  <p class="small muted">Found something the evidence missed? Record it, and trust in that area is withdrawn:
+  <span class="mono">python -m ledger.trust record-escape --issue 2297 --path &lt;file&gt; --found-by spot-check --description "..."</span>.
+  After signing: <span class="mono">python -m ledger.trust record-change out/report-2297.json --owner "Full Name"</span>.</p>
+</section>
+
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
   <h3>What was checked, and by what</h3>
   <ul class="small"><li>Scope and risk of 237 files: risk by static rules (no model), scope by gemini-3.8-flash against the literal issue text (2 out of scope, 13 high risk).</li><li>Change test `LedgerIssue2297`, written by gemini-3.8-flash from the issue only (never saw the diff): green on PR.</li><li>Generation invariance (generated code + diagnostics, base and PR in isolated processes): 30/30 cases outside the issue identical; base deterministic on rerun.</li></ul>
   <h3>What was NOT checked, and why</h3>
-  <ul class="small"><li>src/MessagePack.SourceGenerator/Transforms/CompositeResolverTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/CompositeResolverTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/EnumTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/EnumTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/ResolverTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/ResolverTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/TransformUtilities.cs: out of the issue&#39;s scope and high risk; no evidence can approve an unrequested change.</li><li>src/MessagePack.SourceGenerator/Transforms/UnionTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/UnionTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>223 green files not read and not individually tested: approved by the shared evidence above.</li></ul>
+  <ul class="small"><li>README.md: out of the issue&#39;s scope; only the agent&#39;s justification backs it, no test covers why it changed.</li><li>src/MessagePack.SourceGenerator/Transforms/CompositeResolverTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/CompositeResolverTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/EnumTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/EnumTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/ResolverTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/ResolverTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/TransformUtilities.cs: out of the issue&#39;s scope and high risk; no evidence can approve an unrequested change.</li><li>src/MessagePack.SourceGenerator/Transforms/UnionTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/UnionTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>223 green files not read and not individually tested: approved by the shared evidence above.</li></ul>
   <h3>Residual risk I accept</h3>
-  <ul class="small"><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li></ul>
+  <ul class="small"><li>Spot-checks assigned (4, read each in full before signing to check the AI reviewer): tests/MessagePack.SourceGenerator.Tests/CodeCoverageExclusionTests.cs, tests/MessagePack.SourceGenerator.Tests/Resources/Generics_Constraints_Multiple/Formatters.MessagePack.GeneratedMessagePackResolver.TempProject.MyGenericObjectFormatter`4.g.cs, tests/MessagePack.SourceGenerator.Tests/Resources/EnumFormatter(NestingClass, False)/MessagePack.GeneratedMessagePackResolver.g.cs, tests/MessagePack.SourceGenerator.Tests/Resources/GenericCustomFormatter/MessagePack.GeneratedMessagePackResolver.g.cs. Anything they reveal that the evidence missed is recorded as an escape.</li><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li></ul>
   <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
   <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
 Requirement / Issue ID: #2297 (feature) | Evaluated branch: ju26-issue-2297 | Base: origin/ju26-issue-2297~1
 Auto-verified claims (Green): 223/237 | Reviewed manually (Yellow/Red): 14/237
 Approved by (full name): ______________________  Role: _________________
+Spot-checks read in full: ____ of 4 | Escapes found and recorded: ____
 I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>

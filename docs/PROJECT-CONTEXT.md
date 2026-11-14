@@ -34,8 +34,9 @@ Repo público: `github.com/mreboll/Proof-not-promises`.
 | Concept Card, README público, guiones, formularios | ✅ borradores revisados; falta pasada final de quien presenta |
 | Vídeo y pitch | ❌ guiones listos, falta grabar/ensayar |
 | CI | ⚠️ `runs-on: craci` se queda en cola; sin runner CRACI activo |
+| Confianza por área (D17) | ✅ `ledger/trust/`: historial en `trust/track_record.json` (sembrado solo con el escape real de #2283), spot-checks deterministas en cada informe, `python -m ledger.trust status/record-change/record-escape` |
 | Bloque de firma | ✅ qué se comprobó y con qué / qué NO y por qué / riesgo residual (`ledger/report/signoff.py`), en las 5 demos |
-| Tests | ✅ **350 en verde**, sin red ni claves (`.venv/Scripts/python -m pytest -q`, ~65 s) |
+| Tests | ✅ **388 en verde**, sin red ni claves (`.venv/Scripts/python -m pytest -q`, ~65 s) |
 
 **Ramas:** se trabaja **desde `main`** (unificada el 14/11 a las ~10:15 por avance rápido desde `a/evidence`, sin
 reescribir nada). `a/evidence` y `b/triage-report` ya no aportan nada y se pueden borrar (pedir confirmación antes).
@@ -71,7 +72,7 @@ Diseño original: [`docs/ARQUITECTURA.md`](ARQUITECTURA.md). Guía del motor de 
 ### Comandos
 
 ```bash
-.venv/Scripts/python -m pytest -q                                          # 350 tests, sin red ni claves
+.venv/Scripts/python -m pytest -q                                          # 388 tests, sin red ni claves
 .venv/Scripts/python -m ledger run --issue 2283 --fixtures --fake-runner   # segundos, sin claves ni .NET (sin Etapa 3)
 .venv/Scripts/python -m ledger run --issue 2283                            # real, dotnet local (18–22 min)
 LEDGER_RUNNER=modal .venv/Scripts/python -m ledger run --issue 2283        # real, Modal (11 min en secuencia)

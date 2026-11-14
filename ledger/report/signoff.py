@@ -10,6 +10,8 @@ Función pura: el mismo informe da siempre el mismo texto. No hay puntuación de
 from __future__ import annotations
 
 from ledger.models import ChangeType, InvarianceEvidence, Report, Risk, Scope, Verdict
+from ledger.trust.policy import TRUST_CODE, spot_checks
+from ledger.trust.record import TrackRecord, load_record
 
 
 def _n(n: int, word: str) -> str:
@@ -70,6 +72,8 @@ def _not_checked(report: Report) -> list[str]:
             lines.append(f"{v.path}: out of the issue's scope; only the agent's justification backs it, no test covers why it changed.")
         elif code == "M3":
             lines.append(f"{v.path}: the executable evidence failed or is missing.")
+        elif code == TRUST_CODE:
+            lines.append(f"{v.path}: the evidence passed, but trust withdrawn in its area after an escape; a human reads it.")
         lines.extend(f"  Open question on {v.path}: {q}" for q in open_questions)
     unread = sum(v.verdict is Verdict.GREEN and not v.objections for v in report.verdicts)
     if unread:
@@ -77,8 +81,14 @@ def _not_checked(report: Report) -> list[str]:
     return lines
 
 
-def _residual(report: Report) -> list[str]:
+def _residual(report: Report, record: TrackRecord) -> list[str]:
     lines: list[str] = []
+    picks = spot_checks(report, record)
+    if picks:
+        lines.append(
+            f"Spot-checks assigned ({len(picks)}, read each in full before signing to check the AI reviewer): "
+            f"{', '.join(p.path for p in picks)}. Anything they reveal that the evidence missed is recorded as an escape."
+        )
     if report.invariance is not None:
         lines.append(
             f"Behaviour outside the issue is only as covered as the {_n(len(report.invariance.cases), 'invariance case')}; "
@@ -92,5 +102,6 @@ def _residual(report: Report) -> list[str]:
     return lines
 
 
-def signoff(report: Report, models: dict[str, str]) -> dict[str, list[str]]:
-    return {"checked": _checked(report, models), "not_checked": _not_checked(report), "residual": _residual(report)}
+def signoff(report: Report, models: dict[str, str], *, record: TrackRecord | None = None) -> dict[str, list[str]]:
+    record = load_record() if record is None else record
+    return {"checked": _checked(report, models), "not_checked": _not_checked(report), "residual": _residual(report, record)}

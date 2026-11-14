@@ -61,6 +61,19 @@ RULES: tuple[Rule, ...] = (
         "core generator namespace (CodeAnalysis/Transforms)",
         path_regex=r"^src/MessagePack\.SourceGenerator/(CodeAnalysis|Transforms)/",
     ),
+    # Seguridad (D18). MessagePack deserializa datos que pueden venir de fuera: resolver tipos por nombre es el vector
+    # clásico de los formatters "typeless"; MessagePackSecurity es su defensa contra datos no fiables.
+    Rule(
+        "R-HIGH-04",
+        Risk.HIGH,
+        "security-sensitive API (type resolution by name, untrusted-data settings, process, crypto, interop)",
+        path_regex=_SRC_CS,
+        line_regex=(
+            r"\bType\.GetType\s*\(|\bAssembly\.Load\w*\s*\(|\bActivator\.CreateInstance\b|\bMessagePackSecurity\b|"
+            r"\bBinaryFormatter\b|\bProcess\.Start\s*\(|System\.Security\.Cryptography|\bMarshal\."
+        ),
+    ),
+    Rule("R-HIGH-05", Risk.HIGH, "security or typeless code path", path_regex=r"^src/.*(Security|Typeless)[^/]*(/.*)?\.cs$"),
 )
 
 DEFAULT_RULE = Rule("R-DEFAULT", Risk.MED, "no specific rule: MED as a precaution")
