@@ -104,6 +104,9 @@ class InvarianceCase(_Frozen):
 
 class InvarianceEvidence(_Frozen):
     cases: tuple[InvarianceCase, ...]
+    # Issue que se evalúa. Si se rellena, cualquier caso que no sea "issue-<issue_id>" (general o de OTRO issue)
+    # tiene que quedar idéntico. Vacío = comportamiento anterior (solo cuentan los "general"). Propuesta de A.
+    issue_id: str = ""
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -113,7 +116,12 @@ class InvarianceEvidence(_Frozen):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def unexpected_diffs(self) -> tuple[str, ...]:
-        return tuple(c.id for c in self.cases if c.tag == "general" and c.base_hash != c.pr_hash)
+        own = f"issue-{self.issue_id}"
+
+        def must_not_change(c: InvarianceCase) -> bool:
+            return c.tag != own if self.issue_id else c.tag == "general"
+
+        return tuple(c.id for c in self.cases if must_not_change(c) and c.base_hash != c.pr_hash)
 
     @computed_field  # type: ignore[prop-decorator]
     @property

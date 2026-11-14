@@ -268,6 +268,17 @@ def test_recompute_refreshes_rule_descriptions_by_id_and_keeps_the_quote():
     )
 
 
+def test_hash_table_labels_another_issues_changed_case_as_unexpected():
+    r = make_report()
+    inv = InvarianceEvidence(
+        issue_id="2283",
+        cases=(*r.invariance.cases, InvarianceCase(id="issue-2129-formatter", tag="issue-2129", base_hash="x", base_hash_rerun="x", pr_hash="y")),
+    )
+    html = render_html(r.model_copy(update={"invariance": inv}), models=MODELS, issue_title="#2283")
+    row = html.split("issue-2129-formatter</td>")[1].split("</tr>")[0]
+    assert "unexpected change" in row
+
+
 def test_report_without_verdicts_still_renders():
     html = render_html(make_report(verdicts=()), models=MODELS, issue_title="#2283")
     assert "No verdicts" in html and "README.md" in html

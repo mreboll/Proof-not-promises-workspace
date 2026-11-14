@@ -275,7 +275,7 @@ li { margin: 2px 0; }
       <td class="hash" title="{{ c.pr_hash }}">{{ c.pr_hash[:12] }}</td>
       <td>{% if c.base_hash != c.base_hash_rerun %}<span class="pill red">not deterministic</span>
           {% elif same %}<span class="pill green">identical</span>
-          {% elif c.tag == 'general' %}<span class="pill red">unexpected change</span>
+          {% elif c.id in r.invariance.unexpected_diffs %}<span class="pill red">unexpected change</span>
           {% else %}<span class="pill yellow">expected change</span>{% endif %}
           {% if c.normalization %}<div class="small muted">{{ c.normalization }}</div>{% endif %}</td>
     </tr>

@@ -50,6 +50,25 @@ def test_invariance_flags_general_case_that_changes():
     assert ev.unexpected_diffs == ("a",) and not ev.ok
 
 
+def test_invariance_with_issue_id_flags_a_case_of_another_issue_that_changes():
+    """Propuesta de A: si el PR de #2297 cambia un caso de #2129, también es una diferencia inesperada."""
+    ev = InvarianceEvidence(
+        issue_id="2297",
+        cases=(_case("own", "issue-2297", "1", "1", "2"), _case("other", "issue-2129", "3", "3", "4"), _case("g", "general", "5", "5", "5")),
+    )
+    assert ev.unexpected_diffs == ("other",) and not ev.ok
+
+
+def test_invariance_with_issue_id_allows_its_own_cases_to_change():
+    ev = InvarianceEvidence(issue_id="2283", cases=(_case("own", "issue-2283", "1", "1", "2"), _case("g", "general", "5", "5", "5")))
+    assert ev.unexpected_diffs == () and ev.ok
+
+
+def test_invariance_without_issue_id_keeps_the_old_behaviour():
+    ev = InvarianceEvidence(cases=(_case("other", "issue-2129", "3", "3", "4"),))
+    assert ev.issue_id == "" and ev.unexpected_diffs == ()
+
+
 def test_invariance_not_ok_when_base_is_nondeterministic():
     ev = InvarianceEvidence(cases=(_case("a", "general", "1", "2", "1"),))
     assert not ev.deterministic and not ev.ok
