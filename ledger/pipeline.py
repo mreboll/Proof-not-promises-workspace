@@ -60,11 +60,10 @@ def stage3_and_verdicts(
 
 
 def render_report(report: Report, out_dir: Path) -> Path:
-    """Línea B: ledger/report/render.py. Hasta entonces, vuelca el JSON."""
-    out_dir.mkdir(parents=True, exist_ok=True)
-    target = out_dir / f"report-{report.issue_id}.json"
-    target.write_text(report.model_dump_json(indent=2), encoding="utf-8")
-    return target
+    """Línea B: ledger/report/render.py. Escribe out/report-<id>.html (devuelto) y, al lado, el .json."""
+    from ledger.report.render import render_report as render_html_report  # import local: no toca la cabecera
+
+    return render_html_report(report, out_dir)
 
 
 def _load_fixture(name: str) -> dict:

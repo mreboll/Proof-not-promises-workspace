@@ -11,7 +11,8 @@ def test_fixture_run_writes_report(tmp_path, monkeypatch):
     monkeypatch.setattr("ledger.crossexam.stage.cross_examine", lambda *a, **k: ())
     settings = replace(load_settings(), out_dir=tmp_path)
     path = pipeline.run("2283", settings, FakeTestRunner(), use_fixtures=True)
-    report = json.loads(path.read_text(encoding="utf-8"))
+    assert path.suffix == ".html" and "REGISTRO DE APROBACIÓN" in path.read_text(encoding="utf-8")
+    report = json.loads(path.with_suffix(".json").read_text(encoding="utf-8"))
     assert report["issue_id"] == "2283"
     assert report["change_test"]["ok"] is True
     assert report["invariance"]["ok"] is True
