@@ -83,9 +83,9 @@ the demo repeatable, not the models.
 
 | Name | Role |
 |---|---|
-| **Víctor Verdú García** | Scope and risk triage, cross-examination (Prosecutor, Defender, mutants), verdict matrix and sign-off report |
-| **Martín Reboll Gómez** | Evidence engine: .NET test runner, generation invariance, independent change tests, Modal sandboxes |
-| **Javier de Paz Figueras** | Concept Card, decision log and measured trade-offs |
-| **Marco García López** | Lessons log, demo video and live pitch |
+| **Víctor Verdú García** | Scope and risk triage, verdict matrix |
+| **Martín Reboll Gómez** | Evidence engine: .NET test runner and generation invariance |
+| **Javier de Paz Figueras** | Cross-examination (Prosecutor, Defender, mutants) and sign-off report; Concept Card, decision log and measured trade-offs |
+| **Marco García López** | Independent change tests and Modal sandboxes; lessons log, demo video and live pitch |
 
 Internal team notes (Spanish): [docs/TEAM.md](docs/TEAM.md), [docs/PERSONA-A.md](docs/PERSONA-A.md), [docs/PERSONA-B.md](docs/PERSONA-B.md).
