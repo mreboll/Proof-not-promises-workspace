@@ -7,11 +7,12 @@ Junto al HTML se escribe el JSON del `Report`, para procesarlo a máquina.
 
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from ledger.models import FragmentVerdict, Report, TestRunResult, Verdict
+from ledger.models import ChangeTestEvidence, ChangeType, FragmentVerdict, Report, TestRunResult, Verdict
 
 TEMPLATES = Path(__file__).parent / "templates"
 ROLES = {
@@ -54,6 +55,34 @@ def run_class(result: TestRunResult | None) -> str:
     return "green" if result.green else "red" if result.red_for_real else "muted"
 
 
+def base_view(ct: ChangeTestEvidence | None) -> tuple[str, str, str]:
+    """(etiqueta, clase CSS, nota) del resultado en la BASE, que se lee distinto en bug fix y en feature.
+
+    Bug fix: el test tiene que fallar en la base (reproduce el bug). Feature: el resultado en la base es
+    evidencia extra (A lo ejecuta desde 6211a32); rojo allí es bueno: el test mide algo que antes no existía.
+    """
+    if ct is None or ct.base is None:
+        return "no ejecutado", "muted", ""
+    base = ct.base
+    if ct.change_type is ChangeType.FEATURE:
+        if base.red_for_real:
+            return "rojo en base: el test mide algo nuevo", "none", ""
+        if base.green:
+            return "verde en base", "muted", "El test pasa también sin la feature: no demuestra que mida algo nuevo (el veredicto solo depende del PR)."
+        return run_label(base), "muted", ""
+    if base.green:
+        return run_label(base), "yellow", "El test pasa también en la base: no reproduce el bug, así que no cuenta como evidencia."
+    if not base.build_ok:
+        return run_label(base), "muted", "No compila en la base: un fallo de compilación no cuenta como reproducir el bug."
+    return run_label(base), run_class(base), ""
+
+
+def _normalizations(report: Report) -> list[tuple[str, int]]:
+    if not report.invariance:
+        return []
+    return sorted(Counter(c.normalization for c in report.invariance.cases if c.normalization).items())
+
+
 def render_html(report: Report, *, models: dict[str, str], issue_title: str) -> str:
     verdict_by_path = {v.path: v for v in report.verdicts}
     counts = {k: sum(v.verdict is k for v in report.verdicts) for k in Verdict}
@@ -76,6 +105,8 @@ def render_html(report: Report, *, models: dict[str, str], issue_title: str) -> 
         VERDICT_LABEL=VERDICT_LABEL,
         run_label=run_label,
         run_class=run_class,
+        base_view=base_view(report.change_test),
+        normalizations=_normalizations(report),
     )
 
 

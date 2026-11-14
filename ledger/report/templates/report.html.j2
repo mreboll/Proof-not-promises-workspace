@@ -144,9 +144,10 @@ ul { margin: 4px 0; padding-left: 18px; }
       {% set ct = r.change_test %}
       <div class="small muted">Escrito solo a partir del texto del issue, sin ver el diff.</div>
       <p class="mono">{{ ct.test_name }}</p>
-      <p>Base: <span class="pill {{ run_class(ct.base) }}">{{ run_label(ct.base) }}</span>
+      <p>Base: <span class="pill {{ base_view[1] }}">{{ base_view[0] }}</span>
          PR: <span class="pill {{ run_class(ct.pr) }}">{{ run_label(ct.pr) }}</span>
          <span class="pill {{ 'green' if ct.ok else 'red' }}">{{ 'superado' if ct.ok else 'no superado' }}</span></p>
+      {% if base_view[2] %}<p class="small">{{ base_view[2] }}</p>{% endif %}
       <details><summary>Código del test</summary><pre>{{ ct.test_code }}</pre></details>
       {% if ct.base %}<details><summary>Salida en base</summary><pre>{{ ct.base.output_tail }}</pre></details>{% endif %}
       <details><summary>Salida en PR</summary><pre>{{ ct.pr.output_tail }}</pre></details>
@@ -163,6 +164,12 @@ ul { margin: 4px 0; padding-left: 18px; }
         <span class="pill {{ 'red' if inv.unexpected_diffs else 'green' }}">{{ inv.unexpected_diffs | length }} diferencias fuera del issue</span>
       </p>
       <p class="small muted">{{ inv.cases | selectattr('tag', 'equalto', 'general') | list | length }} casos generales comparados por SHA-256 (base ×2 y PR). Los casos del issue pueden cambiar; los generales no.</p>
+      {% if inv.unexpected_diffs %}
+      <p class="small"><strong>El PR cambia la salida en casos que el issue no toca:</strong> <span class="mono">{{ inv.unexpected_diffs | join(', ') }}</span>. Aunque el triaje marque los ficheros como en alcance, el PR hace más de lo que pide el issue.</p>
+      {% endif %}
+      {% for text, n in normalizations %}
+      <p class="small"><strong>Normalización declarada</strong> antes del hash del PR ({{ n }} caso{{ 's' if n != 1 }}): {{ text }}</p>
+      {% endfor %}
       {% else %}
       <p class="muted">Sin evidencia de invarianza.</p>
       {% endif %}

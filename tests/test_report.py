@@ -126,6 +126,41 @@ def test_is_self_contained(html):
     assert "<html" in html and "http://" not in html.replace("http://www.w3.org", "") and "<link" not in html and "<script" not in html
 
 
+def _card(html: str, title: str) -> str:
+    return html.split(f"<h3>{title}</h3>")[1].split('<div class="card">')[0]
+
+
+def test_feature_red_in_base_is_explained_not_painted_as_a_failure():
+    r = make_report()
+    feature = r.model_copy(update={"change_type": ChangeType.FEATURE, "change_test": r.change_test.model_copy(update={"change_type": ChangeType.FEATURE})})
+    card = _card(render_html(feature, models=MODELS, issue_title="#2297"), "Test del cambio")
+    assert "rojo en base: el test mide algo nuevo" in card
+    assert 'class="pill red">rojo' not in card
+
+
+def test_bugfix_test_green_in_base_says_it_does_not_reproduce_the_bug():
+    r = make_report()
+    weak = r.model_copy(update={"change_test": r.change_test.model_copy(update={"base": GREEN})})
+    card = _card(render_html(weak, models=MODELS, issue_title="#2234"), "Test del cambio")
+    assert "pasa también en la base: no reproduce el bug" in card
+
+
+def test_declared_normalization_is_visible_without_expanding():
+    r = make_report()
+    norm = "removed [ExcludeFromCodeCoverage] lines (feature #2297)"
+    cases = tuple(c.model_copy(update={"normalization": norm}) if c.tag == "general" else c for c in r.invariance.cases)
+    html = render_html(r.model_copy(update={"invariance": InvarianceEvidence(cases=cases)}), models=MODELS, issue_title="#2297")
+    card = _card(html, "Invarianza de generación")
+    assert "Normalización declarada" in card and norm in card and "1 caso" in card
+
+
+def test_unexpected_diff_says_the_pr_does_more_than_the_issue_asks():
+    r = make_report()
+    cases = (*r.invariance.cases, InvarianceCase(id="general-duplicate-int-keys-not-suppressed", tag="general", base_hash="a", base_hash_rerun="a", pr_hash="b"))
+    card = _card(render_html(r.model_copy(update={"invariance": InvarianceEvidence(cases=cases)}), models=MODELS, issue_title="#2234"), "Invarianza de generación")
+    assert "general-duplicate-int-keys-not-suppressed" in card and "más de lo que pide el issue" in card
+
+
 def test_report_without_verdicts_still_renders():
     html = render_html(make_report(verdicts=()), models=MODELS, issue_title="#2283")
     assert "Sin veredictos" in html and "README.md" in html
