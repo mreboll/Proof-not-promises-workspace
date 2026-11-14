@@ -215,7 +215,13 @@ ul { margin: 4px 0; padding-left: 18px; }
     <p class="small">Defensor: <span class="mono">{{ o.test_name or '—' }}</span>
       · PR <span class="pill {{ run_class(o.pr_result) }}">{{ run_label(o.pr_result) }}</span>
       · mutante <span class="pill {{ run_class(o.mutant_result) }}">{{ run_label(o.mutant_result) }}</span>
-      · <span class="pill {{ 'green' if o.valid else 'red' }}">{{ 'objeción cubierta: test válido' if o.valid else 'sin test válido' }}</span></p>
+      · {% if o.valid %}<span class="pill green">objeción cubierta: test válido</span>
+        {% elif o.pr_result and o.pr_result.red_for_real %}<span class="pill red">falla en el PR: posible defecto</span>
+        {% else %}<span class="pill red">sin test válido</span>{% endif %}</p>
+    {% if not o.valid and o.pr_result and o.pr_result.red_for_real %}
+    <p class="small"><strong>El test del Defensor compila y falla en el PR:</strong> puede que el Fiscal tenga razón y el defecto esté en el código, no en el test. Mira la salida.</p>
+    <details open><summary>Salida del test en el PR</summary><pre>{{ o.pr_result.output_tail }}</pre></details>
+    {% endif %}
     {% if o.test_code %}<details><summary>Test del Defensor</summary><pre>{{ o.test_code }}</pre></details>{% endif %}
     {% if o.mutant_patch %}<details><summary>Mutante</summary><pre>{{ o.mutant_patch }}</pre></details>{% endif %}
   </div>

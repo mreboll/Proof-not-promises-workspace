@@ -79,6 +79,17 @@ def _invariance_reasons(inv: InvarianceEvidence | None) -> list[str]:
     return reasons
 
 
+def defensor_test_fails_on_pr(o: Objection) -> bool:
+    """El test del Defensor compila y falla en el PR: quizá el Fiscal tenga razón y el defecto sea del PR."""
+    return o.pr_result is not None and o.pr_result.red_for_real
+
+
+def _unresolved_reason(o: Objection) -> str:
+    if defensor_test_fails_on_pr(o):
+        return f"objeción «{o.question}»: el test del Defensor falla en el PR → posible defecto en el PR, revisa la salida del test"
+    return f"objeción sin test válido: «{o.question}»"
+
+
 def evidence_lines(change_test: ChangeTestEvidence | None, invariance: InvarianceEvidence | None) -> list[str]:
     """Resumen legible de la evidencia de la Etapa 2 (lo usan las razones del veredicto y el Fiscal)."""
     return _change_test_reasons(change_test) + _invariance_reasons(invariance)
@@ -117,7 +128,7 @@ def decide(
 
     unresolved = [o for o in objections if not o.valid]
     if unresolved:
-        questions = [f"objeción sin test válido: «{o.question}»" for o in unresolved]
+        questions = [_unresolved_reason(o) for o in unresolved]
         return _verdict(triage, Verdict.RED, "M7", f"{len(unresolved)} objeción(es) sin resolver: {REFUSE}", questions + evidence, objections)
 
     crossexam = [f"{len(objections)} objeción(es) del Fiscal cubiertas por tests que fallan contra el mutante"] if objections else ["el Fiscal no planteó objeciones"]

@@ -172,6 +172,16 @@ def test_rerender_from_a_json_report(tmp_path, monkeypatch):
     assert render.main([str(src)]) == src.parent / "report-2283.html"
 
 
+def test_defensor_test_failing_on_pr_is_shown_as_possible_defect_with_output_open():
+    defect = OBJ.model_copy(update={"pr_result": RED, "mutant_result": None})
+    r = make_report()
+    verdicts = tuple(v.model_copy(update={"objections": (defect,)}) if v.objections else v for v in r.verdicts)
+    html = render_html(r.model_copy(update={"verdicts": verdicts}), models=MODELS, issue_title="#2283")
+    card = html.split("Fiscal 1:</strong>")[1].split('<div class="card')[0]
+    assert "falla en el PR: posible defecto" in card
+    assert "<details open><summary>Salida del test en el PR</summary>" in card and RED.output_tail in card
+
+
 def test_report_without_verdicts_still_renders():
     html = render_html(make_report(verdicts=()), models=MODELS, issue_title="#2283")
     assert "Sin veredictos" in html and "README.md" in html

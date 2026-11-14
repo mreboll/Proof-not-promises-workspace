@@ -130,6 +130,21 @@ def test_unexpected_diff_names_the_case():
     assert any("int-keys" in r for r in v.reasons)
 
 
+def test_defensor_test_failing_on_the_pr_is_flagged_as_a_possible_defect():
+    """El test del Defensor compila y FALLA en el PR: puede que el Fiscal tenga razón y el defecto sea del PR."""
+    defect = Objection(question="¿Y la línea 735?", test_name="T", test_code="x", pr_result=RED, mutant_result=None)
+    v = decide(tri(Scope.IN, Risk.HIGH), GOOD_TEST, GOOD_INV, (VALID, defect))
+    assert (v.verdict, row(v)) == (Verdict.RED, "M7")
+    flagged = [r for r in v.reasons if "¿Y la línea 735?" in r]
+    assert flagged and "falla en el PR" in flagged[0] and "posible defecto" in flagged[0]
+
+
+def test_defensor_test_that_does_not_compile_is_not_called_a_defect():
+    broken = Objection(question="¿Y si no compila?", test_name="T", test_code="x", pr_result=BUILD_FAIL)
+    v = decide(tri(Scope.IN, Risk.HIGH), GOOD_TEST, GOOD_INV, (broken,))
+    assert not any("posible defecto" in r for r in v.reasons)
+
+
 def test_failed_change_test_with_clean_invariance_points_the_human_at_the_test():
     """Caso #2129: el test generado falla en el PR pero la invarianza no ve regresiones → sigue ROJO, con pista."""
     v = decide(tri(Scope.IN, Risk.MED), BAD_TEST, GOOD_INV)
