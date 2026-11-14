@@ -14,7 +14,7 @@ Text ready to paste into the Junction 2026 submission forms. Every number below 
 
 1. **Scope triage at scale (`gemini-3.8-flash`).** For every changed file, Gemini decides whether the change is required by the issue (IN) or not (OUT), judging only against the literal issue text. On the largest PR (#2297, 237 files) the full Stage 1 took **57 s and 15 Gemini calls**, because 222 generated snapshots are classified by a static rule instead of the model. It left **14 of 237 files for a human** and caught an unrequested change: `TransformUtilities.cs` alters line breaks in generated code although the issue never asks for it.
 2. **Independent change test.** An agent that sees only the issue text, never the diff, writes a test that must fail on the base branch and pass on the PR. A test written by the same agent that wrote the fix would be validating itself. For feature #2297 this test was written by Gemini and ran with real `dotnet test`: red on base, green on the PR.
-3. **Defender and mutants (`gemini-4-hydrogen`).** In the cross-examination, the Defender cannot answer with text: its structured-output schema is only `{test_name, test_code}`. Gemini also writes the mutants that break each edge case on purpose; a Defender test counts only if it fails against its mutant, which rejects empty tests such as `Assert.True(true)`.
+3. **Defender and mutants (`gemini-4-hydrogen`).** In the cross-examination, the Defender cannot answer with text: its structured-output schema is only `{test_name, test_code}`. Gemini also writes the mutants that break each edge case on purpose; a Defender test counts only if it fails against its mutant, which rejects empty tests such as `Assert.True(true)`. On #2283, a Defender test written by Gemini **failed on the PR** and exposed a real defect: the AI-written fix moves the crash to an `InvalidOperationException` instead of removing it, although the PR's own test and the invariance check were green.
 
 **What we did to make Gemini's output reliable.**
 - Structured output (`response_schema`) with Pydantic validation and temperature 0.
@@ -24,7 +24,7 @@ Text ready to paste into the Junction 2026 submission forms. Every number below 
 
 **Measured difference.** We first ran the triage with another model while our Gemini credits were pending. On #2297, Gemini flash was **3.7x faster (57 s vs 214 s)** and removed **both false positives** the other model produced, while still flagging the one real unrequested change.
 
-**Honest status.** The change tests for #2283 and #2234 were generated before our Gemini key arrived; regenerating them with Gemini is in progress.
+**Honest status.** The change tests for #2283 and #2234 were generated before our Gemini key arrived. Gemini's change test for #2129 was itself wrong (it picked the resolver file instead of the formatter): the system did not approve, and the invariance check, an independent oracle, showed the feature works, pointing the human at the test.
 
 ---
 
@@ -36,7 +36,7 @@ Text ready to paste into the Junction 2026 submission forms. Every number below 
 
 **Why it matters: model diversity.** The Prosecutor (Nemotron, NVIDIA) and the Defender (Gemini, Google) are deliberately from different model families. If accusation and defence shared a model, they would share blind spots, and errors would be correlated.
 
-**A real example.** On issue #2283 (an `IndexOutOfRangeException` in the MessagePack source generator), Nemotron's first objection pointed out that the issue names three unsafe `DeclaringSyntaxReferences[0]` call sites and the PR protects only two directly. That is exactly the kind of incomplete fix a human reviewer misses when the tests are green. (Confirming it with `dotnet test` against a mutant is in progress.)
+**A real defect it found.** Issue #2283 reports that the MessagePack source generator crashes with `IndexOutOfRangeException` on a closed generic struct from a referenced assembly, so no resolver is generated. The AI-written fix passed its own change test and the generation-invariance check: a reviewer reading only that evidence would have approved it. Nemotron, as Prosecutor, asked about a metadata generic type with an invalid key. The Defender (Gemini) wrote the test, the test **failed on the PR**, and the system refused to decide. We then reproduced it independently: the fix does not remove the crash, it **moves** it from `IndexOutOfRangeException` to `InvalidOperationException` in `TypeCollector.GetObjectInfo`, and the generator still produces no resolver, which is exactly the impact the issue complains about.
 
 **How we improved its output.**
 1. JSON Schema injected into the prompt, Pydantic validation, and one automatic repair round that sends the validation error back to the model.
