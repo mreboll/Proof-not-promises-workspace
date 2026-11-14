@@ -1,0 +1,235 @@
+# Contexto del proyecto (documento único de traspaso)
+
+> **Para quien retome el proyecto (persona o sesión nueva de IA):** lee este documento entero antes de tocar nada.
+> Resume dónde está todo, qué se ha hecho, qué se ha medido, qué falta y cómo hacerlo. Los detalles viven en los
+> documentos enlazados; este es el mapa. Estado a **14/11/2026, ~07:15**. Desde ahora se trabaja **desde un solo
+> sitio** (ya no hay reparto Línea A / Línea B).
+
+---
+
+## 1. Qué es y a dónde queremos llegar
+
+**Proof, not promises** — *Risk-Scoped Evidence Ledger*. Junction 2026, reto de Tieto **"Earned Trust in AI Code"**.
+Repo público: `github.com/mreboll/Proof-not-promises`.
+
+- **Problema:** un agente de IA cambia cientos de ficheros y una persona tiene que firmar la aprobación. Leerlo todo es
+  inviable; fiarse del resumen de la IA es negligente.
+- **Tesis:** ningún modelo aprueba nada con argumentos. La confianza solo sale de **evidencia ejecutable**; si falta,
+  el sistema **se niega a decidir** y le dice al humano exactamente qué mirar.
+- **Sujeto de prueba:** los 4 PR escritos por IA del reto sobre MessagePack-CSharp: **#2283, #2234** (bug fixes) y
+  **#2129, #2297** (features). Ramas `origin/ju26-issue-<id>`; la base de cada una es `<rama>~1` (commit `32258fdb`).
+- **Objetivo de la entrega:** repo público funcionando + informe HTML con bloque de firma + Concept Card + registros
+  de decisiones y lecciones + **vídeo de 2:00** + **pitch de 3:00** + formularios de bounties (Gemini, NVIDIA
+  Nemotron, Modal; CRACI opcional).
+
+## 2. Estado en una tabla
+
+| Qué | Estado |
+|---|---|
+| Pipeline de punta a punta (T3 → T1 → T2 → informe) | ✅ con dotnet local y con Modal |
+| Evidencia real de los 4 issues | ✅ `fixtures/evidence_<id>.json` (#2129 pendiente de regenerar con `issue_id`) |
+| Informe estrella de #2283 (crash desplazado) | ✅ `demo/2283-dotnet.html` |
+| Etapa 3 en paralelo con Modal | ✅ código y tests (`0f24606`); ⏳ **medición y llevar a `main`** |
+| Concept Card, README público, guiones, formularios | ✅ borradores revisados; falta pasada final de quien presenta |
+| Vídeo y pitch | ❌ guiones listos, falta grabar/ensayar |
+| CI | ⚠️ `runs-on: craci` se queda en cola; sin runner CRACI activo |
+| Tests | ✅ **295 en verde**, sin red ni claves (`.venv/Scripts/python -m pytest -q`, ~65 s) |
+
+**Ramas:** `main` = `d6a553b` (todo excepto `0f24606` y este documento). `a/evidence` = `main` + `0f24606` + este
+documento. `b/triage-report` = igual que `main` (B no tiene nada sin subir). **Pendiente 1** las unifica.
+
+## 3. Cómo funciona (mapa del código)
+
+```
+issues/<id>.md + git diff base→PR
+ │
+ ├─ Etapa 1 · Triaje (T3) ─ ledger/triage/      alcance IN/OUT con LLM (flash) × riesgo por reglas estáticas
+ ├─ Etapa 2 · Evidencia (T1) ─ ledger/evidence/
+ │     change_test.py  test del cambio escrito SOLO desde el issue (rol pro); rojo en base, verde en PR
+ │     invariance.py   GeneratorProbe en base (×2) y PR: código generado + diagnósticos, SHA-256 por caso
+ │     dotnet.py       DotnetTestRunner (local, worktrees en .work/)   ┐ mismo Protocol TestRunner
+ │     modal_runner.py ModalTestRunner (sandboxes sin red)            ┘ LEDGER_RUNNER=local|modal
+ │     trx.py · workspace.py · _proc.py · regen.py · bench.py
+ ├─ Etapa 3 · Interrogatorio (T2) ─ ledger/crossexam/
+ │     fiscal.py (Nemotron) · defensor.py (Gemini, solo {test_name, test_code}) · mutant_gen.py (Gemini)
+ │     loop.py (≤3 rondas; válida = verde en PR + rojo contra mutante) · stage.py · concurrency.py
+ ├─ Veredictos ─ ledger/verdict.py (matriz M1–M7, función pura)
+ └─ Informe ─ ledger/report/ (render.py, templates/report.html.j2, demo.py → demo/*.html)
+
+harness/GeneratorProbe  app .NET que se copia y compila DENTRO de cada worktree (cada lado carga su generador)
+harness/corpus/*.cs     31 snippets (21 `general` + 10 `issue-<id>`), cabecera //@tag:, secciones //@library //@main
+```
+
+Descripción módulo a módulo de triaje, interrogatorio, veredictos e informe: [`docs/HANDOFF-B.md`](HANDOFF-B.md) §1–2.
+Diseño original: [`docs/ARQUITECTURA.md`](ARQUITECTURA.md). Guía del motor de evidencia: [`docs/PERSONA-A.md`](PERSONA-A.md).
+
+### Comandos
+
+```bash
+.venv/Scripts/python -m pytest -q                                          # 295 tests, sin red ni claves
+.venv/Scripts/python -m ledger run --issue 2283 --fixtures --fake-runner   # segundos, sin claves ni .NET (sin Etapa 3)
+.venv/Scripts/python -m ledger run --issue 2283                            # real, dotnet local (18–22 min)
+LEDGER_RUNNER=modal .venv/Scripts/python -m ledger run --issue 2283        # real, Modal (11 min en secuencia)
+.venv/Scripts/python -m ledger.evidence.regen --issue <id> [--runner modal] [--only-invariance]   # fixture con procedencia
+.venv/Scripts/python -m ledger.evidence.bench --issue 2283                 # Modal paralelo vs local secuencial
+.venv/Scripts/python -m ledger.report.demo                                 # regenera demo/*.html desde fixtures
+.venv/Scripts/python -m ledger.report.render <json> [--recompute] [--translate]
+.venv/Scripts/python -m ledger.triage.scale <id>                           # triaje masivo con números
+.venv/Scripts/python -m ledger llm-ping                                    # comprueba Gemini y Nemotron
+```
+
+## 4. Entorno (lo que hace falta para ejecutar de verdad)
+
+- **Windows 11**, Git Bash/PowerShell. Python 3.14 en `.venv` (`pip install -e ".[dev]"`).
+- **.NET SDK 8.0.4xx** (instalado 8.0.428; `global.json` pide 8.0.402 con `rollForward: patch`). La consola de dotnet
+  sale en español: **nunca se parsea**; solo el `.trx` (si hay `.trx`, compiló).
+- **Repo del reto** en `../junction26-messagepack-csharp`, clonado con `-c core.longpaths=true`.
+- **`.env`** (no se sube; plantilla en `.env.example`): `GEMINI_API_KEY`, `NVIDIA_API_KEY`, modelos, `LEDGER_RUNNER`
+  y los topes de concurrencia. **Modelos que funcionan:** `gemini-4-hydrogen` (pro, hasta ~215 s por llamada; timeout
+  300 s), `gemini-3.8-flash` (flash); `gemini-2.5-*` da 404 con claves nuevas. Fiscal:
+  `nvidia/nemotron-3.5-super-vl-120b-a12b`. `LEDGER_NVIDIA_FOR_ALL=0` siempre (D7: Fiscal y Defensor de familias distintas).
+- **Modal:** token en `~/.modal.toml` (`modal token new`), workspace `rebollmartin`, plan Starter (100 contenedores
+  simultáneos, 30 $/mes de créditos). **Usage limit = 30 $** puesto a propósito: cargos posibles = 0 $. Gastado hasta
+  ahora: ~0,21 $ en créditos. La imagen (SDK 8 + 8 worktrees precompilados + caché de ReferenceAssemblies) tarda 5,5 min
+  la primera vez y luego se reutiliza.
+- **Caché del LLM** en `.cache/llm/` (se sube a git a propósito): clave = hash de modelo + prompt. Hace repetible la demo;
+  cambiar un prompt invalida su caché.
+
+## 5. Resultados reales (lo que se cuenta al jurado)
+
+| Issue | Tipo | Test del cambio (solo desde el issue) | Invarianza (31 casos) | Lectura |
+|---|---|---|---|---|
+| #2283 | bug fix | ✅ rojo en base → verde en PR | ✅ 21 generales idénticos | Evidencia completa; la Etapa 3 encontró un defecto |
+| #2234 | bug fix | ❌ pasa también en base (issue de una frase) | ❌ cambia `general-duplicate-int-keys-not-suppressed` | ROJO legítimo: el fix cambia comportamiento fuera del issue |
+| #2297 | feature, 237 ficheros | ✅ verde en PR (y rojo en base) | ✅ tras la normalización **declarada** (`#if/[ExcludeFromCodeCoverage]/#endif`) | 223 ficheros de riesgo bajo aprobados por la evidencia; `TransformUtilities.cs` OUT/HIGH |
+| #2129 | feature | ❌ falla también en PR (el test mira el fichero del resolver) | ✅ el formatter se genera | Falso rojo de la IA; la invarianza apunta al test |
+
+- **El hallazgo estrella (#2283):** el fix escrito por IA **desplaza** el crash (`IndexOutOfRange` →
+  `InvalidOperation` en `TypeCollector.cs:1013`) para un tipo genérico de otro ensamblado con clave inválida; el resolver
+  sigue sin generarse. El test del cambio y la invarianza salían en verde. Reproducido aparte con GeneratorProbe.
+- **Modal:** base + PR + mutante en **28 s en paralelo vs 63 s en secuencia local**, mismos resultados
+  (`fixtures/bench_2283.json`). Pipeline completo de #2283: **11 min en Modal (secuencial)** vs 18–22 min local; 2 de 3
+  objeciones validadas (`fixtures/report_2283_modal.json`).
+- Todas las cifras con su fuente: [`docs/numeros-evidencia.md`](numeros-evidencia.md). Números de la Etapa 1:
+  [`docs/HANDOFF-B.md`](HANDOFF-B.md) §4.
+
+## 6. Decisiones y lecciones
+
+- [`docs/decision-log.md`](decision-log.md): D1–D14. Las que más se defienden: reglas estáticas para el riesgo (D1),
+  invarianza de **generación** y no de bytes (D2), procesos aislados (D3), test escrito solo desde el issue (D4),
+  mutantes (D5), Fiscal y Defensor de familias distintas (D7), código de IA en sandboxes sin red (D8).
+- [`docs/lessons-log.md`](lessons-log.md): 16 fallos reales de la IA, cada uno con la capa que lo paró. Los mejores
+  para el pitch: el crash desplazado (#2283), la aserción débil (#2234), el test del fichero equivocado (#2129) y el
+  **falso "bug reproducido" por falta de red en el sandbox** (ahora se marca `INFRA` y nunca cuenta como evidencia).
+
+## 7. Entregables
+
+| Entregable | Dónde | Estado |
+|---|---|---|
+| README público (inglés) | `README.md` (las notas internas pasaron a `docs/TEAM.md`) | ✅ con equipo y roles |
+| Informes para el jurado | `demo/index.html` + 5 informes | ✅ (#2129 se rehace tras Pendiente 3) |
+| Concept Card | `docs/concept-card.md` | ✅ borrador revisado; pasada final pendiente |
+| Guion vídeo 2:00 y pitch 3:00 | `docs/pitch-script.md` (+ `docs/guion-demo-evidencia.md`) | ✅ guion; ❌ grabación/ensayo |
+| Formularios de bounties | `docs/bounty-forms.md` (Gemini, Nemotron), `docs/bounty-form-modal.md` | ✅; Modal se actualiza tras Pendiente 2 |
+| Registro de decisiones y de lecciones | `docs/decision-log.md`, `docs/lessons-log.md` | ✅ |
+| CI | `.github/workflows/ci.yml` | ⚠️ ver Pendiente 4 |
+
+## 8. Pendientes, en orden (con instrucciones)
+
+**1. Unificar en `main`: `0f24606` + escritura atómica de la caché del LLM.**
+Con la Etapa 3 en paralelo, un hilo puede leer un fichero de `.cache/llm/` a medio escribir. En `ledger/llm.py`, al
+final de `complete`, sustituir la escritura directa por:
+```python
+tmp = cache_file.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
+tmp.write_text(text, encoding="utf-8")
+os.replace(tmp, cache_file)  # atómico en el mismo sistema de ficheros
+```
+Test primero (varios hilos escribiendo y leyendo el mismo prompt: todas las lecturas validan). Después:
+`git checkout main && git merge --ff-only a/evidence && git push origin main`, y trabajar desde `main` en adelante.
+
+**2. Medir la Etapa 3 en paralelo (dato para el formulario de Modal).** Hay que esperar a que termine la tanda en
+curso (§10). Medición justa, **con la caché del LLM vacía** en las dos versiones (si no, el LLM tarda 0 y solo se
+mide Modal). Herramienta: `python -m ledger.evidence.measure <issue> <seq|par> <out_dir>` (caché nueva por modo;
+`seq` fuerza `ModalTestRunner.parallel_safe = False`; guarda tiempo total, pico real de sandboxes
+(`modal_runner.sandbox_stats()`), objeciones válidas y veredictos en `<out_dir>/<issue>-<modo>/summary.json`).
+Ejecutar, **uno detrás de otro** (en paralelo competirían por la cuota de Gemini): #2283 `seq`, #2283 `par`,
+#2297 `par`. Envolverlos en `timeout 7200`. Luego actualizar `docs/bounty-form-modal.md`, `docs/numeros-evidencia.md` y la
+tabla de costes de `docs/concept-card.md` con **el pico real**, no el tope. Si aparecen 429 de Gemini, bajar
+`LEDGER_MAX_CONCURRENT_GEMINI` (por defecto 8).
+
+**3. Fixture de #2129 con `issue_id` y regenerar la demo.**
+```bash
+.venv/Scripts/python -m ledger.evidence.regen --issue 2129 --only-invariance   # conserva el test del cambio
+.venv/Scripts/python -m ledger.report.demo
+.venv/Scripts/python -m pytest -q tests/test_report_demo.py
+```
+(`--only-invariance` reescribe el fixture con un bloque `provenance`; el test del cambio de #2129 lo escribió
+`gemini-3.8-flash`. `2283-dotnet.html` necesita la traducción en caché o `GEMINI_API_KEY`.)
+
+**4. CI.** `runs-on: craci` se queda en cola sin el runner de CRACI. Para el bounty: activarlo en el repo (admin).
+Si no da tiempo: `runs-on: ubuntu-latest` (una línea). El CI corre `pytest` y el comando de fixtures, sin claves.
+
+**5. Vídeo y pitch.** Guion completo en `docs/pitch-script.md`; abrir `demo/index.html`, `demo/2283-dotnet.html`,
+`demo/2297.html` y `docs/lessons-log.md`. 2:00 es estricto: recortar el embudo, nunca la demo. **No ejecutar el
+pipeline completo en directo**: enseñar informes ya generados; en directo, como mucho el comando de fixtures (segundos)
+o el bench (~2 min). La sección "No decir" de `docs/guion-demo-evidencia.md` evita exagerar.
+
+**6. Formularios y Concept Card.** Pasada final de quien presenta; actualizar cifras de Modal tras el Pendiente 2.
+
+**7. Al final del hackathon: limpiar `.work/`** (worktrees compilados, varios GB). Desde `../junction26-messagepack-csharp`:
+`git worktree list` y `git worktree remove --force <ruta>` para cada uno bajo `tieto-ledger/.work/`, luego
+`git worktree prune`. Confirmar antes de borrar.
+
+**8. Stash del usuario.** Hay un stash `usuario-modelos-gemini-locales-0640` (`afaf663…`) con cambios locales antiguos
+de modelos en `config.py`/`.env.example`, superados por `3aba969`. Decidir si se descarta (`git stash drop`, tras
+comprobar el índice con `git stash list`).
+
+**Mejora opcional (si sobra tiempo):** en `loop.py`, lanzar `make_mutant` a la vez que la primera ronda del Defensor.
+
+## 9. Trampas conocidas (ya nos han pasado)
+
+- **Runner local y paralelismo:** dos ejecuciones sobre el mismo worktree se pisan `Ledger/`. Por eso
+  `parallel_enabled()` solo es cierto con `ModalTestRunner`; en local todo va en secuencia.
+- **Filtro de tests:** `test_name` tiene que empezar por `Ledger` y el filtro es exacto (`FullyQualifiedName~X.`); si no,
+  podría ejecutar tests existentes del repo y dar un verde falso.
+- **Mutantes:** solo pueden tocar `src/**/*.cs` existentes (`mutant_patch_problem`); se normalizan a LF y se reintentan
+  con `--ignore-whitespace`. En bash, el reintento va agrupado: `cd X && { A || B; }`.
+- **Fallos de red/NuGet** en un test → `INFRA`, nunca evidencia. La imagen de Modal precalienta ReferenceAssemblies con
+  `TMPDIR=/opt/ledger-tmp`.
+- **Git Bash convierte rutas:** `git show origin/rama:ruta` falla; usar `MSYS_NO_PATHCONV=1`.
+- **El LLM no repite respuestas:** dos ejecuciones dan objeciones distintas. La demo usa la caché/fixtures.
+- **`ledger run` sobrescribe `out/report-<id>.*`**; `ledger.report.render <json>` escribe junto al JSON (no sobre `fixtures/`).
+- **Procesos en segundo plano lanzados desde una sesión de IA** pueden quedar congelados si la sesión se pausa (un
+  pipeline se quedó parado una hora; causa no confirmada). Envolver ejecuciones largas en `timeout`.
+- **Modal Starter:** 100 contenedores simultáneos; tope configurable `LEDGER_MODAL_MAX_SANDBOXES=60`.
+- **Contratos compartidos:** `ledger/models.py` es inmutable (pydantic frozen); `TestRunner` es un Protocol. Cambiarlos
+  rompe fixtures y tests de las dos partes.
+
+## 10. Tanda en curso al escribir esto (rellenar cuando termine)
+
+Lanzada desde esta sesión con `LEDGER_RUNNER=modal`, Defensor/mutantes `gemini-4-hydrogen`, Fiscal Nemotron, **Etapa 3
+en secuencia** (código anterior a `0f24606`), tope de 2 h por issue. Los informes se copian a
+`<scratchpad>/out-modal/` y hay que subirlos como `fixtures/report_<id>_modal.json`.
+
+| Issue | Inicio | Fin | Tiempo | Resultado |
+|---|---|---|---|---|
+| #2234 | 06:03 | 06:07 | 3,5 min | ✅ `fixtures/report_2234_modal.json`: `TypeCollector.cs` RED (evidencia de la Etapa 2 en rojo, sin Etapa 3) |
+| #2297 | 06:34 | _pendiente_ | _pendiente_ | _pendiente_ — sirve de "antes" aproximado (parte de la caché ya caliente) |
+| #2129 | _pendiente_ | _pendiente_ | _pendiente_ | _pendiente_ |
+
+## 11. Índice de documentos
+
+| Documento | Para qué |
+|---|---|
+| `README.md` | Presentación pública para el jurado (inglés) |
+| `docs/PROJECT-CONTEXT.md` | **Este documento**: estado global y pendientes |
+| `docs/HANDOFF-B.md` | Detalle de triaje, interrogatorio, veredictos e informe |
+| `docs/PERSONA-A.md` / `docs/PERSONA-B.md` / `docs/TEAM.md` | Guías internas originales y reparto |
+| `docs/ARQUITECTURA.md` | Diseño completo del embudo (v2.1) |
+| `docs/numeros-evidencia.md` | Todas las cifras medidas, con fuente |
+| `docs/concept-card.md` | Concept Card (inglés) |
+| `docs/pitch-script.md` · `docs/guion-demo-evidencia.md` | Guiones de vídeo y pitch, preguntas del jurado, "no decir" |
+| `docs/bounty-forms.md` · `docs/bounty-form-modal.md` | Textos de los formularios de bounties |
+| `docs/decision-log.md` · `docs/lessons-log.md` | Decisiones (D1–D14) y fallos reales de la IA |
+| `docs/TECH-CHALLENGES.md` | Bounties: requisitos y prioridades |
+| `fixtures/` | Evidencia, triajes, informes reales y bench (lo que usa la demo) |
