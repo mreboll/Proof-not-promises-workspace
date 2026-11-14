@@ -33,7 +33,7 @@ Fiscal `nvidia/nemotron-3.5-super-vl-120b-a12b`; Defensor y mutantes `gemini-4-h
 | Base + PR + mutante | 54 s en secuencia | **29 s en paralelo** (3 sandboxes sin red) |
 | Invarianza (31 casos, base ×2 + PR) | 35–70 s | (en local) |
 | Test del cambio con el LLM (incluye 2 ejecuciones dotnet) | 0,8–5,5 min | — |
-| Pipeline completo #2283 con Etapa 3 | 18–22 min | _pendiente: ejecución en curso_ |
+| Pipeline completo #2283 con Etapa 3 | 18–22 min | _pendiente: el primer intento se colgó en una llamada a Gemini sin timeout (ver lessons-log)_ |
 
 ## Coste
 
