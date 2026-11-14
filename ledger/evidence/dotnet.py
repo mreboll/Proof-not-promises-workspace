@@ -24,11 +24,11 @@ LEDGER_TEST_DIR = TEST_PROJECT / "Ledger"
 RESULTS_DIR = Path(".ledger-results")
 TRX_NAME = "ledger.trx"
 # test_name acaba en un nombre de fichero y en un filtro de dotnet: solo un identificador C#.
-_SAFE_TEST_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
+SAFE_TEST_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
 
 
 def run_in_worktree(worktree: Path, test_code: str, test_name: str, *, timeout_s: float = DEFAULT_TIMEOUT_S) -> TestRunResult:
-    if not _SAFE_TEST_NAME.match(test_name):
+    if not SAFE_TEST_NAME.match(test_name):
         return _refused(f"test_name inválido {test_name!r}: debe ser un identificador C#")
 
     _write_test(worktree, test_code, test_name)
@@ -64,7 +64,7 @@ class DotnetTestRunner:
         with disposable_worktree(self.settings, self.issue_id, side) as worktree:
             patch_file = worktree / RESULTS_DIR / "mutant.patch"
             patch_file.parent.mkdir(parents=True, exist_ok=True)
-            patch_file.write_text(_normalize_patch(mutant_patch), encoding="utf-8", newline="\n")
+            patch_file.write_text(normalize_patch(mutant_patch), encoding="utf-8", newline="\n")
             applied = _apply_patch(worktree, patch_file)
             if not applied.ok:
                 return _refused(f"git apply del mutante falló: {applied.combined[-1500:]}", time.monotonic() - started)
@@ -89,7 +89,7 @@ def _refused(reason: str, duration_s: float = 0.0) -> TestRunResult:
     return TestRunResult(build_ok=False, passed=0, failed=0, output_tail=reason, duration_s=duration_s)
 
 
-def _normalize_patch(patch: str) -> str:
+def normalize_patch(patch: str) -> str:
     """LF como los blobs de git (git apply convierte al final de línea del checkout) y salto final."""
     text = patch.replace("\r\n", "\n")
     return text if text.endswith("\n") else text + "\n"
