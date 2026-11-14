@@ -136,7 +136,7 @@ li { margin: 2px 0; }
     <div><dt>Evaluated branch</dt><dd class="mono small">ju26-issue-2297</dd></div>
     <div><dt>Base</dt><dd class="mono small">origin/ju26-issue-2297~1</dd></div>
     <div><dt>PR</dt><dd class="mono small">origin/ju26-issue-2297</dd></div>
-    <div><dt>Generated (UTC)</dt><dd>2026-11-14T04:36:14+00:00</dd></div>
+    <div><dt>Generated (UTC)</dt><dd>2026-11-14T05:45:58+00:00</dd></div>
     <div><dt>Files in the diff</dt><dd>237</dd></div>
   </dl>
 </header>
@@ -2527,10 +2527,18 @@ Not found: &#34;ExcludeFromCodeCoverage&#34;</pre></details>      <details><summ
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
+  <h3>What was checked, and by what</h3>
+  <ul class="small"><li>Scope and risk of 237 files: risk by static rules (no model), scope by gemini-3.8-flash against the literal issue text (2 out of scope, 13 high risk).</li><li>Change test `LedgerIssue2297`, written by gemini-3.8-flash from the issue only (never saw the diff): green on PR.</li><li>Generation invariance (generated code + diagnostics, base and PR in isolated processes): 30/30 cases outside the issue identical; base deterministic on rerun.</li></ul>
+  <h3>What was NOT checked, and why</h3>
+  <ul class="small"><li>src/MessagePack.SourceGenerator/Transforms/CompositeResolverTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/CompositeResolverTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/EnumTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/EnumTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/ResolverTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/ResolverTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/TransformUtilities.cs: out of the issue&#39;s scope and high risk; no evidence can approve an unrequested change.</li><li>src/MessagePack.SourceGenerator/Transforms/UnionTemplate.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>src/MessagePack.SourceGenerator/Transforms/UnionTemplate.tt: the system refused to decide (high risk without a closed cross-examination).</li><li>223 green files not read and not individually tested: approved by the shared evidence above.</li></ul>
+  <h3>Residual risk I accept</h3>
+  <ul class="small"><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li></ul>
+  <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
   <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
 Requirement / Issue ID: #2297 (feature) | Evaluated branch: ju26-issue-2297 | Base: origin/ju26-issue-2297~1
 Auto-verified claims (Green): 223/237 | Reviewed manually (Yellow/Red): 14/237
 Approved by (full name): ______________________  Role: _________________
+I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>
 

@@ -23,7 +23,8 @@ local runner, so switching is one variable: `LEDGER_RUNNER=modal`.
 2. **One Sandbox per run, `block_network=True`.** Each test or mutant runs in its own container with no network;
    the AI-written code cannot exfiltrate anything or pull dependencies. A mutant is applied directly inside its
    sandbox, which is thrown away afterwards: no shared state between base, PR and mutants.
-3. **Parallelism.** Base, PR and mutant run at the same time in three sandboxes.
+3. **Parallelism.** Base, PR and mutant run at the same time; in the cross-examination, every high-risk file and every
+   objection runs at once, each test in its own sandbox.
 4. **Guard rails.** Everything that ends up in a sandbox shell command is validated before any sandbox is created
    (issue id, test class name, mutant patch limited to existing `src/**/*.cs` files). Every sandbox is terminated
    in a `finally`, and an infrastructure failure is recorded as "no evidence", never as a pass.
@@ -34,8 +35,14 @@ local runner, so switching is one variable: `LEDGER_RUNNER=modal`.
 - **Full pipeline for #2283 (triage, change test, invariance, cross-examination with mutants): 11 min on Modal vs
   18–22 min locally.** Two of three Prosecutor objections were validated against their mutants; the third test was
   rejected because it also passed against the mutant.
+- **Full pipeline for the 237-file PR #2297, cross-examination in parallel: 17 min** (it passed 1 h sequentially and
+  was cancelled). 12 high-risk files and 36 objections at once: **126 sandboxes, real peak 16, zero failures**, and no
+  rate-limit errors from the models (`fixtures/measure_2297_par_v1.json`). Four optimisation runs then took 13.9–19.9 min:
+  from here on, the model's latency variance, not Modal, sets the wall time.
+- **Capacity sweep** (`python -m ledger.evidence.capacity modal 1,4,8,16,32,60`): 60 sandboxes at once finish the real
+  test in 27 s with zero failures, against 18.7 s for one. Modal is not our ceiling; the LLM is.
 - Image build: 5.5 min once, cached afterwards.
-- **Total cost of everything we ran on Modal during the hackathon: $0.21 in credits, $0 in charges**, with a usage
+- **Total cost of everything we ran on Modal during the hackathon: $2.86 in credits, $0 in charges**, with a usage
   limit equal to the free monthly credits.
 
 **What Modal taught us (real failures, from our lessons log).**
@@ -47,5 +54,5 @@ local runner, so switching is one variable: `LEDGER_RUNNER=modal`.
   real sandbox run caught it.
 
 **Honest limits.** The generation-invariance check (our differential oracle) still runs locally; what goes to
-Modal is all the code written by AI. The cross-examination loop is sequential per objection, so the full-pipeline
-speed-up comes mostly from faster, isolated builds rather than parallelism.
+Modal is all the code written by AI. The rounds of one objection are sequential by design (each round uses the
+previous failure), so the wall time is bounded by the slowest chain of model calls (up to 300 s each), not by Modal.

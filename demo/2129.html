@@ -136,7 +136,7 @@ li { margin: 2px 0; }
     <div><dt>Evaluated branch</dt><dd class="mono small">ju26-issue-2129</dd></div>
     <div><dt>Base</dt><dd class="mono small">origin/ju26-issue-2129~1</dd></div>
     <div><dt>PR</dt><dd class="mono small">origin/ju26-issue-2129</dd></div>
-    <div><dt>Generated (UTC)</dt><dd>2026-11-14T04:36:14+00:00</dd></div>
+    <div><dt>Generated (UTC)</dt><dd>2026-11-14T05:45:58+00:00</dd></div>
     <div><dt>Files in the diff</dt><dd>28</dd></div>
   </dl>
 </header>
@@ -983,10 +983,18 @@ partial class GeneratedMessagePackResolver : MsgPack::IFormatterResolver
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
+  <h3>What was checked, and by what</h3>
+  <ul class="small"><li>Scope and risk of 28 files: risk by static rules (no model), scope by gemini-3.8-flash against the literal issue text (6 out of scope, 9 high risk).</li><li>Change test `LedgerIssue2129`, written by gemini-3.8-flash from the issue only (never saw the diff): NOT green on PR.</li><li>Generation invariance (generated code + diagnostics, base and PR in isolated processes): 21/21 cases outside the issue identical; base deterministic on rerun.</li></ul>
+  <h3>What was NOT checked, and why</h3>
+  <ul class="small"><li>src/MessagePack.Annotations/Attributes.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/AnalyzerReleases.Unshipped.md: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Analyzers/MsgPack00xMessagePackAnalyzer.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterCollector.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterRequest.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/CodeAnalysis/ObjectSerializationInfo.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/GeneratorUtilities.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/MessagePackGenerator.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt: the executable evidence failed or is missing.</li><li>src/MessagePack.SourceGenerator/Utils/Constants.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypes.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypesTests.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExecutionTests/MessagePack.SourceGenerator.ExecutionTests.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPerson.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPoint.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/ExternalWidget.cs: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.ExternalTypes/MessagePack.SourceGenerator.ExternalTypes.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.MapModeExecutionTests/MessagePack.SourceGenerator.MapModeExecutionTests.csproj: the executable evidence failed or is missing.</li><li>tests/MessagePack.SourceGenerator.Tests/GeneratedMessagePackFormatterTests.cs: the executable evidence failed or is missing.</li></ul>
+  <h3>Residual risk I accept</h3>
+  <ul class="small"><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li></ul>
+  <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
   <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
 Requirement / Issue ID: #2129 (feature) | Evaluated branch: ju26-issue-2129 | Base: origin/ju26-issue-2129~1
 Auto-verified claims (Green): 0/28 | Reviewed manually (Yellow/Red): 28/28
 Approved by (full name): ______________________  Role: _________________
+I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>
 

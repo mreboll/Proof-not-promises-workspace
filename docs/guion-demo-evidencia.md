@@ -56,6 +56,9 @@ Pantalla: terminal con el bench.
 | "Why not compare serialized bytes?" | "All four PRs change the source generator and analyzer, not runtime serialization. We compare generated code and diagnostics." |
 | "Isn't 2297 a diff everywhere?" | "Yes, by design it adds an attribute to all generated code. We declare that one transformation, normalize only it, and show it in the report. Everything else stays identical." |
 | "Is it deterministic?" | "The base runs twice and must hash identically before any PR difference counts. LLM answers are cached on disk, so the demo replays without new calls." |
+| "What would make you not trust your own output?" | "Three things, and the report shows each: an open objection, a missing oracle for that area, or a test written from a vague ticket, like 2234. And if a spot-check finds an escape, that area loses its light checks." |
+| "Who owns the decision?" | "The named engineer in the sign-off block. They sign what was checked, what was not, and the residual risk. The AI never approves." |
+| "How would this scale?" | "Human reading scales with risk, not with diff size: 14 of 237 files on 2297. Compute scales out: we measured 60 sandboxes at once with no failures, and the LLM limit is the real ceiling." |
 | "What doesn't it do?" | "It can't catch a wrong ticket, and it needs a differential oracle. Issue 2234 shows the first limit honestly." |
 
 ---

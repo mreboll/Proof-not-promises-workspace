@@ -179,17 +179,17 @@ li { margin: 2px 0; }
   <div class="card YELLOW">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">README.md</span>
-    <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change adds documentation in the README.md file regarding generic types from referenced assemblies, which is not requested in the bug report.</li></ul>
+    <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change adds documentation in the README.md file about generic types from referenced assemblies, which is not requested in the bug report.</li></ul>
   </div>
   <div class="card YELLOW">
     <span class="pill YELLOW">Yellow</span>
     <span class="path">doc/analyzers/MsgPack004.md</span>
-    <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the bug report about the IndexOutOfRangeException exception.</li></ul>
+    <ul class="small"><li class="first">M2: out of scope, LOW risk: review the justification</li><li>justification: The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the error report regarding the IndexOutOfRangeException exception.</li></ul>
   </div>
   <div class="card RED">
     <span class="pill RED">Red</span>
     <span class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</span>
-    <ul class="small"><li class="first">M7: 2 unresolved objection(s): the system refuses to decide</li><li>objection “Does Diagnostic.Create throw an exception (or produce an invalid location) when GetPropertyIdentifierLocation returns null for a property declared in metadata without [Key] inside a [MessagePackObject] type of the assembly being compiled?”: the Defender&#39;s test fails on the PR → possible defect in the PR, check the test output</li><li>objection “Does IndexOutOfRangeException occur when a [MessagePackObject] type of the assembly being compiled has a member of a closed generic reference type from a referenced assembly (for example List&lt;Item&lt;int&gt;&gt; or List&lt;int&gt;), instead of a closed generic value type like Item&lt;int&gt;?”: the Defender&#39;s test fails on the PR → possible defect in the PR, check the test output</li><li>change test `LedgerIssue2283`: base red (2 failed), PR green (2 passed)</li><li>invariance: deterministic, 21 general cases identical</li></ul>
+    <ul class="small"><li class="first">M7: 2 unresolved objection(s): the system refuses to decide</li><li>objection “Does Diagnostic.Create throw an exception (or produce an invalid location) when GetPropertyIdentifierLocation returns null for a property declared in metadata without [Key] inside a [MessagePackObject] type of the assembly being compiled?”: the Defender&#39;s test fails on the PR → possible defect in the PR, check the test output</li><li>objection “Does IndexOutOfRangeException occur when a [MessagePackObject] type in the assembly being compiled has a closed generic reference type member from a referenced assembly (for example List&lt;Item&lt;int&gt;&gt; or List&lt;int&gt;), instead of a closed generic value type like Item&lt;int&gt;?”: the Defender&#39;s test fails on the PR → possible defect in the PR, check the test output</li><li>change test `LedgerIssue2283`: base red (2 failed), PR green (2 passed)</li><li>invariance: deterministic, 21 general cases identical</li></ul>
   </div>
 </section>
 
@@ -206,7 +206,7 @@ li { margin: 2px 0; }
       <td>LOW</td>
       <td><span class="pill YELLOW">Yellow</span></td>
       <td class="small">
-<strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change adds documentation in the README.md file regarding generic types from referenced assemblies, which is not requested in the bug report.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
+<strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change adds documentation in the README.md file about generic types from referenced assemblies, which is not requested in the bug report.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
     <tr>
       <td class="path">doc/analyzers/MsgPack004.md</td>
@@ -214,7 +214,7 @@ li { margin: 2px 0; }
       <td>LOW</td>
       <td><span class="pill YELLOW">Yellow</span></td>
       <td class="small">
-<strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the bug report about the IndexOutOfRangeException exception.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
+<strong>M2: out of scope, LOW risk: review the justification</strong><br><span class="muted">Scope:</span> The change modifies documentation in doc/analyzers/MsgPack004.md, which is not requested in the error report regarding the IndexOutOfRangeException exception.<br><span class="muted mono">R-LOW-02: Markdown documentation (.md)</span><br>      </td>
     </tr>
     <tr>
       <td class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</td>
@@ -222,7 +222,7 @@ li { margin: 2px 0; }
       <td>HIGH</td>
       <td><span class="pill RED">Red</span></td>
       <td class="small">
-<strong>M7: 2 unresolved objection(s): the system refuses to decide</strong><br><span class="muted">Scope:</span> The change in TypeCollector.cs fixes the IndexOutOfRangeException exception by safely accessing DeclaringSyntaxReferences for types originating from referenced assemblies.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
+<strong>M7: 2 unresolved objection(s): the system refuses to decide</strong><br><span class="muted">Scope:</span> The change in TypeCollector.cs fixes the IndexOutOfRangeException exception by safely accessing DeclaringSyntaxReferences for types coming from referenced assemblies.<br><span class="muted mono">R-MED-01: production code in src/ (private/internal logic)</span><br><span class="muted mono">R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)</span><br>      </td>
     </tr>
     </tbody>
   </table>
@@ -237,7 +237,7 @@ li { margin: 2px 0; }
       <td>LOW</td>
       <td><span class="pill GREEN">Green</span></td>
       <td class="small">
-<strong>M4: in scope, LOW risk, evidence passed</strong><br><span class="muted">Scope:</span> The change adds unit tests to verify that the presence of closed generic structs in referenced assemblies does not cause errors in the generator and analyzer, fulfilling the bug report.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
+<strong>M4: in scope, LOW risk, evidence passed</strong><br><span class="muted">Scope:</span> The change adds unit tests to verify that the presence of closed generic structs in referenced assemblies does not cause errors in the generator and analyzer, satisfying the bug report.<br><span class="muted mono">R-LOW-01: tests/ path</span><br>      </td>
     </tr>
     </tbody>
   </table>
@@ -638,8 +638,8 @@ System.IndexOutOfRangeException: Index was outside the bounds of the array.
   <h3 class="path">src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs</h3>
   <div class="card turn GREEN">
     <div class="speaker">Prosecutor · nvidia/nemotron-3.5-super-vl-120b-a12b</div>
-    <p class="q"><strong>Prosecutor 1:</strong> Does GetObjectInfo still throw IndexOutOfRangeException when a closed generic value type defined in a referenced assembly triggers one of the diagnostic branches that still index DeclaringSyntaxReferences[0] directly (lines 735, 1009, and 1101 of the issue), for example a member without [Key] or both keys null in that metadata type?</p>
-<p class="small muted">The diff only replaces direct access at two diagnostic sites and wraps reportDiagnostic in ReportIfLocatedInCompilation, but does not remove the unguarded direct accesses inside GetObjectInfo pointed out in the issue. The exception occurs when constructing the diagnostic, before the location filter can act. The LedgerIssue2283 change test does not cover those alternative branches of GetObjectInfo.</p>    <div class="answer">
+    <p class="q"><strong>Prosecutor 1:</strong> Does GetObjectInfo still throw IndexOutOfRangeException when a closed generic value type defined in a referenced assembly triggers one of the diagnostic branches that still directly index DeclaringSyntaxReferences[0] (lines 735, 1009, and 1101 of the issue), for example a member without [Key] or both keys null in that metadata type?</p>
+<p class="small muted">The diff only replaces direct access in two diagnostic sites and wraps reportDiagnostic in ReportIfLocatedInCompilation, but does not remove unguarded direct accesses inside GetObjectInfo pointed out in the issue. The exception occurs when constructing the diagnostic, before the location filter can act. The LedgerIssue2283 change test does not cover those alternative branches of GetObjectInfo.</p>    <div class="answer">
       <div class="speaker">Defender · gemini-4-hydrogen · may answer only with a test</div>
       <p class="small">Defender: <span class="mono">Ledger_2283_Objection1</span>
         · PR <span class="pill green">green · 2 passed</span>
@@ -810,7 +810,7 @@ public class Ledger_2283_Objection1
   <div class="card turn RED">
     <div class="speaker">Prosecutor · nvidia/nemotron-3.5-super-vl-120b-a12b</div>
     <p class="q"><strong>Prosecutor 2:</strong> Does Diagnostic.Create throw an exception (or produce an invalid location) when GetPropertyIdentifierLocation returns null for a property declared in metadata without [Key] inside a [MessagePackObject] type of the assembly being compiled?</p>
-<p class="small muted">GetPropertyIdentifierLocation returns null for metadata symbols. That null is passed to Diagnostic.Create before invoking ReportIfLocatedInCompilation; if Diagnostic.Create does not accept null, the analyzer crashes with ArgumentNullException instead of discarding the diagnostic. The change test does not cover metadata members lacking a key.</p>    <div class="answer">
+<p class="small muted">GetPropertyIdentifierLocation returns null for metadata symbols. That null is passed to Diagnostic.Create before invoking ReportIfLocatedInCompilation; if Diagnostic.Create does not accept null, the analyzer fails with ArgumentNullException instead of discarding the diagnostic. The change test does not cover metadata members that lack a key.</p>    <div class="answer">
       <div class="speaker">Defender · gemini-4-hydrogen · may answer only with a test</div>
       <p class="small">Defender: <span class="mono">Ledger_2283_Objection2</span>
         · PR <span class="pill red">red · 2 failed</span>
@@ -1024,7 +1024,7 @@ public class Ledger_2283_Objection2
   </div>
   <div class="card turn RED">
     <div class="speaker">Prosecutor · nvidia/nemotron-3.5-super-vl-120b-a12b</div>
-    <p class="q"><strong>Prosecutor 3:</strong> Does IndexOutOfRangeException occur when a [MessagePackObject] type of the assembly being compiled has a member of a closed generic reference type from a referenced assembly (for example List&lt;Item&lt;int&gt;&gt; or List&lt;int&gt;), instead of a closed generic value type like Item&lt;int&gt;?</p>
+    <p class="q"><strong>Prosecutor 3:</strong> Does IndexOutOfRangeException occur when a [MessagePackObject] type in the assembly being compiled has a closed generic reference type member from a referenced assembly (for example List&lt;Item&lt;int&gt;&gt; or List&lt;int&gt;), instead of a closed generic value type like Item&lt;int&gt;?</p>
 <p class="small muted">CollectGeneric invokes GetObjectInfo for any closed generic type on a metadata symbol, not just for value types. The repro only covers Item&lt;int&gt; (value type) as a direct member; it does not cover closed generic reference types or closed generic types used as arguments of other generic types, which also lack syntax in the current compilation.</p>    <div class="answer">
       <div class="speaker">Defender · gemini-4-hydrogen · may answer only with a test</div>
       <p class="small">Defender: <span class="mono">Ledger_2283_Objection3</span>
@@ -1215,10 +1215,18 @@ public sealed partial record Cmd([property: Key(0)] string Scope)
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
+  <h3>What was checked, and by what</h3>
+  <ul class="small"><li>Scope and risk of 4 files: risk by static rules (no model), scope by gemini-3.5-flash against the literal issue text (2 out of scope, 1 high risk).</li><li>Change test `LedgerIssue2283`, written by gemini-4-hydrogen from the issue only (never saw the diff): red on base, green on PR.</li><li>Generation invariance (generated code + diagnostics, base and PR in isolated processes): 21/21 cases outside the issue identical; base deterministic on rerun.</li><li>Cross-examination: 1 of 3 objections closed by a test that passes on the PR and fails against a mutant (Prosecutor nvidia/nemotron-3.5-super-vl-120b-a12b, Defender gemini-4-hydrogen).</li></ul>
+  <h3>What was NOT checked, and why</h3>
+  <ul class="small"><li>src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>  Open question on src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: Does Diagnostic.Create throw an exception (or produce an invalid location) when GetPropertyIdentifierLocation returns null for a property declared in metadata without [Key] inside a [MessagePackObject] type of the assembly being compiled?</li><li>  Open question on src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: Does IndexOutOfRangeException occur when a [MessagePackObject] type in the assembly being compiled has a closed generic reference type member from a referenced assembly (for example List&lt;Item&lt;int&gt;&gt; or List&lt;int&gt;), instead of a closed generic value type like Item&lt;int&gt;?</li><li>1 green file not read and not individually tested: approved by the shared evidence above.</li></ul>
+  <h3>Residual risk I accept</h3>
+  <ul class="small"><li>Behaviour outside the issue is only as covered as the 29 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li><li>2 open objections: if I approve, I accept that these questions stay unanswered.</li></ul>
+  <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
   <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
 Requirement / Issue ID: #2283 (bugfix) | Evaluated branch: ju26-issue-2283 | Base: origin/ju26-issue-2283~1
 Auto-verified claims (Green): 1/4 | Reviewed manually (Yellow/Red): 3/4
 Approved by (full name): ______________________  Role: _________________
+I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>
 

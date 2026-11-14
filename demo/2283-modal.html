@@ -1225,10 +1225,18 @@ public sealed partial record Cmd([property: Key(0)] string Scope)
 <section>
   <h2>Sign-off</h2>
   <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
+  <h3>What was checked, and by what</h3>
+  <ul class="small"><li>Scope and risk of 4 files: risk by static rules (no model), scope by gemini-3.5-flash against the literal issue text (2 out of scope, 1 high risk).</li><li>Change test `LedgerIssue2283`, written by gemini-4-hydrogen from the issue only (never saw the diff): red on base, green on PR.</li><li>Generation invariance (generated code + diagnostics, base and PR in isolated processes): 21/21 cases outside the issue identical; base deterministic on rerun.</li><li>Cross-examination: 2 of 3 objections closed by a test that passes on the PR and fails against a mutant (Prosecutor nvidia/nemotron-3.5-super-vl-120b-a12b, Defender gemini-4-hydrogen).</li></ul>
+  <h3>What was NOT checked, and why</h3>
+  <ul class="small"><li>src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: the system refused to decide (high risk without a closed cross-examination).</li><li>  Open question on src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs: When GetObjectInfo processes a closed generic value type from a referenced assembly and reaches a direct DeclaringSyntaxReferences[0] indexing site other than the two property-diagnostic sites edited in the diff (the issue cites lines 735, 1009, and 1101), does the analyzer or generator still throw IndexOutOfRangeException?</li><li>1 green file not read and not individually tested: approved by the shared evidence above.</li></ul>
+  <h3>Residual risk I accept</h3>
+  <ul class="small"><li>Behaviour outside the issue is only as covered as the 31 invariance cases; the oracle is generated code and diagnostics, not runtime serialization.</li><li>The change test and the Defender tests were written by an AI: they cover the edge cases somebody asked about, not all of them.</li><li>1 open objection: if I approve, I accept that these questions stay unanswered.</li></ul>
+  <p class="small muted">"The AI said it was fine" is not an approval: every line above is a check you can rerun, or a gap you accept by name.</p>
   <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
 Requirement / Issue ID: #2283 (bugfix) | Evaluated branch: ju26-issue-2283 | Base: origin/ju26-issue-2283~1
 Auto-verified claims (Green): 1/4 | Reviewed manually (Yellow/Red): 3/4
 Approved by (full name): ______________________  Role: _________________
+I have read the residual risk above and accept it: [ ] yes
 Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>
 

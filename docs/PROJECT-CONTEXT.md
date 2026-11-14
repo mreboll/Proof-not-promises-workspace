@@ -2,7 +2,7 @@
 
 > **Para quien retome el proyecto (persona o sesión nueva de IA):** lee este documento entero antes de tocar nada.
 > Resume dónde está todo, qué se ha hecho, qué se ha medido, qué falta y cómo hacerlo. Los detalles viven en los
-> documentos enlazados; este es el mapa. Estado a **14/11/2026, ~07:35**, al cerrar la sesión de trabajo de la
+> documentos enlazados; este es el mapa. Estado a **14/11/2026, ~08:25**, al cerrar la sesión de trabajo de la
 > antigua Línea A. Desde ahora se trabaja **desde un solo sitio** (ya no hay reparto Línea A / Línea B).
 > **El prompt para arrancar una sesión nueva está al final (§12).**
 
@@ -30,11 +30,12 @@ Repo público: `github.com/mreboll/Proof-not-promises`.
 | Pipeline de punta a punta (T3 → T1 → T2 → informe) | ✅ con dotnet local y con Modal |
 | Evidencia real de los 4 issues | ✅ `fixtures/evidence_<id>.json` (#2129 pendiente de regenerar con `issue_id`) |
 | Informe estrella de #2283 (crash desplazado) | ✅ `demo/2283-dotnet.html` |
-| Etapa 3 en paralelo con Modal | ✅ código y tests (`0f24606`, caché atómica `c259b8f`); ❌ **nunca ejecutada en real** (Pendiente 2); falta llevarla a `main` |
+| Etapa 3 en paralelo con Modal | ✅ **validada en real**: #2297 completo en **14–20 min** en 4 ejecuciones (antes >1 h), 36 objeciones, 0 errores 429, pico real 14–16 sandboxes; #2283 en 10,4 min. Límite medido (§5). Falta llevarla a `main` |
 | Concept Card, README público, guiones, formularios | ✅ borradores revisados; falta pasada final de quien presenta |
 | Vídeo y pitch | ❌ guiones listos, falta grabar/ensayar |
 | CI | ⚠️ `runs-on: craci` se queda en cola; sin runner CRACI activo |
-| Tests | ✅ **296 en verde**, sin red ni claves (`.venv/Scripts/python -m pytest -q`, ~65 s) |
+| Bloque de firma | ✅ qué se comprobó y con qué / qué NO y por qué / riesgo residual (`ledger/report/signoff.py`), en las 5 demos |
+| Tests | ✅ **350 en verde**, sin red ni claves (`.venv/Scripts/python -m pytest -q`, ~65 s) |
 
 **Ramas:** `main` = `d6a553b`. **`a/evidence` es la más completa**: `main` + el paralelismo (`0f24606`), la caché
 atómica (`20028e1`, `c259b8f`), este documento y la herramienta de medición (`c2eb91e`) y una lección (`ca02baf`); va
@@ -72,12 +73,13 @@ Diseño original: [`docs/ARQUITECTURA.md`](ARQUITECTURA.md). Guía del motor de 
 ### Comandos
 
 ```bash
-.venv/Scripts/python -m pytest -q                                          # 295 tests, sin red ni claves
+.venv/Scripts/python -m pytest -q                                          # 350 tests, sin red ni claves
 .venv/Scripts/python -m ledger run --issue 2283 --fixtures --fake-runner   # segundos, sin claves ni .NET (sin Etapa 3)
 .venv/Scripts/python -m ledger run --issue 2283                            # real, dotnet local (18–22 min)
 LEDGER_RUNNER=modal .venv/Scripts/python -m ledger run --issue 2283        # real, Modal (11 min en secuencia)
 .venv/Scripts/python -m ledger.evidence.regen --issue <id> [--runner modal] [--only-invariance]   # fixture con procedencia
 .venv/Scripts/python -m ledger.evidence.bench --issue 2283                 # Modal paralelo vs local secuencial
+.venv/Scripts/python -m ledger.evidence.capacity modal 1,8,32,60          # límite de concurrencia (también: llm pro / llm fiscal)
 .venv/Scripts/python -m ledger.report.demo                                 # regenera demo/*.html desde fixtures
 .venv/Scripts/python -m ledger.report.render <json> [--recompute] [--translate]
 .venv/Scripts/python -m ledger.triage.scale <id>                           # triaje masivo con números
@@ -116,6 +118,15 @@ LEDGER_RUNNER=modal .venv/Scripts/python -m ledger run --issue 2283        # rea
 - **Modal:** base + PR + mutante en **28 s en paralelo vs 63 s en secuencia local**, mismos resultados
   (`fixtures/bench_2283.json`). Pipeline completo de #2283: **11 min en Modal (secuencial)** vs 18–22 min local; 2 de 3
   objeciones validadas (`fixtures/report_2283_modal.json`).
+- **Límite de concurrencia** (`ledger.evidence.capacity`): Modal escala sin fallos hasta 60 sandboxes; Gemini pro no
+  da 429 hasta 48 y se hunde en 64; Nemotron sobrado hasta 32. Topes por defecto ahora **Gemini 32, Nemotron 16**
+  (antes 8, que era el cuello de botella). El `.env` local no fija topes (usa estos por defecto) y tiene `LEDGER_RUNNER=modal`. Con estos topes el tiempo
+  lo marca la cadena más lenta de llamadas largas a Gemini (hasta 300 s), no la concurrencia. El primer Defensor se
+  pide a la vez que el mutante.
+- Coste Modal total: **2,86 $** en créditos (`modal billing report --for "this month"`).
+- **Optimización (D15, D16):** etapas 1 y 2 a la vez con Modal, triaje en paralelo, variantes del Defensor solo con cupo
+  libre, y hedging (desactivado por defecto). Cuatro versiones medidas en `docs/numeros-evidencia.md`: a partir de
+  ~17 min, la variación de latencia de Gemini pesa más que cualquier mejora. **Se paró de optimizar aquí a propósito.**
 - Todas las cifras con su fuente: [`docs/numeros-evidencia.md`](numeros-evidencia.md). Números de la Etapa 1:
   [`docs/HANDOFF-B.md`](HANDOFF-B.md) §4.
 
@@ -149,7 +160,7 @@ git fetch origin && git checkout main && git merge --ff-only origin/a/evidence &
 ```
 y trabajar desde `main` en adelante (se pueden borrar después las ramas `a/evidence` y `b/triage-report`).
 
-**2. Validar la Etapa 3 en paralelo en una ejecución REAL (imprescindible antes de presentarla).** Solo está probada
+**2. ✅ HECHO (10:00): #2297 y #2283 en paralelo medidos solos; cifras y conclusión en `docs/numeros-evidencia.md`.** Texto original: Solo está probada
 con tests simulados. Una ejecución con Modal, Gemini y Nemotron reales puede destapar errores 429 de Gemini con 8
 peticiones a la vez, problemas con muchos sandboxes simultáneos o condiciones de carrera.
 ```bash
@@ -190,7 +201,7 @@ o el bench (~2 min). La sección "No decir" de `docs/guion-demo-evidencia.md` ev
 de modelos en `config.py`/`.env.example`, superados por `3aba969`. Decidir si se descarta (`git stash drop`, tras
 comprobar el índice con `git stash list`).
 
-**Mejora opcional (si sobra tiempo):** en `loop.py`, lanzar `make_mutant` a la vez que la primera ronda del Defensor.
+**Mejoras opcionales:** el triaje (Etapa 1) hace sus ~15 llamadas en secuencia (42 s en #2297; en paralelo serían ~5 s). Con más ficheros de riesgo alto que huecos (12), convendría que entrasen primero los que tocan API pública. (Lo de lanzar el mutante a la vez que el primer Defensor ya está hecho.)
 
 ## 9. Trampas conocidas (ya nos han pasado)
 
@@ -208,6 +219,7 @@ comprobar el índice con `git stash list`).
 - **Procesos en segundo plano lanzados desde una sesión de IA** pueden quedar congelados si la sesión se pausa (un
   pipeline se quedó parado una hora; causa no confirmada). Envolver ejecuciones largas en `timeout`.
 - **Modal Starter:** 100 contenedores simultáneos; tope configurable `LEDGER_MODAL_MAX_SANDBOXES=60`.
+- **En Windows, `ps` de Git Bash no ve los `python.exe`:** usar `tasklist`. Por fiarse de `ps` se lanzaron dos mediciones a la vez (H8).
 - **Contratos compartidos:** `ledger/models.py` es inmutable (pydantic frozen); `TestRunner` es un Protocol. Cambiarlos
   rompe fixtures y tests de las dos partes.
 

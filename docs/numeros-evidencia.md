@@ -44,8 +44,76 @@ pasaba también contra el mutante). Las preguntas del Fiscal no coinciden con la
 los LLM no repiten respuestas y los prompts cambiaron a inglés. Informe: `fixtures/report_2283_modal.json`;
 comparativa: `fixtures/bench_2283.json`.
 
+## Pipeline completo en Modal con la Etapa 3 en paralelo (14/11/2026)
+
+`python -m ledger.evidence.measure <issue> par <dir>` con caché del LLM vacía; topes Gemini 32, Nemotron 16, Modal 60.
+
+| | #2297 (237 ficheros) |
+|---|---|
+| Tiempo total | **1024 s (17 min)**; en secuencia pasó de 1 h y se canceló |
+| Interrogatorio | 12 ficheros, **36 objeciones**: 12 válidas, 12 con test que falla en el PR (posible defecto o test erróneo), 12 con test que también pasa contra el mutante |
+| Veredictos | 223 M4 + 2 M5 verdes · 10 M7 (se niega a decidir) · `TransformUtilities.cs` M1 · `README.md` M2 |
+| Modal | 126 sandboxes, **pico real 16** (tope 60), 0 fallos |
+| Gemini | 131 peticiones, pico 32 (= tope), **0 errores 429**, 1 timeout (300 s), 39 s de espera por hueco en total |
+| Nemotron | 12 peticiones (una por fichero), pico 12 |
+
+Fuentes: `fixtures/measure_2297_par_v1.json`, `fixtures/report_2297_modal.json`. Lectura: el tope de Gemini se llegó a
+llenar pero solo costó 39 s de espera; el tiempo lo marca la cadena más lenta de llamadas largas (hasta 300 s cada
+una), no la concurrencia.
+
+**#2283 en paralelo.** Medida limpia (sola, con variantes del Defensor, D15): **622 s (10,4 min)**; 0/3 objeciones
+válidas y `TypeCollector.cs` rojo (`fixtures/measure_2283_par.json`). Referencia: 11 min en secuencia con parte de la
+caché caliente. Las dos primeras mediciones se lanzaron por error a la vez y compartieron caché (447 s y 796 s;
+`fixtures/measure_2283_par_overlap_{a,b}.json`, lessons-log H8): no valen como cifra, pero muestran que dos ejecuciones
+del mismo PR dan resultados distintos (3/3 válidas en una, 1/3 en otra).
+
+### Optimización de #2297: cuatro versiones, una ejecución cada una
+
+| Versión | Tiempo | Objeciones válidas | Gemini: peticiones · errores · espera por hueco | Respaldos (útiles) | p90 de las respuestas |
+|---|---|---|---|---|---|
+| v1: topes 32/16 (`_v1`) | 1024 s (17,1 min) | 12/36 | 131 · 1 timeout · 39 s | — | 456 s |
+| v2: + etapas 1 y 2 a la vez, triaje en paralelo, variantes adaptativas (D15) (`_v2`) | 1054 s (17,6 min) | 8/36 | 142 · 2 × 504 · 48 s | — | 396 s |
+| v3: + hedging con la mediana por proveedor (`_v3`, lessons-log H9) | **833 s (13,9 min)** | 3/36 | 232 · 0 · 8983 s | 79 (6) | 595 s |
+| v4: + hedging por modelo y solo con cupo libre (`_v4`) | 1192 s (19,9 min) | 6/36 | 195 · 6 × 504 · 449 s | 40 (4) | 591 s |
+
+Fuentes: `fixtures/measure_2297_par_v{1,2,3,4}.json`.
+
+**Conclusión (lo que se puede afirmar y lo que no):**
+- Lo demostrado: subir el tope de Gemini de 8 a 32 quitó la cola (más de 1 h en secuencia frente a 17 min), y Modal
+  nunca fue el límite (pico real de 14–16 sandboxes de 60).
+- En #2297, el final lo marca **una llamada rezagada del Defensor**: en v2, el 90 % de las respuestas había llegado a
+  los 396 s y la última llegó a los 1006 s.
+- La variación de latencia de Gemini entre ejecuciones (p90 de 396 a 595 s; de 0 a 6 errores 504) es **mayor que el
+  efecto de cada mejora**. Con una ejecución por versión no se puede atribuir la diferencia al código. Por eso el
+  hedging queda **desactivado por defecto** (`LEDGER_HEDGE=1` lo activa): gasto de más sin beneficio probado.
+- Las objeciones válidas oscilan entre 3 y 12 de 36. No sabemos si es ruido del LLM o rondas perdidas por 504.
+- Para bajar de verdad el tiempo hace falta otra palanca: un modelo más rápido para el Defensor (a costa de calidad)
+  o más cupo en el proveedor. Medirlo bien exigiría ~3 ejecuciones por versión (15–20 min y ~0,5 $ de Modal cada una).
+
+## Límite de concurrencia (barrido de capacidad, 14/11/2026)
+
+`python -m ledger.evidence.capacity <modal|llm pro|llm fiscal> <niveles>`: N trabajos idénticos a la vez por nivel, cada
+recurso por separado. Fuentes: `fixtures/capacity_modal.json`, `fixtures/capacity_llm_pro.json`, `fixtures/capacity_llm_fiscal.json`.
+
+| N a la vez | Modal: test real de #2283 (total / máx.) | Gemini pro `gemini-4-hydrogen`, ping (total / máx.) | Nemotron, ping (total) |
+|---|---|---|---|
+| 1 | 18,7 s / 18,4 s | 5,9 s | 4,3 s |
+| 8 | 20,0 s / 19,7 s | 5,5 s | 1,3 s |
+| 16 | 23,1 s / 22,5 s | 5,9 s | 1,3 s |
+| 32 | 32,1 s / 30,9 s | 9,6 s / 9,2 s | 1,7 s |
+| 48 | — | 11,8 s / 11,7 s | — |
+| 60 / 64 | **27,4 s / 27,0 s (60)**, 0 fallos | **29,9 s / 29,2 s (64)**: el rendimiento cae a la mitad | — |
+
+- **Modal no es el límite:** 60 sandboxes a la vez (pico real 60) terminan en 27 s sin un solo fallo: 131 ejecuciones/min frente a 3,2 con una.
+- **Gemini pro es el techo:** ningún 429 en todo el barrido, pero a partir de 48 las peticiones se encolan en el
+  proveedor y en 64 el rendimiento se hunde (243 → 129 por minuto). El ping mide concurrencia, no tokens: los prompts
+  reales pesan mucho más, así que el tope por defecto queda en **32** (antes 8, que era el verdadero cuello de botella).
+- **Nemotron** escala sin problema hasta 32; el Fiscal hace una llamada por fichero, así que el tope queda en **16**.
+- Además, el primer Defensor se pide **a la vez** que el mutante (no lo ve): una llamada "pro" menos en el camino crítico de cada objeción.
+
 ## Coste
 
+- Modal, total del hackathon a las 10:00 (`modal billing report --for "this month"`): **2,86 $ en créditos**, 0 $ de cargos. Antes:
 - Modal: **0,13 $ en créditos** para construir la imagen dos veces, depurar y validar (tope de uso 30 $, sin cargos).
 - LLM: con caché en disco por hash del prompt; repetir la demo no hace llamadas nuevas.
 
