@@ -87,6 +87,25 @@ def test_second_compile_failure_is_returned_as_is(settings):
     assert not evidence.pr.build_ok
 
 
+@pytest.mark.parametrize(
+    "infra_failure",
+    [
+        TestRunResult(build_ok=False, passed=0, failed=1, output_tail="INFRA: test failed for infrastructure reasons"),
+        TestRunResult(build_ok=False, passed=0, failed=0, output_tail="timeout tras 900s"),
+        TestRunResult(build_ok=False, passed=0, failed=0, output_tail="Modal falló: ConnectionError"),
+    ],
+)
+def test_infrastructure_failures_do_not_spend_the_llm_retry(settings, infra_failure):
+    """Reescribir el test no arregla la red, un timeout ni Modal caído: no se reintenta con el LLM."""
+    llm = ScriptedLLM([T1, T2])
+    runner = ScriptedRunner({"pr": [infra_failure], "base": [RED]})
+
+    evidence = run(settings, llm, runner)
+
+    assert len(llm.calls) == 1
+    assert not evidence.ok
+
+
 def test_test_that_passes_on_base_does_not_prove_a_bugfix(settings):
     runner = ScriptedRunner({"pr": [GREEN], "base": [GREEN]})
 

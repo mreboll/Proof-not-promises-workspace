@@ -99,6 +99,14 @@ def build_retry_prompt(issue_text: str, template: str, previous: GeneratedTest, 
     )
 
 
+_INFRA_PREFIXES = ("INFRA", "timeout", "Modal falló")
+
+
+def _is_infrastructure_failure(result: TestRunResult) -> bool:
+    """Red, timeout o Modal caído: reescribir el test no lo arregla, así que no se gasta el reintento."""
+    return result.output_tail.startswith(_INFRA_PREFIXES)
+
+
 def read_issue(settings: Settings, issue_id: str) -> str:
     path = settings.issues_dir / f"{issue_id}.md"
     if not path.exists():
@@ -128,7 +136,7 @@ def generate_change_test(
 
     test: GeneratedTest = complete(SYSTEM_PROMPT, build_user_prompt(issue_text, template), GeneratedTest, "pro")
     pr = runner.run_tests("pr", test.test_code, test.test_name)
-    if not pr.build_ok:
+    if not pr.build_ok and not _is_infrastructure_failure(pr):
         retry_prompt = build_retry_prompt(issue_text, template, test, pr.output_tail)
         test = complete(SYSTEM_PROMPT, retry_prompt, GeneratedTest, "pro")
         pr = runner.run_tests("pr", test.test_code, test.test_name)

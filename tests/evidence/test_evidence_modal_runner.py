@@ -7,6 +7,7 @@ from ledger.evidence.modal_runner import REMOTE_RESULTS, ModalTestRunner, worktr
 
 DATA = Path(__file__).parent / "data"
 TRX = (DATA / "pass_fail.trx").read_text(encoding="utf-8")
+SRC_PATCH = "--- a/src/A.cs\n+++ b/src/A.cs\n@@ -1 +1 @@\n-x\n+y\n"
 
 
 @dataclass
@@ -93,13 +94,13 @@ def test_runs_test_in_side_worktree_without_network(settings):
     sandbox = FakeSandbox()
     runner, factory = make_runner(settings, sandbox)
 
-    result = runner.run_tests("base", "public class T {}", "T")
+    result = runner.run_tests("base", "public class LedgerT {}", "LedgerT")
 
     assert factory.created[0]["block_network"] is True
     wt = worktree_dir("2283", "base")
-    assert sandbox.filesystem.files[f"{wt}/tests/MessagePack.SourceGenerator.Tests/Ledger/T.cs"] == "public class T {}"
+    assert sandbox.filesystem.files[f"{wt}/tests/MessagePack.SourceGenerator.Tests/Ledger/LedgerT.cs"] == "public class LedgerT {}"
     test_cmd = next(c for c in sandbox.commands if "dotnet test" in c)
-    assert f"cd {wt}" in test_cmd and "--no-restore" in test_cmd and "FullyQualifiedName~T" in test_cmd
+    assert f"cd {wt}" in test_cmd and "--no-restore" in test_cmd and "FullyQualifiedName~LedgerT." in test_cmd
     assert result.red_for_real
     assert sandbox.terminated
 
@@ -108,7 +109,7 @@ def test_previous_ledger_tests_are_removed_before_writing(settings):
     sandbox = FakeSandbox()
     runner, _ = make_runner(settings, sandbox)
 
-    runner.run_tests("pr", "class T {}", "T")
+    runner.run_tests("pr", "class LedgerT {}", "LedgerT")
 
     clean = sandbox.commands[0]
     assert "rm -rf" in clean and "Ledger" in clean
@@ -118,7 +119,7 @@ def test_build_failure_when_no_trx(settings):
     sandbox = FakeSandbox(trx=None, build_output="/w/2283/pr/tests/Ledger/T.cs(1,1): error CS1002: ; expected")
     runner, _ = make_runner(settings, sandbox)
 
-    result = runner.run_tests("pr", "class T {", "T")
+    result = runner.run_tests("pr", "class LedgerT {", "LedgerT")
 
     assert not result.build_ok
     assert "CS1002" in result.output_tail
@@ -130,7 +131,7 @@ def test_unsafe_names_never_reach_a_sandbox(settings, bad_name):
     sandbox = FakeSandbox()
     runner, factory = make_runner(settings, sandbox)
 
-    result = runner.run_tests("pr", "class T {}", bad_name)
+    result = runner.run_tests("pr", "class LedgerT {}", bad_name)
 
     assert not result.build_ok and factory.created == []
 
@@ -139,7 +140,7 @@ def test_mutant_is_applied_in_the_sandbox_before_testing(settings):
     sandbox = FakeSandbox()
     runner, _ = make_runner(settings, sandbox)
 
-    result = runner.run_against_mutant("pr", "--- a/x\r\n+++ b/x\r\n", "class T {}", "T")
+    result = runner.run_against_mutant("pr", SRC_PATCH.replace("\n", "\r\n"), "class LedgerT {}", "LedgerT")
 
     patch_path = next(p for p in sandbox.filesystem.files if p.endswith("mutant.patch"))
     assert "\r" not in sandbox.filesystem.files[patch_path]  # normalizado a LF, como en local
@@ -155,7 +156,7 @@ def test_lenient_apply_only_runs_if_strict_fails(settings):
     sandbox = FakeSandbox()
     runner, _ = make_runner(settings, sandbox)
 
-    runner.run_against_mutant("pr", "--- a/x\n+++ b/x\n", "class T {}", "T")
+    runner.run_against_mutant("pr", SRC_PATCH, "class LedgerT {}", "LedgerT")
 
     apply_cmd = next(c for c in sandbox.commands if "git apply" in c)
     strict, lenient = apply_cmd.split("||")
@@ -168,7 +169,7 @@ def test_mutant_that_does_not_apply_is_not_tested(settings):
     sandbox = FakeSandbox(apply_ok=False)
     runner, _ = make_runner(settings, sandbox)
 
-    result = runner.run_against_mutant("pr", "garbage", "class T {}", "T")
+    result = runner.run_against_mutant("pr", SRC_PATCH, "class LedgerT {}", "LedgerT")
 
     assert not result.build_ok and "git apply" in result.output_tail
     assert not any("dotnet test" in c for c in sandbox.commands)
@@ -183,7 +184,29 @@ def test_sandbox_is_terminated_even_if_exec_raises(settings):
     sandbox = Exploding()
     runner, _ = make_runner(settings, sandbox)
 
-    result = runner.run_tests("pr", "class T {}", "T")
+    result = runner.run_tests("pr", "class LedgerT {}", "LedgerT")
 
     assert not result.build_ok and "modal down" in result.output_tail
     assert sandbox.terminated
+
+
+def test_mutant_outside_product_source_never_reaches_a_sandbox(settings):
+    sandbox = FakeSandbox()
+    runner, factory = make_runner(settings, sandbox)
+
+    evil = SRC_PATCH.replace("src/A.cs", "tests/X/LedgerT.cs")
+    result = runner.run_against_mutant("pr", evil, "class LedgerT {}", "LedgerT")
+
+    assert not result.build_ok and "mutant" in result.output_tail.lower()
+    assert factory.created == []
+
+
+def test_unknown_issue_never_reaches_a_sandbox(settings):
+    sandbox = FakeSandbox()
+    factory = FakeFactory(sandbox)
+    runner = ModalTestRunner(settings, "2283; rm -rf /", sandbox_factory=factory)
+
+    result = runner.run_tests("pr", "class LedgerT {}", "LedgerT")
+
+    assert not result.build_ok and "issue" in result.output_tail.lower()
+    assert factory.created == []

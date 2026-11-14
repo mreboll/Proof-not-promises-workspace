@@ -16,7 +16,15 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from ledger.config import ISSUES, Settings
-from ledger.evidence.dotnet import LEDGER_TEST_DIR, SAFE_TEST_NAME, TEST_PROJECT, TRX_NAME, normalize_patch
+from ledger.evidence.dotnet import (
+    LEDGER_TEST_DIR,
+    SAFE_TEST_NAME,
+    TEST_PROJECT,
+    TRX_NAME,
+    exact_test_filter,
+    mutant_patch_problem,
+    normalize_patch,
+)
 from ledger.evidence.trx import build_result
 from ledger.models import Side, TestRunResult
 
@@ -95,8 +103,13 @@ class ModalTestRunner:
         return self._run(side, test_code, test_name, mutant_patch=mutant_patch)
 
     def _run(self, side: Side, test_code: str, test_name: str, mutant_patch: str | None) -> TestRunResult:
+        # Todo lo que acaba en un comando de shell del sandbox se valida antes de crear nada en Modal.
+        if self.issue_id not in ISSUES:
+            return _failed(f"issue desconocido {self.issue_id!r}")
         if not SAFE_TEST_NAME.match(test_name):
-            return _failed(f"test_name inválido {test_name!r}: debe ser un identificador C#")
+            return _failed(f"test_name inválido {test_name!r}: debe ser un identificador C# que empiece por 'Ledger'")
+        if mutant_patch is not None and (problem := mutant_patch_problem(mutant_patch)):
+            return _failed(problem)
         factory = self.sandbox_factory or _default_factory(self.settings)
         started = time.monotonic()
         sandbox = None
@@ -128,7 +141,7 @@ def _run_in_sandbox(sandbox: Any, wt: str, test_code: str, test_name: str, mutan
     _, output = _sh(
         sandbox,
         f"cd {wt} && dotnet test {TEST_PROJECT.as_posix()} --no-restore "
-        f"--filter FullyQualifiedName~{test_name} "
+        f"--filter {exact_test_filter(test_name)} "
         f"--logger 'trx;LogFileName={TRX_NAME}' --results-directory {REMOTE_RESULTS}",
     )
     try:
