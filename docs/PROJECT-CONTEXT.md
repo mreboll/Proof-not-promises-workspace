@@ -37,10 +37,8 @@ Repo público: `github.com/mreboll/Proof-not-promises`.
 | Bloque de firma | ✅ qué se comprobó y con qué / qué NO y por qué / riesgo residual (`ledger/report/signoff.py`), en las 5 demos |
 | Tests | ✅ **350 en verde**, sin red ni claves (`.venv/Scripts/python -m pytest -q`, ~65 s) |
 
-**Ramas:** `main` = `d6a553b`. **`a/evidence` es la más completa**: `main` + el paralelismo (`0f24606`), la caché
-atómica (`20028e1`, `c259b8f`), este documento y la herramienta de medición (`c2eb91e`) y una lección (`ca02baf`); va
-6 commits por delante y contiene todo `main`. `b/triage-report` = `main` (B no tiene nada sin subir). El
-**Pendiente 1** las unifica en `main`.
+**Ramas:** se trabaja **desde `main`** (unificada el 14/11 a las ~10:15 por avance rápido desde `a/evidence`, sin
+reescribir nada). `a/evidence` y `b/triage-report` ya no aportan nada y se pueden borrar (pedir confirmación antes).
 
 **Fuera del repo:** 115 respuestas del LLM sin seguimiento en `.cache/llm/` de la máquina de A (de las ejecuciones en
 Modal); la demo no las necesita. Los resultados de las mediciones canceladas quedaron en una carpeta temporal y no valen.
@@ -153,12 +151,8 @@ LEDGER_RUNNER=modal .venv/Scripts/python -m ledger run --issue 2283        # rea
 
 ## 8. Pendientes, en orden (con instrucciones)
 
-**1. Unificar en `main`.** La escritura atómica de la caché que pedía B ya está hecha (`c259b8f`, robusta en Windows:
-`os.replace` reintenta si otro hilo tiene el fichero abierto). Solo falta:
-```bash
-git fetch origin && git checkout main && git merge --ff-only origin/a/evidence && git push origin main
-```
-y trabajar desde `main` en adelante (se pueden borrar después las ramas `a/evidence` y `b/triage-report`).
+**1. ✅ HECHO (10:15): `a/evidence` unificada en `main`** por avance rápido. Queda opcional borrar las ramas
+`a/evidence` y `b/triage-report` (confirmar antes).
 
 **2. ✅ HECHO (10:00): #2297 y #2283 en paralelo medidos solos; cifras y conclusión en `docs/numeros-evidencia.md`.** Texto original: Solo está probada
 con tests simulados. Una ejecución con Modal, Gemini y Nemotron reales puede destapar errores 429 de Gemini con 8
