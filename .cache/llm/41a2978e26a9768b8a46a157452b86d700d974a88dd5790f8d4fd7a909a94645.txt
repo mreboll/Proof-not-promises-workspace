@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "Los cambios en TypeCollector.cs controlan el manejo de claves duplicadas y mixtas, lo cual no tiene relación con el problema reportado de que el analizador no funciona cuando SuppressSourceGeneration es true."
+}

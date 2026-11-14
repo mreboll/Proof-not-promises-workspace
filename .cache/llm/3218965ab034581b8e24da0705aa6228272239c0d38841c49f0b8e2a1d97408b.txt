@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El cambio actualiza la documentación de analizadores (un archivo de documentación), algo que no fue solicitado en la descripción del problema."
+}

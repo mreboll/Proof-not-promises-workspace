@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Define un tipo externo sin atributos de serialización dentro de una biblioteca de pruebas para verificar la generación de formateadores de tipos externos propuesta en la incidencia."
+}

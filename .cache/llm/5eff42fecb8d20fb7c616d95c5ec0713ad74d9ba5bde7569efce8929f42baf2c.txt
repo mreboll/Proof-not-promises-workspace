@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "It excludes types marked with [GeneratedMessagePackFormatter] from being detected as hand-written formatters in the source generator, supporting the feature requested in the issue."
+}

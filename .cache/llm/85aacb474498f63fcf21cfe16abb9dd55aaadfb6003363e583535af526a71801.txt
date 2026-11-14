@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El archivo agrega pruebas unitarias para verificar que el analizador reporte diagnósticos correctamente cuando SuppressSourceGeneration es verdadero, cumpliendo directamente con el problema reportado."
+}

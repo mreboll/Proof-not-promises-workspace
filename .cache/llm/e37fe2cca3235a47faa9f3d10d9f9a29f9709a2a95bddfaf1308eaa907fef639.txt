@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Es necesario excluir las pruebas del nuevo formateador para tipos externos en este proyecto para evitar errores de compilación por falta de referencias."
+}

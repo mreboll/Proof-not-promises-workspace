@@ -1,0 +1,296 @@
+[
+  {
+    "path": "README.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: Markdown documentation (.md)"
+    ],
+    "justification": "The issue requests a feature for source-generating formatters for types in referenced assemblies, but does not ask for documentation or README updates.",
+    "touches_public_api": false
+  },
+  {
+    "path": "doc/analyzers/MsgPack019.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: Markdown documentation (.md)"
+    ],
+    "justification": "The issue requests the `[GeneratedMessagePackFormatter]` feature itself, and does not request documentation files or analyzer docs.",
+    "touches_public_api": false
+  },
+  {
+    "path": "doc/analyzers/MsgPack020.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: Markdown documentation (.md)"
+    ],
+    "justification": "The issue requests adding the GeneratedMessagePackFormatter feature, but does not request documentation or analyzer documentation files.",
+    "touches_public_api": false
+  },
+  {
+    "path": "doc/analyzers/MsgPack021.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: Markdown documentation (.md)"
+    ],
+    "justification": "The issue requests the ability to source-generate formatters for types in referenced assemblies, but does not request documentation or analyzer doc files like MsgPack021.md.",
+    "touches_public_api": false
+  },
+  {
+    "path": "doc/analyzers/MsgPack022.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: Markdown documentation (.md)"
+    ],
+    "justification": "The change adds documentation for an analyzer rule, which is not requested in the issue.",
+    "touches_public_api": false
+  },
+  {
+    "path": "doc/analyzers/index.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: Markdown documentation (.md)"
+    ],
+    "justification": "The issue does not ask for documentation updates, so modifying doc/analyzers/index.md is out of scope.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.Annotations/Attributes.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-01: public signature added or removed (API contract) → +`public class GeneratedMessagePackFormatterAttribute : Attribute`"
+    ],
+    "justification": "The diff defines GeneratedMessagePackFormatterAttribute with a SurrogateType property, which is directly requested and agreed upon in the issue discussion to allow source-generating formatters for external types.",
+    "touches_public_api": true
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/AnalyzerReleases.Unshipped.md",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: Markdown documentation (.md)"
+    ],
+    "justification": "Registering the new diagnostic rules (MsgPack019 through MsgPack022) in AnalyzerReleases.Unshipped.md is required when adding analyzer diagnostics for the requested GeneratedMessagePackFormatter and surrogate type feature.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/Analyzers/MsgPack00xMessagePackAnalyzer.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-01: public signature added or removed (API contract) → +`public const string GeneratedFormatterMustBePartialId = \"MsgPack019\";`"
+    ],
+    "justification": "The added diagnostic descriptors define validation rules for the requested [GeneratedMessagePackFormatter] attribute and surrogate type usage discussed in the issue.",
+    "touches_public_api": true
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterCollector.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
+    ],
+    "justification": "The file implements GeneratedFormatterCollector to analyze types marked with [GeneratedMessagePackFormatter] using contractless mode or surrogate types as agreed upon in the issue discussion.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/CodeAnalysis/GeneratedFormatterRequest.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-01: public signature added or removed (API contract) → +`public sealed record GeneratedFormatterRequest(INamedTypeSymbol Formatter, IName`",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
+    ],
+    "justification": "This file adds the data structure to represent a requested generated formatter and its optional surrogate type for the source generator, as requested in the issue.",
+    "touches_public_api": true
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/CodeAnalysis/ObjectSerializationInfo.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-01: public signature added or removed (API contract) → +`public bool IsUserDeclaredFormatter { get; init; }`",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
+    ],
+    "justification": "The added property tracks user-declared partial formatters marked with `[GeneratedMessagePackFormatter]`, which directly implements the requested feature.",
+    "touches_public_api": true
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/GeneratorUtilities.cs",
+    "scope": "IN",
+    "risk": "MED",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)"
+    ],
+    "justification": "It excludes types marked with [GeneratedMessagePackFormatter] from being detected as hand-written formatters in the source generator, supporting the feature requested in the issue.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/MessagePackGenerator.cs",
+    "scope": "IN",
+    "risk": "MED",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)"
+    ],
+    "justification": "The changes integrate the requested `[GeneratedMessagePackFormatter]` attribute into the source generator's pipeline and diagnostic reporting.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
+    ],
+    "justification": "The change updates FormatterTemplate to generate a partial class when the formatter is user-declared, directly supporting the issue's request for source-generating partial class formatters.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/Transforms/FormatterTemplate.tt",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
+    ],
+    "justification": "The change updates the formatter template to emit a partial class when the formatter is user-declared, which is necessary to implement the requested `[GeneratedMessagePackFormatter]` feature on partial classes.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.cs",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
+    ],
+    "justification": "This modification updates the string-key formatter template to emit a partial class when the formatter is declared by the user, directly implementing the requested user-declared formatter feature.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/Transforms/StringKey/StringKeyFormatterTemplate.tt",
+    "scope": "IN",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
+    ],
+    "justification": "The change updates the string key formatter template to generate a partial class when the formatter is user-declared, implementing part of the requested partial class formatter feature.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/Utils/Constants.cs",
+    "scope": "IN",
+    "risk": "MED",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)"
+    ],
+    "justification": "The added constants define names for the GeneratedMessagePackFormatterAttribute and its SurrogateType property requested and agreed upon in the issue discussion.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypes.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path"
+    ],
+    "justification": "This file adds test cases that verify the requested [GeneratedMessagePackFormatter] attribute and surrogate type feature for external types.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExecutionTests/GeneratedFormatterForExternalTypesTests.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path"
+    ],
+    "justification": "This file adds execution tests that verify the requested feature of generating formatters for external types using contractless mode and surrogate types.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExecutionTests/MessagePack.SourceGenerator.ExecutionTests.csproj",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path",
+      "R-LOW-03: project file (.csproj)"
+    ],
+    "justification": "The change adds a project reference to an external types project without MessagePack references to enable testing formatters generated for types in referenced assemblies as requested in the issue.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPerson.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path"
+    ],
+    "justification": "This file adds an external type without MessagePack attributes in a separate test library to test generating a formatter for a type in a referenced assembly, as requested by the issue.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExternalTypes/ExternalPoint.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path"
+    ],
+    "justification": "This file defines an external type without MessagePack annotations in a separate assembly, which is needed to test generating formatters for types in referenced assemblies as requested in the issue.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExternalTypes/ExternalWidget.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path"
+    ],
+    "justification": "This file adds an external type without serialization attributes to serve as a test case for generating formatters for types in referenced assemblies via surrogate types as discussed in the issue.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExternalTypes/MessagePack.SourceGenerator.ExternalTypes.csproj",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path",
+      "R-LOW-03: project file (.csproj)"
+    ],
+    "justification": "This project sets up a dependency-free external assembly specifically to test generating formatters for external types as requested in the issue.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.MapModeExecutionTests/MessagePack.SourceGenerator.MapModeExecutionTests.csproj",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path",
+      "R-LOW-03: project file (.csproj)"
+    ],
+    "justification": "Excluding the new external types test files from this test project prevents compilation failures caused by missing assembly references when adding tests that verify the new feature.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.Tests/GeneratedMessagePackFormatterTests.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path"
+    ],
+    "justification": "This file adds tests verifying the behavior and diagnostics of the requested `[GeneratedMessagePackFormatter]` attribute and surrogate types feature.",
+    "touches_public_api": false
+  }
+]

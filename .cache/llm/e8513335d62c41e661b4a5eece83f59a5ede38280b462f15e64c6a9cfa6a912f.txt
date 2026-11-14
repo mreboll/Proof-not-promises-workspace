@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio añade el atributo ExcludeFromCodeCoverage a la clase generada en la plantilla de enums, respondiendo directamente a la solicitud del issue."
+}

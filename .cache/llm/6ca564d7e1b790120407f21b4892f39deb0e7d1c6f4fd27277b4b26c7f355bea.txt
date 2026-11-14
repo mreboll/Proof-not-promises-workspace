@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El cambio agrega documentación en el README sobre la opción SuppressSourceGeneration, lo cual no fue solicitado en el reporte de error del issue."
+}

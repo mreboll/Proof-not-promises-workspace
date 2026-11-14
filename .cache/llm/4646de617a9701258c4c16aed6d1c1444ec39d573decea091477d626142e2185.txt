@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio agrega una referencia de proyecto en el proyecto de pruebas para verificar la generación de formateadores de tipos externos no vinculados a MessagePack, tal como solicita el problema."
+}

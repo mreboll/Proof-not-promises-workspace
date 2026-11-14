@@ -4,9 +4,9 @@
     "scope": "OUT",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-02: documentación .md"
+      "R-LOW-02: Markdown documentation (.md)"
     ],
-    "justification": "El cambio solo añade una nota en el README sobre la decoración del atributo, pero no agrega el atributo ExcludeFromCodeCoverage al código generado, que es lo que solicita la incidencia.",
+    "justification": "The issue requests adding the ExcludeFromCodeCoverage attribute to generated code, but does not ask for updates to the README documentation.",
     "touches_public_api": false
   },
   {
@@ -14,10 +14,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a los tipos generados en CompositeResolverTemplate.cs, cumpliendo la solicitud del issue #2297 de decorar el código generado con ese atributo.",
+    "justification": "The diff adds the `ExcludeFromCodeCoverage` attribute to the generated resolver and cache classes, directly satisfying the issue's request to decorate generated code with the attribute.",
     "touches_public_api": false
   },
   {
@@ -25,10 +25,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El problema solicita añadir el atributo ExcludeFromCodeCoverage al código generado; el diff agrega ese atributo a los tipos generados en CompositeResolverTemplate.tt, satisfaciendo directamente la petición.",
+    "justification": "The change adds the requested ExcludeFromCodeCoverage attribute to the generated resolver code template.",
     "touches_public_api": false
   },
   {
@@ -36,10 +36,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio en EnumTemplate.cs agrega el atributo ExcludeFromCodeCoverage al código generado, cumpliendo la solicitud del issue de decorar el código generado con ese atributo.",
+    "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated enum formatter class, directly fulfilling the feature requested in the issue.",
     "touches_public_api": false
   },
   {
@@ -47,10 +47,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El issue solicita agregar el atributo ExcludeFromCodeCoverage al código generado, y el diff agrega exactamente ese atributo a la clase formatter generada en EnumTemplate.tt, satisfaciendo la petición.",
+    "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated enum formatter template, directly implementing the requested feature.",
     "touches_public_api": false
   },
   {
@@ -58,10 +58,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a las clases de generador de formatos, que es parte del código generado solicitado en el issue.",
+    "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated formatter class, which directly addresses the issue's request to decorate generated code with this attribute.",
     "touches_public_api": false
   },
   {
@@ -69,10 +69,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El diff agrega el atributo ExcludeFromCodeCoverage a las clases generadas, satisfaciendo la solicitud del issue de decorar el código generado con ese atributo.",
+    "justification": "The diff adds the requested ExcludeFromCodeCoverage attribute to the generated formatter class template, directly fulfilling the issue's request.",
     "touches_public_api": false
   },
   {
@@ -80,10 +80,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El issue #2297 solicita agregar el atributo ExcludeFromCodeCoverage a todo el código generado, y el diff lo añade condicionalmente al template del resolutor, cumpliendo la petición.",
+    "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated resolver classes, directly implementing the requested feature.",
     "touches_public_api": false
   },
   {
@@ -91,10 +91,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El diff agrega el atributo ExcludeFromCodeCoverage a las clases de resolutor generadas, lo cual satisface la solicitud del issue de decorar el código generado con ese atributo.",
+    "justification": "The changes add the requested ExcludeFromCodeCoverage attribute to the resolver classes emitted by the source generator template.",
     "touches_public_api": false
   },
   {
@@ -102,10 +102,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la clase generada, satisfaciendo la solicitud del issue de decorar el código generado con ese atributo.",
+    "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated string key formatter class, directly fulfilling the issue's request to decorate generated code with this attribute.",
     "touches_public_api": false
   },
   {
@@ -113,10 +113,10 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El issue solicita añadir ExcludeFromCodeCoverage a todo el código generado, y el diff lo implementa en la plantilla StringKeyFormatterTemplate.tt.",
+    "justification": "The diff adds the ExcludeFromCodeCoverage attribute to the generated string-key formatter template, directly implementing the requested feature.",
     "touches_public_api": false
   },
   {
@@ -124,10 +124,10 @@
     "scope": "OUT",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El cambio solo ajusta el formato de las llaves en TransformUtilities.cs y no agrega el atributo ExcludeFromCodeCoverage al código generado que solicita el issue #2297.",
+    "justification": "This change only fixes whitespace/formatting when emitting nesting type constraints and does not add the ExcludeFromCodeCoverage attribute requested in the issue.",
     "touches_public_api": false
   },
   {
@@ -135,31 +135,31 @@
     "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El diff agrega el atributo ExcludeFromCodeCoverage al código generado de la unión, cumpliendo la solicitud de la issue de decorar el código generado con ese atributo.",
+    "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated union formatter class, directly fulfilling the issue's request to decorate generated code with that attribute.",
     "touches_public_api": false
   },
   {
     "path": "src/MessagePack.SourceGenerator/Transforms/UnionTemplate.tt",
-    "scope": "OUT",
+    "scope": "IN",
     "risk": "HIGH",
     "rule_hits": [
-      "R-MED-01: código de producción en src/ (lógica private/internal)",
-      "R-HIGH-03: namespace núcleo del generador (CodeAnalysis/Transforms)"
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
     ],
-    "justification": "El issue solicita añadir ExcludeFromCodeCoverage a todo el código generado, no solo a un archivo; el cambio afecta solo a UnionTemplate.tt, por lo que no satisface la petición completa.",
+    "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated union formatter template, directly satisfying the issue's request to decorate generated code with that attribute.",
     "touches_public_api": false
   },
   {
     "path": "tests/MessagePack.SourceGenerator.Tests/CodeCoverageExclusionTests.cs",
-    "scope": "OUT",
+    "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/"
+      "R-LOW-01: tests/ path"
     ],
-    "justification": "El diff solo agrega un archivo de prueba que verifica la presencia del atributo, pero no añade el atributo ExcludeFromCodeCoverage a los tipos generados, por lo que no satisface la solicitud del issue.",
+    "justification": "This file adds unit tests verifying that all types emitted by the source generator are decorated with the ExcludeFromCodeCoverage attribute as requested in the issue.",
     "touches_public_api": false
   },
   {
@@ -167,10 +167,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -178,10 +178,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -189,10 +189,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -200,10 +200,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -211,10 +211,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -222,10 +222,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -233,10 +233,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -244,10 +244,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -255,10 +255,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -266,10 +266,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -277,10 +277,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -288,10 +288,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -299,10 +299,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -310,10 +310,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -321,10 +321,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -332,10 +332,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -343,10 +343,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -354,10 +354,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -365,10 +365,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -376,10 +376,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -387,10 +387,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -398,10 +398,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -409,10 +409,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -420,10 +420,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -431,10 +431,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -442,10 +442,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -453,10 +453,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -464,10 +464,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -475,10 +475,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -486,10 +486,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -497,10 +497,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -508,10 +508,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -519,10 +519,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -530,10 +530,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -541,10 +541,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -552,10 +552,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -563,10 +563,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -574,10 +574,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -585,10 +585,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -596,10 +596,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -607,10 +607,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -618,10 +618,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -629,10 +629,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -640,10 +640,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -651,10 +651,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -662,10 +662,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -673,10 +673,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -684,10 +684,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -695,10 +695,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -706,10 +706,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -717,10 +717,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -728,10 +728,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -739,10 +739,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -750,10 +750,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -761,10 +761,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -772,10 +772,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -783,10 +783,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -794,10 +794,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -805,10 +805,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -816,10 +816,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -827,10 +827,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -838,10 +838,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -849,10 +849,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -860,10 +860,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -871,10 +871,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -882,10 +882,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -893,10 +893,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -904,10 +904,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -915,10 +915,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -926,10 +926,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -937,10 +937,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -948,10 +948,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -959,10 +959,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -970,10 +970,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -981,10 +981,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -992,10 +992,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1003,10 +1003,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1014,10 +1014,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1025,10 +1025,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1036,10 +1036,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1047,10 +1047,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1058,10 +1058,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1069,10 +1069,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1080,10 +1080,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1091,10 +1091,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1102,10 +1102,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1113,10 +1113,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1124,10 +1124,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1135,10 +1135,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1146,10 +1146,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1157,10 +1157,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1168,10 +1168,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1179,10 +1179,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1190,10 +1190,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1201,10 +1201,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1212,10 +1212,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1223,10 +1223,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1234,10 +1234,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1245,10 +1245,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1256,10 +1256,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1267,10 +1267,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1278,10 +1278,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1289,10 +1289,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1300,10 +1300,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1311,10 +1311,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1322,10 +1322,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1333,10 +1333,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1344,10 +1344,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1355,10 +1355,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1366,10 +1366,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1377,10 +1377,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1388,10 +1388,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1399,10 +1399,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1410,10 +1410,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1421,10 +1421,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1432,10 +1432,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1443,10 +1443,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1454,10 +1454,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1465,10 +1465,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1476,10 +1476,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1487,10 +1487,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1498,10 +1498,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1509,10 +1509,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1520,10 +1520,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1531,10 +1531,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1542,10 +1542,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1553,10 +1553,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1564,10 +1564,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1575,10 +1575,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1586,10 +1586,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1597,10 +1597,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1608,10 +1608,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1619,10 +1619,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1630,10 +1630,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1641,10 +1641,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1652,10 +1652,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1663,10 +1663,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1674,10 +1674,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1685,10 +1685,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1696,10 +1696,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1707,10 +1707,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1718,10 +1718,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1729,10 +1729,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1740,10 +1740,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1751,10 +1751,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1762,10 +1762,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1773,10 +1773,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1784,10 +1784,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1795,10 +1795,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1806,10 +1806,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1817,10 +1817,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1828,10 +1828,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1839,10 +1839,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1850,10 +1850,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1861,10 +1861,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1872,10 +1872,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1883,10 +1883,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1894,10 +1894,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1905,10 +1905,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1916,10 +1916,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1927,10 +1927,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1938,10 +1938,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1949,10 +1949,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1960,10 +1960,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1971,10 +1971,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1982,10 +1982,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -1993,10 +1993,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2004,10 +2004,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2015,10 +2015,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2026,10 +2026,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2037,10 +2037,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2048,10 +2048,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2059,10 +2059,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2070,10 +2070,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2081,10 +2081,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2092,10 +2092,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2103,10 +2103,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2114,10 +2114,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2125,10 +2125,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2136,10 +2136,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2147,10 +2147,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2158,10 +2158,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2169,10 +2169,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2180,10 +2180,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2191,10 +2191,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2202,10 +2202,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2213,10 +2213,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2224,10 +2224,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2235,10 +2235,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2246,10 +2246,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2257,10 +2257,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2268,10 +2268,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2279,10 +2279,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2290,10 +2290,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2301,10 +2301,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2312,10 +2312,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2323,10 +2323,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2334,10 +2334,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2345,10 +2345,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2356,10 +2356,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2367,10 +2367,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2378,10 +2378,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2389,10 +2389,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2400,10 +2400,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2411,10 +2411,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2422,10 +2422,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2433,10 +2433,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2444,10 +2444,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2455,10 +2455,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2466,10 +2466,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2477,10 +2477,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2488,10 +2488,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2499,10 +2499,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2510,10 +2510,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2521,10 +2521,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2532,10 +2532,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2543,10 +2543,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2554,10 +2554,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2565,10 +2565,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2576,10 +2576,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2587,10 +2587,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   },
   {
@@ -2598,10 +2598,10 @@
     "scope": "IN",
     "risk": "LOW",
     "rule_hits": [
-      "R-LOW-01: ruta tests/",
-      "R-LOW-05: snapshot de código generado (Resources/**.g.cs)"
+      "R-LOW-01: tests/ path",
+      "R-LOW-05: generated-code snapshot (Resources/**.g.cs)"
     ],
-    "justification": "Snapshot de código generado y el issue trata del código generado (regla sin LLM).",
+    "justification": "Generated-code snapshot, and the issue is about the generated code (rule, no LLM).",
     "touches_public_api": false
   }
 ]

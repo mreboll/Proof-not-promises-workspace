@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Agrega pruebas unitarias que reproducen y verifican específicamente el fallo reportado cuando se utiliza una estructura genérica cerrada proveniente de un ensamblado referenciado."
+}

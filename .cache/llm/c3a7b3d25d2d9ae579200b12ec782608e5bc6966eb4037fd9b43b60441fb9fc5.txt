@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The change adds documentation for an analyzer rule, which is not requested in the issue."
+}

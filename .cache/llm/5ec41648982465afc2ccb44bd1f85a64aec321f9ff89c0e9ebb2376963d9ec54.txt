@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Registra las nuevas reglas de diagnóstico del analizador necesarias para validar el uso del nuevo atributo de formateadores generados y tipos sustitutos solicitado en la discusión del issue."
+}

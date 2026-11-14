@@ -86,7 +86,7 @@ def test_m6_in_high_all_objections_valid_with_public_is_yellow():
 def test_m7_in_high_unresolved_objection_refuses_and_quotes_the_fiscal():
     v = decide(tri(Scope.IN, Risk.HIGH), GOOD_TEST, GOOD_INV, (VALID, TRIVIAL))
     assert (v.verdict, row(v)) == (Verdict.RED, "M7")
-    assert any("se niega a decidir" in r for r in v.reasons)
+    assert any("refuses to decide" in r for r in v.reasons)
     assert any(TRIVIAL.question in r for r in v.reasons)
     assert not any(VALID.question in r for r in v.reasons)
 
@@ -98,7 +98,7 @@ def test_m7_in_high_unresolved_objection_refuses_and_quotes_the_fiscal():
 def test_in_without_evidence_is_red(test, inv):
     v = decide(tri(Scope.IN, Risk.LOW), test, inv)
     assert (v.verdict, row(v)) == (Verdict.RED, "M3")
-    assert any("falta" in r for r in v.reasons)
+    assert any("missing" in r for r in v.reasons)
 
 
 def test_in_high_without_crossexam_refuses():
@@ -109,7 +109,7 @@ def test_in_high_without_crossexam_refuses():
 def test_in_high_fiscal_raised_nothing_passes_and_says_so():
     v = decide(tri(Scope.IN, Risk.HIGH), GOOD_TEST, GOOD_INV, ())
     assert (v.verdict, row(v)) == (Verdict.GREEN, "M5")
-    assert any("no planteó objeciones" in r for r in v.reasons)
+    assert any("raised no objections" in r for r in v.reasons)
 
 
 def test_bugfix_whose_test_does_not_compile_in_base_is_not_a_reproduction():
@@ -122,12 +122,39 @@ def test_bugfix_whose_test_does_not_compile_in_base_is_not_a_reproduction():
 def test_non_deterministic_base_is_red():
     v = decide(tri(Scope.IN, Risk.LOW), GOOD_TEST, NON_DETERMINISTIC)
     assert v.verdict is Verdict.RED
-    assert any("determinista" in r for r in v.reasons)
+    assert any("deterministic" in r for r in v.reasons)
 
 
 def test_unexpected_diff_names_the_case():
     v = decide(tri(Scope.IN, Risk.LOW), GOOD_TEST, BAD_INV)
     assert any("int-keys" in r for r in v.reasons)
+
+
+def test_defensor_test_failing_on_the_pr_is_flagged_as_a_possible_defect():
+    """El test del Defensor compila y FALLA en el PR: puede que el Fiscal tenga razón y el defecto sea del PR."""
+    defect = Objection(question="¿Y la línea 735?", test_name="T", test_code="x", pr_result=RED, mutant_result=None)
+    v = decide(tri(Scope.IN, Risk.HIGH), GOOD_TEST, GOOD_INV, (VALID, defect))
+    assert (v.verdict, row(v)) == (Verdict.RED, "M7")
+    flagged = [r for r in v.reasons if "¿Y la línea 735?" in r]
+    assert flagged and "fails on the PR" in flagged[0] and "possible defect" in flagged[0]
+
+
+def test_defensor_test_that_does_not_compile_is_not_called_a_defect():
+    broken = Objection(question="¿Y si no compila?", test_name="T", test_code="x", pr_result=BUILD_FAIL)
+    v = decide(tri(Scope.IN, Risk.HIGH), GOOD_TEST, GOOD_INV, (broken,))
+    assert not any("possible defect" in r for r in v.reasons)
+
+
+def test_failed_change_test_with_clean_invariance_points_the_human_at_the_test():
+    """Caso #2129: el test generado falla en el PR pero la invarianza no ve regresiones → sigue ROJO, con pista."""
+    v = decide(tri(Scope.IN, Risk.MED), BAD_TEST, GOOD_INV)
+    assert (v.verdict, row(v)) == (Verdict.RED, "M3")
+    assert any("shows no regressions" in r and "check the generated test" in r for r in v.reasons)
+
+
+def test_no_test_hint_when_the_invariance_also_fails():
+    v = decide(tri(Scope.IN, Risk.MED), BAD_TEST, BAD_INV)
+    assert not any("check the generated test" in r for r in v.reasons)
 
 
 def test_feature_only_needs_green_on_pr():

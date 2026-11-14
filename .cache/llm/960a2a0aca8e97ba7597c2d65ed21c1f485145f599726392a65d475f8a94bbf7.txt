@@ -1,0 +1,16 @@
+{
+  "objections": [
+    {
+      "question": "¿Sigue lanzando IndexOutOfRangeException GetObjectInfo cuando se ejecuta sobre un tipo valor genérico cerrado de un ensamblado referenciado y emite el diagnóstico que usa DeclaringSyntaxReferences[0] directamente en la línea 735 de TypeCollector.cs, sitio que el diff no toca?",
+      "rationale": "El diff solo protege los sitios de BothStringAndIntKeyAreNull y MemberNeedsKey; la línea 735 citada en el issue sigue indexando DeclaringSyntaxReferences[0] sin protección, y el test de cambio solo reproduce el escenario del reporte, que no activa esa rama."
+    },
+    {
+      "question": "¿Se genera el resolver sin fallar cuando un tipo en origen tiene un miembro cuyo tipo es un tipo valor genérico cerrado anidado de un ensamblado referenciado (por ejemplo Item<Item<int>> con Item<T> definido en metadata)?",
+      "rationale": "El reporte y el test de cambio solo ejercen un nivel de cerrado (Item<int>); la recursividad de CollectGeneric/GetObjectInfo sobre un argumento de tipo que es a su vez un tipo valor genérico cerrado de metadata no está cubierta por el test de cambio ni por los 19 casos de invariancia."
+    },
+    {
+      "question": "¿Se genera el resolver sin fallar cuando un tipo en origen tiene un miembro de tipo colección o diccionario de metadata cuyo argumento de tipo es un tipo valor genérico cerrado de metadata (por ejemplo List<Item<int>> o Dictionary<string, Item<int>>)?",
+      "rationale": "Ese escenario hace que la recursividad llegue a GetObjectInfo sobre un tipo valor genérico cerrado de metadata a través de los argumentos de tipo de un tipo de referencia de metadata, una ruta distinta del miembro directo Item<int> del repro y no ejercitada por la evidencia."
+    }
+  ]
+}

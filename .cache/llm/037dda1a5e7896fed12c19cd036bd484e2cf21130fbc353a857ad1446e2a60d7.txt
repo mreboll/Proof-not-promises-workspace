@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "This file adds the data structure to represent a requested generated formatter and its optional surrogate type for the source generator, as requested in the issue."
+}

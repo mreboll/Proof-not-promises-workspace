@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "This project sets up a dependency-free external assembly specifically to test generating formatters for external types as requested in the issue."
+}

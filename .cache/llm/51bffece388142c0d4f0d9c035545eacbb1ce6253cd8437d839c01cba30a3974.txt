@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The issue requests a feature for source-generating formatters for types in referenced assemblies, but does not ask for documentation or README updates."
+}

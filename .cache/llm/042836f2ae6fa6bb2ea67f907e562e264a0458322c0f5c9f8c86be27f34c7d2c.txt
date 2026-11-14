@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The diff adds the `ExcludeFromCodeCoverage` attribute to the generated resolver and cache classes, directly satisfying the issue's request to decorate generated code with the attribute."
+}

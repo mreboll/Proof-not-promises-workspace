@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The changes prevent the IndexOutOfRangeException when accessing DeclaringSyntaxReferences on types/members from referenced assemblies and properly handle reporting diagnostics for symbols not declared in the current compilation."
+}

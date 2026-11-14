@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The issue requests the ability to source-generate formatters for types in referenced assemblies, but does not request documentation or analyzer doc files like MsgPack021.md."
+}

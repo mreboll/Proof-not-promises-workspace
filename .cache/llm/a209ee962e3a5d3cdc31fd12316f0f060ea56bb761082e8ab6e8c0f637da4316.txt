@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The file implements GeneratedFormatterCollector to analyze types marked with [GeneratedMessagePackFormatter] using contractless mode or surrogate types as agreed upon in the issue discussion."
+}

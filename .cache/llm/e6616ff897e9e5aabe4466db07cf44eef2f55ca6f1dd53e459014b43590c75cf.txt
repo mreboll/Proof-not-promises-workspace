@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "This file adds an external type without serialization attributes to serve as a test case for generating formatters for types in referenced assemblies via surrogate types as discussed in the issue."
+}

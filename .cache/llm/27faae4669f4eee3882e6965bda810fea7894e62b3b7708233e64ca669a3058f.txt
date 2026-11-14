@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The issue requests the `[GeneratedMessagePackFormatter]` feature itself, and does not request documentation files or analyzer docs."
+}

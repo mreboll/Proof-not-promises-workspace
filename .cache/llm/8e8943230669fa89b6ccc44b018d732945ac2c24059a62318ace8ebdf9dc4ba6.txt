@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El cambio consiste en un ajuste de formato de salto de línea en la generación de código y no añade el atributo ExcludeFromCodeCoverage solicitado en la incidencia."
+}

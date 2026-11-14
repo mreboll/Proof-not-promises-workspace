@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El archivo agrega pruebas sobre la omisión de la generación de código y la serialización dinámica, pero no prueba ni verifica el comportamiento del analizador reportado en el problema."
+}

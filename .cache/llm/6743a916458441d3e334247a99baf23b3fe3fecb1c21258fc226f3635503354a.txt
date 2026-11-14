@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change updates FormatterTemplate to generate a partial class when the formatter is user-declared, directly supporting the issue's request for source-generating partial class formatters."
+}

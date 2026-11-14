@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El cambio añade documentación explicativa para un analizador, lo cual no fue solicitado en el reporte del fallo sobre la excepción IndexOutOfRangeException."
+}

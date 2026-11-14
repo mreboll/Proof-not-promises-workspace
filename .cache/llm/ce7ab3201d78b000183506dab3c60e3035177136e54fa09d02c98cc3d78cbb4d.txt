@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "The change adds the ExcludeFromCodeCoverage attribute to the generated resolver classes, directly implementing the requested feature."
+}

@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "This change only fixes whitespace/formatting when emitting nesting type constraints and does not add the ExcludeFromCodeCoverage attribute requested in the issue."
+}

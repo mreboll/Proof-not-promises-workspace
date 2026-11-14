@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio agrega diagnósticos para validar el uso del nuevo atributo [GeneratedMessagePackFormatter] y tipos surrogados acordados en la discusión del problema."
+}

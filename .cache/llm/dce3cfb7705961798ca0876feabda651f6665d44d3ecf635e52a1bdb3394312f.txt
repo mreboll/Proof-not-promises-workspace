@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El cambio consiste en documentación para una nueva regla del analizador, la cual no fue solicitada en la descripción del problema."
+}

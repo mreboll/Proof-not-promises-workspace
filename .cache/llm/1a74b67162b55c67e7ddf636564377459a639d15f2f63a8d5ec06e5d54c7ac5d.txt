@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "This file adds test cases that verify the requested [GeneratedMessagePackFormatter] attribute and surrogate type feature for external types."
+}

@@ -1,121 +1,201 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Evidence Ledger #{{ r.issue_id }}</title>
 <style>
+/* Direction: a technical audit ledger. Serif for what is signed, mono for what is verified. */
 :root {
-  --bg: #f6f7f9; --card: #ffffff; --ink: #1b1f24; --muted: #5b6470; --line: #dfe3e8; --code: #f2f4f7;
-  --green: #1a7f37; --green-bg: #e6f4ea; --yellow: #8a5a00; --yellow-bg: #fff4d6; --red: #c62828; --red-bg: #fdecec;
-  --accent: #2f4cdd;
+  --paper: #f6f4ef; --sheet: #fffdf9; --ink: #1c2330; --ink-2: #4a5363; --rule: #e3ded3; --rule-2: #cfc8b9;
+  --code: #f1eee7; --accent: #2b4f8c;
+  --green: #1d7348; --green-bg: #e3f1e8; --amber: #8f5d00; --amber-bg: #fbf0d6; --red: #b42318; --red-bg: #fbe7e4;
+  --idle: #6b7280; --idle-bg: #eceae4;
+  --serif: "Iowan Old Style", "Charter", "Palatino Linotype", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f1216; --card: #171b21; --ink: #e8ebef; --muted: #9aa4b0; --line: #2a313a; --code: #1e242c;
-    --green: #4cc26d; --green-bg: #13301d; --yellow: #e2b341; --yellow-bg: #33290f; --red: #ff6b6b; --red-bg: #3a1717;
-    --accent: #8ea2ff;
+    --paper: #12151b; --sheet: #191d25; --ink: #e9ecf1; --ink-2: #a3acba; --rule: #2a303b; --rule-2: #39404d;
+    --code: #20252f; --accent: #8fb0ff;
+    --green: #5cc98b; --green-bg: #16301f; --amber: #e7b44c; --amber-bg: #33280f; --red: #ff8a7a; --red-bg: #3b1915;
+    --idle: #9aa3b2; --idle-bg: #232833;
   }
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
-h1 { font-size: 26px; line-height: 1.25; margin: 4px 0 16px; }
-h2 { font-size: 18px; margin: 0 0 12px; }
-h3 { font-size: 15px; margin: 0 0 8px; }
-section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin: 16px 0; }
-code, pre, .mono { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 13px; }
-pre { background: var(--code); border-radius: 8px; padding: 12px; overflow-x: auto; white-space: pre; margin: 8px 0 0; max-height: 420px; }
-details { margin-top: 8px; }
-summary { cursor: pointer; color: var(--accent); font-size: 13px; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.6 var(--sans); }
+main { max-width: 1120px; margin: 0 auto; padding: 40px 16px 72px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; }
+h1 { font-size: clamp(24px, 3.2vw, 34px); line-height: 1.2; margin: 6px 0 20px; }
+h2 { font-size: 21px; margin: 0 0 4px; }
+h3 { font-size: 16px; margin: 0 0 8px; }
+.lede { color: var(--ink-2); margin: 0 0 16px; font-size: 14px; }
+section { background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 24px; margin: 18px 0; }
+code, pre, .mono, .path, .hash { font-family: var(--mono); }
+pre { background: var(--code); border-radius: 8px; padding: 12px 14px; overflow-x: auto; white-space: pre; margin: 8px 0 0; max-height: 440px; font-size: 12.5px; line-height: 1.5; }
+details { margin-top: 10px; }
+summary { cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 500; }
+summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid var(--line); }
-th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
-ul { margin: 4px 0; padding-left: 18px; }
-.eyebrow { color: var(--muted); font-size: 13px; letter-spacing: .04em; text-transform: uppercase; }
-.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px 16px; margin: 0; }
-.meta dt { color: var(--muted); font-size: 12px; }
-.meta dd { margin: 0; overflow-wrap: anywhere; }
-.decision { border-left: 6px solid var(--muted); }
-.decision.green { border-left-color: var(--green); } .decision.yellow { border-left-color: var(--yellow); } .decision.red { border-left-color: var(--red); }
-.decision h2 { font-size: 22px; }
-.tiles { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
-.tile { flex: 1 1 140px; border-radius: 10px; padding: 12px 14px; }
-.tile .n { font-size: 30px; font-weight: 700; line-height: 1; }
-.tile.GREEN { background: var(--green-bg); color: var(--green); } .tile.YELLOW { background: var(--yellow-bg); color: var(--yellow); } .tile.RED { background: var(--red-bg); color: var(--red); }
-.pill { display: inline-block; border-radius: 999px; padding: 1px 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
-.pill.GREEN, .pill.green { background: var(--green-bg); color: var(--green); }
-.pill.YELLOW, .pill.yellow { background: var(--yellow-bg); color: var(--yellow); }
-.pill.RED, .pill.red { background: var(--red-bg); color: var(--red); }
-.pill.muted, .pill.none { background: var(--code); color: var(--muted); }
-.path { font-family: ui-monospace, Consolas, monospace; font-size: 13px; overflow-wrap: anywhere; }
-.muted { color: var(--muted); }
+th, td { text-align: left; vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--rule); }
+th { font: 600 11px/1.4 var(--sans); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); }
+ul { margin: 6px 0 0; padding-left: 18px; }
+li { margin: 2px 0; }
+.eyebrow { font: 600 11.5px/1.4 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.muted { color: var(--ink-2); }
 .small { font-size: 13px; }
-.card { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin: 10px 0; }
-.card.RED { border-color: var(--red); } .card.YELLOW { border-color: var(--yellow); }
-.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
-.hash { font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+.path { font-size: 12.5px; overflow-wrap: anywhere; }
+.hash { font-size: 12px; }
 .table-wrap { overflow-x: auto; }
-.sign { white-space: pre-wrap; background: var(--code); border-radius: 8px; padding: 16px; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+
+/* Header */
+.masthead { padding: 0 4px; }
+.meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px 20px; margin: 0;
+        padding: 14px 0 0; border-top: 1px solid var(--rule-2); }
+.meta dt { font: 600 11px/1.4 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.meta dd { margin: 2px 0 0; overflow-wrap: anywhere; font-size: 14px; }
+
+/* Decision */
+.decision { display: grid; grid-template-columns: auto 1fr; gap: 20px 28px; align-items: center; border-top: 5px solid var(--idle); }
+.decision.green { border-top-color: var(--green); } .decision.yellow { border-top-color: var(--amber); } .decision.red { border-top-color: var(--red); }
+.stamp { width: 112px; height: 112px; border-radius: 50%; border: 3px double currentColor; display: grid; place-items: center;
+         text-align: center; font: 700 12px/1.25 var(--sans); letter-spacing: .1em; text-transform: uppercase; padding: 10px; transform: rotate(-6deg); }
+.decision.green .stamp { color: var(--green); } .decision.yellow .stamp { color: var(--amber); } .decision.red .stamp { color: var(--red); } .decision.none .stamp { color: var(--idle); }
+.decision h2 { font-size: 26px; }
+.bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--idle-bg); margin: 14px 0 10px; gap: 2px; }
+.bar span { min-width: 6px; }
+.bar .GREEN { background: var(--green); } .bar .YELLOW { background: var(--amber); } .bar .RED { background: var(--red); }
+.tiles { display: flex; gap: 22px; flex-wrap: wrap; }
+.tile { display: flex; align-items: baseline; gap: 8px; }
+.tile .n { font: 700 28px/1 var(--serif); }
+.tile.GREEN .n { color: var(--green); } .tile.YELLOW .n { color: var(--amber); } .tile.RED .n { color: var(--red); }
+.tile .lbl { font-size: 13px; color: var(--ink-2); }
+
+/* Funnel */
+.funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 0; overflow: hidden; }
+.stage { padding: 20px 22px; position: relative; }
+.stage + .stage { border-left: 1px solid var(--rule); }
+.stage + .stage::before { content: ""; position: absolute; left: -7px; top: 26px; width: 12px; height: 12px; background: var(--sheet);
+                          border-top: 1px solid var(--rule); border-right: 1px solid var(--rule); transform: rotate(45deg); }
+.stage .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.stage .tag { font: 700 12px/1 var(--mono); padding: 5px 7px; border-radius: 6px; background: var(--code); color: var(--ink-2); }
+.stage .name { font: 600 16px/1.2 var(--serif); }
+.stage .dot { margin-left: auto; width: 10px; height: 10px; border-radius: 50%; background: var(--idle); }
+.stage.pass .dot { background: var(--green); } .stage.fail .dot { background: var(--red); } .stage.done .dot { background: var(--accent); }
+.stage ul { list-style: none; padding: 0; margin: 0; font-size: 13.5px; color: var(--ink-2); }
+
+/* Pills and cards */
+.pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font: 600 12px/1.5 var(--sans); white-space: nowrap; vertical-align: 1px; }
+.pill.GREEN, .pill.green { background: var(--green-bg); color: var(--green); }
+.pill.YELLOW, .pill.yellow { background: var(--amber-bg); color: var(--amber); }
+.pill.RED, .pill.red { background: var(--red-bg); color: var(--red); }
+.pill.muted, .pill.none { background: var(--idle-bg); color: var(--ink-2); }
+.card { border: 1px solid var(--rule); border-left: 4px solid var(--rule-2); border-radius: 10px; padding: 14px 16px; margin: 12px 0; background: var(--sheet); }
+.card.RED { border-left-color: var(--red); } .card.YELLOW { border-left-color: var(--amber); } .card.GREEN { border-left-color: var(--green); }
+.card .first { font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.grid2 > .card { margin: 0; border-left-width: 1px; }
+.note { border-left: 3px solid var(--amber); padding: 6px 12px; background: var(--amber-bg); border-radius: 0 8px 8px 0; font-size: 13px; margin: 10px 0 0; }
+.note.red { border-left-color: var(--red); background: var(--red-bg); }
+
+/* Cross-examination as a transcript */
+.turn .speaker { font: 700 11px/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+.turn .q { font: 500 16px/1.5 var(--serif); margin: 2px 0 6px; }
+.turn .answer { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule-2); }
+
+/* Sign-off */
+.sign { white-space: pre-wrap; background: var(--code); border: 1px dashed var(--rule-2); border-radius: 10px; padding: 18px; font: 13px/1.8 var(--mono); }
+
+@media (max-width: 720px) {
+  section { padding: 18px; }
+  .decision { grid-template-columns: 1fr; }
+  .stamp { width: 92px; height: 92px; font-size: 11px; }
+  .funnel { grid-template-columns: 1fr; }
+  .stage + .stage { border-left: 0; border-top: 1px solid var(--rule); }
+  .stage + .stage::before { display: none; }
+}
 @media print {
-  :root { --bg: #fff; --card: #fff; --ink: #000; --code: #f4f4f4; }
-  body { font-size: 11pt; } main { padding: 0; max-width: none; }
+  :root { --paper: #fff; --sheet: #fff; --ink: #000; --code: #f4f4f4; }
+  body { font-size: 10.5pt; } main { padding: 0; max-width: none; }
   section { break-inside: avoid; border-color: #bbb; }
   pre { max-height: none; white-space: pre-wrap; }
-  summary { color: #000; }
+  .stamp { transform: none; }
 }
+@media (prefers-reduced-motion: reduce) { .stamp { transform: none; } }
 </style>
 </head>
 <body>
 <main>
 
-<header>
-  <div class="eyebrow">Risk-Scoped Evidence Ledger · Tieto · Earned Trust in AI Code</div>
+<header class="masthead">
+  <div class="eyebrow">Evidence Ledger · Tieto — Earned Trust in AI Code</div>
   <h1>{{ issue_title }}</h1>
   <dl class="meta">
-    <div><dt>Requisito</dt><dd>Issue #{{ r.issue_id }} ({{ r.change_type.value }})</dd></div>
-    <div><dt>Rama evaluada</dt><dd class="mono">{{ r.branch }}</dd></div>
-    <div><dt>Base</dt><dd class="mono">{{ r.base_commit }}</dd></div>
-    <div><dt>PR</dt><dd class="mono">{{ r.pr_commit }}</dd></div>
-    <div><dt>Generado (UTC)</dt><dd>{{ r.generated_at }}</dd></div>
-    <div><dt>Ficheros en el diff</dt><dd>{{ r.triage | length }}</dd></div>
+    <div><dt>Requirement</dt><dd>Issue #{{ r.issue_id }} ({{ r.change_type.value }})</dd></div>
+    <div><dt>Evaluated branch</dt><dd class="mono small">{{ r.branch }}</dd></div>
+    <div><dt>Base</dt><dd class="mono small">{{ r.base_commit }}</dd></div>
+    <div><dt>PR</dt><dd class="mono small">{{ r.pr_commit }}</dd></div>
+    <div><dt>Generated (UTC)</dt><dd>{{ r.generated_at }}</dd></div>
+    <div><dt>Files in the diff</dt><dd>{{ r.triage | length }}</dd></div>
   </dl>
 </header>
 
-<section class="decision {{ decision_class }}">
-  <div class="eyebrow">Decisión del sistema</div>
-  <h2>{{ decision }}</h2>
-  <p class="muted">{{ decision_text }}</p>
-  <div class="tiles">
-    {% for k in [Verdict.GREEN, Verdict.YELLOW, Verdict.RED] %}
-    <div class="tile {{ k.value }}"><div class="n" data-count="{{ k.value }}">{{ counts[k] }}</div><div>{{ VERDICT_LABEL[k] }}</div></div>
-    {% endfor %}
+{% if notice %}<p class="note" role="note">{{ notice }}</p>{% endif %}
+
+<section class="decision {{ decision_class }}" aria-label="System decision">
+  <div class="stamp" aria-hidden="true">{{ {'green': 'Approvable', 'yellow': 'Review', 'red': 'Audit', 'none': 'Pending'}[decision_class] }}</div>
+  <div>
+    <div class="eyebrow">System decision</div>
+    <h2>{{ decision }}</h2>
+    <p class="lede">{{ decision_text }}</p>
+    {% if total %}
+    <div class="bar" role="img" aria-label="{{ counts[Verdict.GREEN] }} green, {{ counts[Verdict.YELLOW] }} yellow, {{ counts[Verdict.RED] }} red">
+      {% for k in [Verdict.GREEN, Verdict.YELLOW, Verdict.RED] %}{% if counts[k] %}<span class="{{ k.value }}" style="flex: {{ counts[k] }}"></span>{% endif %}{% endfor %}
+    </div>
+    {% endif %}
+    <div class="tiles">
+      {% for k in [Verdict.GREEN, Verdict.YELLOW, Verdict.RED] %}
+      <div class="tile {{ k.value }}"><div class="n" data-count="{{ k.value }}">{{ counts[k] }}</div><div class="lbl">{{ VERDICT_LABEL[k] }}</div></div>
+      {% endfor %}
+    </div>
   </div>
 </section>
 
+<section id="funnel" class="funnel" aria-label="Verification funnel">
+  {% for s in funnel %}
+  <div class="stage {{ s.status }}">
+    <div class="head"><span class="tag">{{ s.id }}</span><span class="name">{{ s.name }}</span><span class="dot" aria-hidden="true"></span></div>
+    <ul>{% for line in s.lines %}<li>{{ line }}</li>{% endfor %}</ul>
+  </div>
+  {% endfor %}
+</section>
+
 <section id="must-read">
-  <h2>Lo que tienes que leer</h2>
+  <h2>What you need to read</h2>
   {% if not r.verdicts %}
-  <p class="muted">Sin veredictos todavía.</p>
+  <p class="lede">No verdicts yet.</p>
   {% elif not must_read %}
-  <p>Nada. Toda la evidencia respalda la aprobación: no hace falta leer el código.</p>
+  <p class="lede">Nothing. All the evidence supports approval: there is no need to read the code.</p>
   {% else %}
-  <p class="muted small">Solo estos fragmentos necesitan ojos humanos. El resto está respaldado por pruebas ejecutables.</p>
+  <p class="lede">Only these fragments need human eyes. Everything else is backed by executable tests.</p>
   {% for v in must_read %}
   <div class="card {{ v.verdict.value }}">
     <span class="pill {{ v.verdict.value }}">{{ VERDICT_LABEL[v.verdict] }}</span>
     <span class="path">{{ v.path }}</span>
-    <ul class="small">{% for reason in v.reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
+    <ul class="small">{% for reason in v.reasons %}<li{% if loop.first %} class="first"{% endif %}>{{ reason }}</li>{% endfor %}</ul>
   </div>
   {% endfor %}
   {% endif %}
 </section>
 
-<section>
-  <h2>Ficheros del diff</h2>
+<section id="files">
+  <h2>Files in the diff</h2>
+  <p class="lede">Risk comes from static rules (no LLM); scope is judged against the literal issue text.</p>
+  {% macro file_table(rows) %}
   <div class="table-wrap">
   <table>
-    <thead><tr><th>Fichero</th><th>Alcance</th><th>Riesgo</th><th>Veredicto</th><th>Por qué</th></tr></thead>
+    <thead><tr><th>File</th><th>Scope</th><th>Risk</th><th>Verdict</th><th>Why</th></tr></thead>
     <tbody>
     {% for t, v in rows %}
     <tr>
@@ -125,7 +205,7 @@ ul { margin: 4px 0; padding-left: 18px; }
       <td>{% if v %}<span class="pill {{ v.verdict.value }}">{{ VERDICT_LABEL[v.verdict] }}</span>{% else %}<span class="pill none">—</span>{% endif %}</td>
       <td class="small">
         {% if v and v.reasons %}<strong>{{ v.reasons[0] }}</strong><br>{% endif %}
-        {% if t.justification %}<span class="muted">Alcance:</span> {{ t.justification }}<br>{% endif %}
+        {% if t.justification %}<span class="muted">Scope:</span> {{ t.justification }}<br>{% endif %}
         {% for hit in t.rule_hits %}<span class="muted mono">{{ hit }}</span><br>{% endfor %}
       </td>
     </tr>
@@ -133,45 +213,58 @@ ul { margin: 4px 0; padding-left: 18px; }
     </tbody>
   </table>
   </div>
+  {% endmacro %}
+  {% if attention_rows %}{{ file_table(attention_rows) }}{% else %}<p class="lede">No file needs attention.</p>{% endif %}
+  {% if green_rows %}
+  <details><summary>{{ green_rows | length }} green file{{ 's' if green_rows | length != 1 }}</summary>{{ file_table(green_rows) }}</details>
+  {% endif %}
 </section>
 
 <section>
-  <h2>Evidencia ejecutable</h2>
+  <h2>Executable evidence</h2>
+  <p class="lede">Trust comes only from tests that run: a test written without seeing the diff, and a comparison of the generator output between base and PR.</p>
   <div class="grid2">
     <div class="card">
-      <h3>Test del cambio</h3>
+      <h3>Change test</h3>
       {% if r.change_test %}
       {% set ct = r.change_test %}
-      <div class="small muted">Escrito solo a partir del texto del issue, sin ver el diff.</div>
-      <p class="mono">{{ ct.test_name }}</p>
-      <p>Base: <span class="pill {{ run_class(ct.base) }}">{{ run_label(ct.base) }}</span>
+      <div class="small muted">Written only from the issue text, without seeing the diff.</div>
+      <p class="mono small">{{ ct.test_name }}</p>
+      <p>Base: <span class="pill {{ base_view[1] }}">{{ base_view[0] }}</span>
          PR: <span class="pill {{ run_class(ct.pr) }}">{{ run_label(ct.pr) }}</span>
-         <span class="pill {{ 'green' if ct.ok else 'red' }}">{{ 'superado' if ct.ok else 'no superado' }}</span></p>
-      <details><summary>Código del test</summary><pre>{{ ct.test_code }}</pre></details>
-      {% if ct.base %}<details><summary>Salida en base</summary><pre>{{ ct.base.output_tail }}</pre></details>{% endif %}
-      <details><summary>Salida en PR</summary><pre>{{ ct.pr.output_tail }}</pre></details>
+         <span class="pill {{ 'green' if ct.ok else 'red' }}">{{ 'passed' if ct.ok else 'failed' }}</span></p>
+      {% if base_view[2] %}<p class="note">{{ base_view[2] }}</p>{% endif %}
+      <details><summary>Test code</summary><pre>{{ ct.test_code }}</pre></details>
+      {% if ct.base %}<details><summary>Output on base</summary><pre>{{ ct.base.output_tail }}</pre></details>{% endif %}
+      <details><summary>Output on PR</summary><pre>{{ ct.pr.output_tail }}</pre></details>
       {% else %}
-      <p class="muted">Sin test del cambio.</p>
+      <p class="muted">No change test.</p>
       {% endif %}
     </div>
     <div class="card">
-      <h3>Invarianza de generación</h3>
+      <h3>Generation invariance</h3>
       {% if r.invariance %}
       {% set inv = r.invariance %}
       <p>
-        <span class="pill {{ 'green' if inv.deterministic else 'red' }}">{{ 'base determinista' if inv.deterministic else 'base NO determinista' }}</span>
-        <span class="pill {{ 'red' if inv.unexpected_diffs else 'green' }}">{{ inv.unexpected_diffs | length }} diferencias fuera del issue</span>
+        <span class="pill {{ 'green' if inv.deterministic else 'red' }}">{{ 'deterministic base' if inv.deterministic else 'base NOT deterministic' }}</span>
+        <span class="pill {{ 'red' if inv.unexpected_diffs else 'green' }}">{{ inv.unexpected_diffs | length }} changes outside the issue</span>
       </p>
-      <p class="small muted">{{ inv.cases | selectattr('tag', 'equalto', 'general') | list | length }} casos generales comparados por SHA-256 (base ×2 y PR). Los casos del issue pueden cambiar; los generales no.</p>
+      <p class="small muted">{{ inv.cases | selectattr('tag', 'equalto', 'general') | list | length }} general cases compared by SHA-256 (base ×2 and PR). Issue cases may change; general cases must not.</p>
+      {% if inv.unexpected_diffs %}
+      <p class="note red"><strong>The PR changes the output in cases the issue does not touch:</strong> <span class="mono">{{ inv.unexpected_diffs | join(', ') }}</span>. Even if the triage marks the files as in scope, the PR does more than the issue asks for.</p>
+      {% endif %}
+      {% for text, n in normalizations %}
+      <p class="note"><strong>Declared normalization</strong> before hashing the PR ({{ n }} case{{ 's' if n != 1 }}): {{ text }}</p>
+      {% endfor %}
       {% else %}
-      <p class="muted">Sin evidencia de invarianza.</p>
+      <p class="muted">No invariance evidence.</p>
       {% endif %}
     </div>
   </div>
   {% if r.invariance %}
-  <details><summary>Hashes por caso ({{ r.invariance.cases | length }})</summary>
+  <details><summary>Hashes per case ({{ r.invariance.cases | length }})</summary>
   <div class="table-wrap"><table>
-    <thead><tr><th>Caso</th><th>Etiqueta</th><th>Base</th><th>Base (repetición)</th><th>PR</th><th>Estado</th></tr></thead>
+    <thead><tr><th>Case</th><th>Tag</th><th>Base</th><th>Base (rerun)</th><th>PR</th><th>Status</th></tr></thead>
     <tbody>
     {% for c in r.invariance.cases %}
     {% set same = c.base_hash == c.pr_hash %}
@@ -180,10 +273,10 @@ ul { margin: 4px 0; padding-left: 18px; }
       <td class="hash" title="{{ c.base_hash }}">{{ c.base_hash[:12] }}</td>
       <td class="hash" title="{{ c.base_hash_rerun }}">{{ c.base_hash_rerun[:12] }}</td>
       <td class="hash" title="{{ c.pr_hash }}">{{ c.pr_hash[:12] }}</td>
-      <td>{% if c.base_hash != c.base_hash_rerun %}<span class="pill red">no determinista</span>
-          {% elif same %}<span class="pill green">idéntico</span>
-          {% elif c.tag == 'general' %}<span class="pill red">cambio inesperado</span>
-          {% else %}<span class="pill yellow">cambio esperado</span>{% endif %}
+      <td>{% if c.base_hash != c.base_hash_rerun %}<span class="pill red">not deterministic</span>
+          {% elif same %}<span class="pill green">identical</span>
+          {% elif c.tag == 'general' %}<span class="pill red">unexpected change</span>
+          {% else %}<span class="pill yellow">expected change</span>{% endif %}
           {% if c.normalization %}<div class="small muted">{{ c.normalization }}</div>{% endif %}</td>
     </tr>
     {% endfor %}
@@ -194,51 +287,66 @@ ul { margin: 4px 0; padding-left: 18px; }
 </section>
 
 <section>
-  <h2>Interrogatorio: Fiscal contra Defensor</h2>
-  <p class="small muted">Solo para fragmentos en alcance y de riesgo alto. El Defensor no puede argumentar: cada objeción se cierra únicamente con un test que pasa en el PR y falla contra un mutante que rompe ese caso a propósito.</p>
+  <h2>Cross-examination: Prosecutor vs Defender</h2>
+  <p class="lede">Only for in-scope, high-risk fragments. The Defender cannot argue: an objection is closed only by a test that passes on the PR and fails against a mutant that breaks that case on purpose.</p>
   {% if not crossexam %}
-  <p class="muted">No hubo objeciones que interrogar.</p>
+  <p class="muted">There were no objections to examine.</p>
   {% endif %}
   {% for v in crossexam %}
   <h3 class="path">{{ v.path }}</h3>
   {% for o in v.objections %}
-  <div class="card {{ 'GREEN' if o.valid else 'RED' }}">
-    <p><strong>Fiscal {{ loop.index }}:</strong> {{ o.question }}</p>
+  {% set defect = (not o.valid) and o.pr_result and o.pr_result.red_for_real %}
+  <div class="card turn {{ 'GREEN' if o.valid else 'RED' }}">
+    <div class="speaker">Prosecutor · {{ models_by_role.fiscal }}</div>
+    <p class="q"><strong>Prosecutor {{ loop.index }}:</strong> {{ o.question }}</p>
     {% if o.rationale %}<p class="small muted">{{ o.rationale }}</p>{% endif %}
-    <p class="small">Defensor: <span class="mono">{{ o.test_name or '—' }}</span>
-      · PR <span class="pill {{ run_class(o.pr_result) }}">{{ run_label(o.pr_result) }}</span>
-      · mutante <span class="pill {{ run_class(o.mutant_result) }}">{{ run_label(o.mutant_result) }}</span>
-      · <span class="pill {{ 'green' if o.valid else 'red' }}">{{ 'objeción cubierta: test válido' if o.valid else 'sin test válido' }}</span></p>
-    {% if o.test_code %}<details><summary>Test del Defensor</summary><pre>{{ o.test_code }}</pre></details>{% endif %}
-    {% if o.mutant_patch %}<details><summary>Mutante</summary><pre>{{ o.mutant_patch }}</pre></details>{% endif %}
+    <div class="answer">
+      <div class="speaker">Defender · {{ models_by_role.pro }} · may answer only with a test</div>
+      <p class="small">Defender: <span class="mono">{{ o.test_name or '—' }}</span>
+        · PR <span class="pill {{ run_class(o.pr_result) }}">{{ run_label(o.pr_result) }}</span>
+        · mutant <span class="pill {{ run_class(o.mutant_result) }}">{{ run_label(o.mutant_result) }}</span>
+        · {% if o.valid %}<span class="pill green">objection covered: valid test</span>
+          {% elif defect %}<span class="pill red">fails on the PR: possible defect</span>
+          {% else %}<span class="pill red">no valid test</span>{% endif %}</p>
+      {% if defect %}
+      <p class="note red"><strong>The Defender's test compiles and fails on the PR:</strong> the Prosecutor may be right and the defect may be in the code, not in the test. Check the output.</p>
+      <details open><summary>Test output on the PR</summary><pre>{{ o.pr_result.output_tail }}</pre></details>
+      {% endif %}
+      {% if o.test_code %}<details><summary>Defender's test</summary><pre>{{ o.test_code }}</pre></details>{% endif %}
+      {% if o.mutant_patch %}<details><summary>Mutant</summary><pre>{{ o.mutant_patch }}</pre></details>{% endif %}
+    </div>
   </div>
   {% endfor %}
   {% endfor %}
 </section>
 
 <section>
-  <h2>Qué modelo hizo cada papel</h2>
+  <h2>Which model played each role</h2>
+  <p class="lede">Configuration when this report was generated. If the Stage 2 evidence is reused from another run (fixtures), the model that produced it is recorded with it.</p>
+  <div class="table-wrap">
   <table>
-    <thead><tr><th>Rol</th><th>Modelo</th><th>Tarea</th></tr></thead>
+    <thead><tr><th>Role</th><th>Model</th><th>Task</th></tr></thead>
     <tbody>
     {% for role, model, task in models %}
-    <tr><td class="mono">{{ role }}</td><td class="mono">{{ model }}</td><td class="small">{{ task }}</td></tr>
+    <tr><td class="mono small">{{ role }}</td><td class="mono small">{{ model }}</td><td class="small">{{ task }}</td></tr>
     {% endfor %}
     </tbody>
   </table>
+  </div>
   {% if same_family %}
-  <p class="small muted">Aviso: el Fiscal y el Defensor usan el mismo modelo (modo temporal sin Gemini). La decisión D7 pide familias distintas para que no compartan puntos ciegos.</p>
+  <p class="note">The Prosecutor and the Defender use the same model. Decision D7 requires different model families so that they do not share blind spots.</p>
   {% endif %}
-  <p class="small muted">El riesgo lo deciden reglas estáticas, sin LLM. Los modelos solo clasifican el alcance y producen tests y mutantes; ningún modelo aprueba nada con argumentos.</p>
+  <p class="small muted">Risk is decided by static rules, without an LLM. The models only classify scope and produce tests and mutants; no model approves anything by argument.</p>
 </section>
 
 <section>
-  <h2>Firma</h2>
-  <div class="sign">--- REGISTRO DE APROBACIÓN Y RENDICIÓN DE CUENTAS ---
-Requisito / Issue ID: #{{ r.issue_id }} ({{ r.change_type.value }}) | Rama evaluada: {{ r.branch }} | Base: {{ r.base_commit }}
-Afirmaciones auto-verificadas (Verde): {{ counts[Verdict.GREEN] }}/{{ total }} | Revisadas manualmente (Amarillo/Rojo): {{ counts[Verdict.YELLOW] + counts[Verdict.RED] }}/{{ total }}
-Aprobado por (nombre y apellidos): ______________________  Rol: _________________
-Timestamp (UTC): ____________________ | Decisión: [ ] APROBADO  [ ] RECHAZADO</div>
+  <h2>Sign-off</h2>
+  <p class="lede">Accountability stays human: the system only states what is proven and what is not.</p>
+  <div class="sign">--- APPROVAL AND ACCOUNTABILITY RECORD ---
+Requirement / Issue ID: #{{ r.issue_id }} ({{ r.change_type.value }}) | Evaluated branch: {{ r.branch }} | Base: {{ r.base_commit }}
+Auto-verified claims (Green): {{ counts[Verdict.GREEN] }}/{{ total }} | Reviewed manually (Yellow/Red): {{ counts[Verdict.YELLOW] + counts[Verdict.RED] }}/{{ total }}
+Approved by (full name): ______________________  Role: _________________
+Timestamp (UTC): ____________________ | Decision: [ ] APPROVED  [ ] REJECTED</div>
 </section>
 
 </main>

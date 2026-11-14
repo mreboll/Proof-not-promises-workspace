@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Modifica la plantilla de generación de formateadores para emitir una clase parcial cuando el formateador es declarado por el usuario, lo cual es necesario para permitir la implementación de formateadores autogenerados solicitada en el issue."
+}

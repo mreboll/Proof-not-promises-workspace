@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "El cambio agrega documentación para un analizador en formato markdown, lo cual no fue solicitado en la descripción del problema."
+}

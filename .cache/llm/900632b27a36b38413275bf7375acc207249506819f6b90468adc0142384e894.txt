@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio implementa en el generador de código fuente la detección y procesamiento de clases decoradas con el atributo [GeneratedMessagePackFormatter] solicitado en el issue."
+}

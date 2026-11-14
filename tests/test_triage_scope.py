@@ -70,7 +70,7 @@ def test_snapshot_skips_llm_and_is_in_when_issue_mentions_generated_code():
     fake = FakeComplete()
     scope, why = classify_scope(ISSUE, SNAPSHOT, complete=fake)
     assert scope is Scope.IN and fake.calls == []
-    assert "sin LLM" in why
+    assert "no LLM" in why
 
 
 def test_snapshot_is_out_when_issue_does_not_mention_generated_code():
@@ -110,7 +110,7 @@ def test_falls_back_to_pro_role_when_flash_gives_invalid_json():
 def test_unclassifiable_file_goes_to_human_review_instead_of_crashing():
     fake = FlakyComplete({"flash", "pro"})
     scope, why = classify_scope(ISSUE, CODE, complete=fake)
-    assert scope is Scope.OUT and "revisión humana" in why and "JSON inválido" in why
+    assert scope is Scope.OUT and "human review" in why and "JSON inválido" in why
 
 
 def test_load_issue_text_reads_the_literal_markdown():

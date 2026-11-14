@@ -36,7 +36,7 @@ class MutantEdit(BaseModel):
 
     find: str = Field(description="Exact text copied verbatim from the code, unique in the file (one or a few whole lines)")
     replace: str = Field(description="The text that replaces it and re-breaks the edge case; the code must still compile")
-    explanation: str = Field(default="", description="One sentence in Spanish: what behaviour the mutant breaks")
+    explanation: str = Field(default="", description="One sentence in English: what behaviour the mutant breaks")
 
 
 SYSTEM = """You create a MUTANT of a pull request: a minimal edit to the PR code that breaks again exactly the edge case
@@ -113,4 +113,4 @@ def make_mutant(fd: FileDiff, question: str, source: str, *, complete: Complete 
             error = str(exc)
         except llm.LLMError as exc:
             error = f"LLM error: {exc}"
-    return "", f"no se pudo generar un mutante válido: {error}"
+    return "", f"no valid mutant could be generated: {error}"

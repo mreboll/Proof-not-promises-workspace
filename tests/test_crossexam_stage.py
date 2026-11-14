@@ -48,7 +48,7 @@ def test_only_in_high_is_cross_examined_and_gets_a_verdict(wired):
 
 def test_fiscal_receives_the_evidence_summary(wired):
     judge()
-    assert "test del cambio `T`" in wired[0][1] and "invarianza" in wired[0][1]
+    assert "change test `T`" in wired[0][1] and "invariance" in wired[0][1]
 
 
 def test_failed_evidence_skips_the_crossexam(wired):

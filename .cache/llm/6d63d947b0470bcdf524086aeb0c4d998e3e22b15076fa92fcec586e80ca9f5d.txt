@@ -1,0 +1,4 @@
+{
+  "scope": "OUT",
+  "justification": "The changes in TypeCollector.cs handle duplicate keys and mixed string/int keys, which is unrelated to the issue of the analyzer not working when SuppressSourceGeneration is set to true."
+}

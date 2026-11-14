@@ -1,0 +1,43 @@
+[
+  {
+    "path": "README.md",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-02: Markdown documentation (.md)"
+    ],
+    "justification": "The issue reports a bug where the analyzer does not work when SuppressSourceGeneration is true, but does not request documentation or README updates.",
+    "touches_public_api": false
+  },
+  {
+    "path": "src/MessagePack.SourceGenerator/CodeAnalysis/TypeCollector.cs",
+    "scope": "OUT",
+    "risk": "HIGH",
+    "rule_hits": [
+      "R-MED-01: production code in src/ (private/internal logic)",
+      "R-HIGH-03: core generator namespace (CodeAnalysis/Transforms)"
+    ],
+    "justification": "The changes in TypeCollector.cs handle duplicate keys and mixed string/int keys, which is unrelated to the issue of the analyzer not working when SuppressSourceGeneration is set to true.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.ExecutionTests/SuppressedSourceGenerationTests.cs",
+    "scope": "OUT",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path"
+    ],
+    "justification": "The test checks runtime serialization and that source generation is suppressed, rather than verifying analyzer behavior or diagnostics when SuppressSourceGeneration is true.",
+    "touches_public_api": false
+  },
+  {
+    "path": "tests/MessagePack.SourceGenerator.Tests/SuppressSourceGenerationAnalyzerTests.cs",
+    "scope": "IN",
+    "risk": "LOW",
+    "rule_hits": [
+      "R-LOW-01: tests/ path"
+    ],
+    "justification": "This new test file directly tests and verifies analyzer functionality when SuppressSourceGeneration is set to true, as reported in the issue.",
+    "touches_public_api": false
+  }
+]

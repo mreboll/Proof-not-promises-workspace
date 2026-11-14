@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "Define las constantes necesarias para identificar el atributo `GeneratedMessagePackFormatter` y su propiedad `SurrogateType`, requeridos por la característica solicitada en el issue."
+}

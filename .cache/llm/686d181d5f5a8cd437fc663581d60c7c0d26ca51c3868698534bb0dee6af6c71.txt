@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "This file adds tests that specifically reproduce and verify the fix for closed generic structs from referenced assemblies crashing the generator and analyzer as reported in issue #2283."
+}

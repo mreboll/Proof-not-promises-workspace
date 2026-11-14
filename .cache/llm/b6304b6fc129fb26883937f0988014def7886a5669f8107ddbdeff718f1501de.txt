@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El cambio agrega el atributo ExcludeFromCodeCoverage a la clase generada por la plantilla StringKeyFormatterTemplate, cumpliendo directamente con lo solicitado en el problema."
+}

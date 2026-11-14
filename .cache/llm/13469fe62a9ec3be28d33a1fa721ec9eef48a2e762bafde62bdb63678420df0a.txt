@@ -1,0 +1,4 @@
+{
+  "scope": "IN",
+  "justification": "El archivo añade pruebas que verifican la funcionalidad solicitada en el issue, utilizando el atributo [GeneratedMessagePackFormatter] y tipos sustitutos (SurrogateType) para generar formateadores de tipos externos."
+}

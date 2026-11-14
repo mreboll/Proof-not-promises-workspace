@@ -1,0 +1,5 @@
+{
+  "find": "    private void ReportIfLocatedInCompilation(Action<Diagnostic> report, Diagnostic diagnostic)\n    {\n        if (diagnostic.Location.IsInSource && this.compilation.ContainsSyntaxTree(diagnostic.Location.SourceTree))\n        {\n            report(diagnostic);\n        }\n    }",
+  "replace": "    private void ReportIfLocatedInCompilation(Action<Diagnostic> report, Diagnostic diagnostic)\n    {\n        report(diagnostic);\n    }",
+  "explanation": "El mutante elimina el filtrado de diagnósticos por ubicación en la compilación actual, haciendo que se reporten diagnósticos inválidos para símbolos provenientes de metadata u otras compilaciones."
+}
