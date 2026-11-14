@@ -1,0 +1,253 @@
+{
+  "_comment": "Salida REAL de la Línea A (dotnet local, test escrito por nvidia/nemotron-3.5-super-vl-120b-a12b solo desde issues/2234.md). change_test.ok=false: el test pasa también en base. invariance.ok=false: general-duplicate-int-keys-not-suppressed cambia (el fix también quita el crash sin SuppressSourceGeneration).",
+  "change_test": {
+    "issue_id": "2234",
+    "change_type": "bugfix",
+    "test_name": "LedgerIssue2234AnalyzerSuppressSourceGeneration",
+    "test_code": "using System.Linq;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing Microsoft.CodeAnalysis;\nusing Microsoft.CodeAnalysis.CSharp;\nusing Microsoft.CodeAnalysis.Diagnostics;\nusing Microsoft.CodeAnalysis.Testing;\nusing MessagePack.SourceGenerator;\nusing MessagePack.SourceGenerator.Analyzers;\nusing Xunit;\n\npublic class LedgerIssue2234AnalyzerSuppressSourceGeneration\n{\n    [Fact]\n    public async Task AnalyzerReportsDuplicateKeyWhenSourceGenerationIsSuppressed()\n    {\n        const string source = \"\"\"\n            using MessagePack;\n\n            namespace TempProject\n            {\n                [MessagePackObject(SuppressSourceGeneration = true)]\n                public class MyObject\n                {\n                    [Key(0)]\n                    public int First { get; set; }\n\n                    [Key(0)]\n                    public int Second { get; set; }\n                }\n            }\n            \"\"\";\n\n        ImmutableArray<Diagnostic> analyzerDiagnostics = await GetAnalyzerDiagnosticsAsync(source);\n        var msgPackDiagnostics = analyzerDiagnostics.Where(static d => d.Id.StartsWith(\"MsgPack\")).ToImmutableArray();\n\n        Assert.True(msgPackDiagnostics.Length > 0, \"The analyzer did not report any MsgPack diagnostics for a type with SuppressSourceGeneration = true.\");\n    }\n\n    [Fact]\n    public async Task AnalyzerReportsNothingForValidTypeWhenSourceGenerationIsSuppressed()\n    {\n        const string source = \"\"\"\n            using MessagePack;\n\n            namespace TempProject\n            {\n                [MessagePackObject(SuppressSourceGeneration = true)]\n                public class MyObject\n                {\n                    [Key(0)]\n                    public int First { get; set; }\n\n                    [Key(1)]\n                    public int Second { get; set; }\n                }\n            }\n            \"\"\";\n\n        ImmutableArray<Diagnostic> analyzerDiagnostics = await GetAnalyzerDiagnosticsAsync(source);\n        var msgPackDiagnostics = analyzerDiagnostics.Where(static d => d.Id.StartsWith(\"MsgPack\")).ToImmutableArray();\n\n        Assert.Empty(msgPackDiagnostics);\n    }\n\n    private static async Task<ImmutableArray<Diagnostic>> GetAnalyzerDiagnosticsAsync(string source)\n    {\n        var parseOptions = new CSharpParseOptions(LanguageVersion.Latest);\n        var syntaxTree = CSharpSyntaxTree.ParseText(source, parseOptions);\n\n        var references = ReferencesHelper.GetReferences(ReferencesSet.MessagePack)\n            .Concat(await ReferenceAssemblies.Net.Net80.ResolveAsync(LanguageNames.CSharp, CancellationToken.None));\n\n        var compilation = CSharpCompilation.Create(\n            \"TestAssembly\",\n            new[] { syntaxTree },\n            references,\n            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));\n\n        GeneratorDriver driver = CSharpGeneratorDriver.Create(new MessagePackGenerator().AsSourceGenerator());\n        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation output, out var _);\n\n        return await output\n            .WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new MsgPack00xMessagePackAnalyzer()))\n            .GetAnalyzerDiagnosticsAsync();\n    }\n}",
+    "base": {
+      "build_ok": true,
+      "passed": 2,
+      "failed": 0,
+      "output_tail": "2 passed, 0 failed (of 2)",
+      "duration_s": 20.78110789996572,
+      "green": true,
+      "red_for_real": false
+    },
+    "pr": {
+      "build_ok": true,
+      "passed": 2,
+      "failed": 0,
+      "output_tail": "2 passed, 0 failed (of 2)",
+      "duration_s": 18.25136770005338,
+      "green": true,
+      "red_for_real": false
+    },
+    "ok": false
+  },
+  "invariance": {
+    "cases": [
+      {
+        "id": "general-collections",
+        "tag": "general",
+        "base_hash": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "base_hash_rerun": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "pr_hash": "7654617729b166b0e20e4f24fedd5192bc83c82ad135edab23da0ff9124e5e28",
+        "normalization": ""
+      },
+      {
+        "id": "general-constructor",
+        "tag": "general",
+        "base_hash": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "base_hash_rerun": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "pr_hash": "b728925274c07e513e5fc6561175fd66ea70d5335d281af77e7d3bf22c44dfed",
+        "normalization": ""
+      },
+      {
+        "id": "general-duplicate-int-keys-not-suppressed",
+        "tag": "general",
+        "base_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "base_hash_rerun": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "pr_hash": "af93e70de06a5286b51406847a046445e380d0f920cf459b27ca4bf74d286251",
+        "normalization": ""
+      },
+      {
+        "id": "general-enum",
+        "tag": "general",
+        "base_hash": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "base_hash_rerun": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "pr_hash": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
+        "normalization": ""
+      },
+      {
+        "id": "general-generic-class",
+        "tag": "general",
+        "base_hash": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "base_hash_rerun": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "pr_hash": "8f1d5f9de4bfa0a7b60b438af2825fb2144027fbb3f4965562711a26825ec83a",
+        "normalization": ""
+      },
+      {
+        "id": "general-generic-from-same-compilation",
+        "tag": "general",
+        "base_hash": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "base_hash_rerun": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "pr_hash": "3beb8e5364767b30a79b35cb2f7d36f6dc76d19a4f951982780a65a15c6cab0f",
+        "normalization": ""
+      },
+      {
+        "id": "general-ignore-member",
+        "tag": "general",
+        "base_hash": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "base_hash_rerun": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "pr_hash": "cafaeed792699a37067df9cd62059ecfcb91eda758bd7232d790f8bf29c07968",
+        "normalization": ""
+      },
+      {
+        "id": "general-inheritance",
+        "tag": "general",
+        "base_hash": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "base_hash_rerun": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "pr_hash": "dbc9028604b5a9e3317efda4b3185ee2d82cee5d7b0574016ff9140ac4ed0c93",
+        "normalization": ""
+      },
+      {
+        "id": "general-init-only",
+        "tag": "general",
+        "base_hash": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "base_hash_rerun": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "pr_hash": "f6b6329a1fa36628dc32cf96e73d2f0d3699414d43fc22933e3f019e945e6009",
+        "normalization": ""
+      },
+      {
+        "id": "general-int-keys",
+        "tag": "general",
+        "base_hash": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "base_hash_rerun": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "pr_hash": "7b01595063d713bb01297e08b38d8ff482234e07655e1e265f0114b70f0f0df9",
+        "normalization": ""
+      },
+      {
+        "id": "general-keyasname",
+        "tag": "general",
+        "base_hash": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "base_hash_rerun": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "pr_hash": "325daca8d53576366800b29900e33be9634b8ea4fbf25ebd7531be51e342d87d",
+        "normalization": ""
+      },
+      {
+        "id": "general-missing-key-in-source",
+        "tag": "general",
+        "base_hash": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "base_hash_rerun": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "pr_hash": "7c8ddebe412de2b32bea8dae8a17edee4306d11049d0ce419ed463e43e4737e0",
+        "normalization": ""
+      },
+      {
+        "id": "general-nested-types",
+        "tag": "general",
+        "base_hash": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "base_hash_rerun": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "pr_hash": "17621e544c6d9590164734ea9fd89da2efaf82674e82d2721eb2c2a98a52fa29",
+        "normalization": ""
+      },
+      {
+        "id": "general-nullable",
+        "tag": "general",
+        "base_hash": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "base_hash_rerun": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "pr_hash": "b2bfaadca297367d7df4713ef229cf7c500aaa76c27e05d6a5687865521ba8fa",
+        "normalization": ""
+      },
+      {
+        "id": "general-private-members",
+        "tag": "general",
+        "base_hash": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "base_hash_rerun": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "pr_hash": "8bac39b819722f19701438ab9b296467fc9a1017c3c72e5537603238385b8910",
+        "normalization": ""
+      },
+      {
+        "id": "general-record",
+        "tag": "general",
+        "base_hash": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "base_hash_rerun": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "pr_hash": "f5d7882efe4aeff8fbe0aa1d0261c335d9fd24d4b12e51cd0a121a1467e20b46",
+        "normalization": ""
+      },
+      {
+        "id": "general-resolver-attribute",
+        "tag": "general",
+        "base_hash": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "base_hash_rerun": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "pr_hash": "c5713d6122f9fbe278cdc665ef4d7a01a87640d3715170c13702386f66ccea15",
+        "normalization": ""
+      },
+      {
+        "id": "general-string-keys",
+        "tag": "general",
+        "base_hash": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "base_hash_rerun": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "pr_hash": "62548088b848776deabaee37023b668633705ab31fa7b7f303d1ba6179d6b99d",
+        "normalization": ""
+      },
+      {
+        "id": "general-struct",
+        "tag": "general",
+        "base_hash": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "base_hash_rerun": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "pr_hash": "7a70f2de5294a66ee3ce7a354e5f2f0e413112d65740fd37c9b453508d5e4f15",
+        "normalization": ""
+      },
+      {
+        "id": "general-union",
+        "tag": "general",
+        "base_hash": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "base_hash_rerun": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "pr_hash": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-duplicate-int-keys",
+        "tag": "issue-2234",
+        "base_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "base_hash_rerun": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "pr_hash": "912821a65350bf92f4a8c948b2505aa4fb6e8bdd6e060f21fae3b3d05ab3b7b9",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-duplicate-string-keys",
+        "tag": "issue-2234",
+        "base_hash": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
+        "base_hash_rerun": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
+        "pr_hash": "ca6f0d4db07bea1a2e20264de03c93b4987f45f6a689ffc5d37adbbe06375ee4",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-missing-key",
+        "tag": "issue-2234",
+        "base_hash": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "base_hash_rerun": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "pr_hash": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-mixed-keys",
+        "tag": "issue-2234",
+        "base_hash": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
+        "base_hash_rerun": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
+        "pr_hash": "aba6a8e20911e891c953b5ac7f3756dbae03959e11cd201dc4e92cd3939aaa5f",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-closed-generic-struct-from-metadata",
+        "tag": "issue-2283",
+        "base_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "base_hash_rerun": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "pr_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-generic-record-struct-from-metadata",
+        "tag": "issue-2283",
+        "base_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "base_hash_rerun": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "pr_hash": "90b24678e89bd125d29535c3df24680f765dae08cc2657501fc52f46da1b0fa3",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2283-unkeyed-member-in-metadata-generic",
+        "tag": "issue-2283",
+        "base_hash": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
+        "base_hash_rerun": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
+        "pr_hash": "ce8e281bf15ee40df17b07f0d21a8af59ab7a289060f5af1b7bcabf9cf7a4570",
+        "normalization": ""
+      }
+    ],
+    "deterministic": true,
+    "unexpected_diffs": [
+      "general-duplicate-int-keys-not-suppressed"
+    ],
+    "ok": false
+  }
+}

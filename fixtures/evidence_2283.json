@@ -44,6 +44,14 @@
         "normalization": ""
       },
       {
+        "id": "general-duplicate-int-keys-not-suppressed",
+        "tag": "general",
+        "base_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "base_hash_rerun": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "pr_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "normalization": ""
+      },
+      {
         "id": "general-enum",
         "tag": "general",
         "base_hash": "38c7c338ffaa32db1c4988e752bfc28b98e92f8ff9d69bd446f84e6555de9d07",
@@ -177,6 +185,38 @@
         "base_hash": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
         "base_hash_rerun": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
         "pr_hash": "d838b525a3dc43bc558f864d79fab743b45d79a8a0645bdf05225f9e2e1f3661",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-duplicate-int-keys",
+        "tag": "issue-2234",
+        "base_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "base_hash_rerun": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "pr_hash": "01d977cc4b166f8046057242e53c13c6e489ce9e86e3387d552dd206be21a16a",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-duplicate-string-keys",
+        "tag": "issue-2234",
+        "base_hash": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
+        "base_hash_rerun": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
+        "pr_hash": "b05370a0f1accc6416e068b9ebf9fc3cc891f7262237f5fae7f892096ce7979d",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-missing-key",
+        "tag": "issue-2234",
+        "base_hash": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "base_hash_rerun": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "pr_hash": "a0c8a7a4c018c2bd9dadcf3cc7307c853b50ff397150cc5d93501b6a97ecde1c",
+        "normalization": ""
+      },
+      {
+        "id": "issue-2234-suppressed-mixed-keys",
+        "tag": "issue-2234",
+        "base_hash": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
+        "base_hash_rerun": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
+        "pr_hash": "866ec3112a14ea4dfdd8d2fb53ee27b65e05d1408aee414da28ace3cab34994b",
         "normalization": ""
       },
       {
