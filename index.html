@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://proof-not-promises.vercel.app/assets/landing/v2/hero.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/landing/v2/hero.jpg" fetchpriority="high">
 <link rel="stylesheet" href="assets/landing/v2/landing.css">
 </head>
@@ -29,7 +29,7 @@
       <li><a href="#found">What it found</a></li>
       <li><a href="#trust">Trust</a></li>
       <li><a href="#modal">Modal</a></li>
-      <li><a href="#explore">Check</a></li>
+      <li><a href="#explore">Sources</a></li>
     </ul>
     <a class="btn small" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer">GitHub</a>
   </div>
@@ -49,7 +49,7 @@
       and when it's missing, the system <strong>refuses to decide</strong> and tells a named human exactly what to read.</p>
     <div class="cta">
       <a class="btn primary" href="#video">Watch the 2-minute demo</a>
-      <a class="btn" href="#try">Try it in 20 seconds</a>
+      <a class="btn" href="#try">Try it in 19 seconds</a>
       <a class="btn" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer">Source code</a>
     </div>
     <div class="stats" role="list">
@@ -135,7 +135,7 @@
       </div>
     </div>
     <div class="rule-card reveal">
-      <div class="eyebrow" style="margin-bottom:10px">The one rule</div>
+      <div class="eyebrow">The one rule</div>
       <div class="big">No model approves anything. <span>Only executable evidence counts.</span></div>
     </div>
   </div>
@@ -145,7 +145,7 @@
   <div class="wrap">
     <div class="eyebrow">Try it</div>
     <h2 id="try-h">Press Enter. Watch a real review run.</h2>
-    <p class="lede">A 17-second replay of the recorded run for issue #2283; the real one took 18–22 minutes. Every line is what that run actually did.</p>
+    <p class="lede">A 19-second replay of the recorded run for issue #2283; the real one took 18–22 minutes. Every line is what that run actually did.</p>
 
     <div class="try">
       <div class="term" id="term" tabindex="0" role="group" aria-label="Terminal. Press Enter to run the review.">
@@ -179,7 +179,7 @@
     <div class="result" id="result" hidden>
       <div class="result-head">
         <div>
-          <div class="eyebrow" style="color:var(--red)">Decision · manual audit required</div>
+          <div class="eyebrow">Decision · manual audit required</div>
           <h3>The AI fix passed its own test. The cross-examination says it moved the crash.</h3>
           <p class="muted">1 file refused to decide (2 Defender tests fail on the PR), 2 out-of-scope files to glance at, 1 file approved on evidence. This is the real report that run produced:</p>
         </div>
@@ -195,7 +195,7 @@
 
 <section class="hs" id="found" aria-labelledby="found-h">
   <div class="hs-sticky">
-    <div class="media" aria-hidden="true"><img src="assets/landing/v2/t3.jpg" alt="" width="1600" height="900" loading="lazy"><div class="shade full"></div></div>
+    <div class="media" aria-hidden="true"><video data-src="assets/landing/v2/exhibits.mp4" poster="assets/landing/v2/exhibits.jpg" muted loop playsinline preload="none"></video><div class="shade full"></div></div>
     <div class="wrap hs-head">
       <div class="eyebrow">Four real AI-written PRs</div>
       <h2 id="found-h">What it found, and what it refused to decide</h2>
@@ -204,22 +204,22 @@
       <article class="pr star">
         <div class="head"><span class="num">#2283</span><span class="pill grey">bug fix</span><span class="pill red">defect found</span></div>
         <p>Its own test and the invariance check were green. Cross-examination showed the AI fix <strong>moved the crash</strong> instead of removing it.</p>
-        <a href="demo/2283-dotnet.html#crossexam" target="_blank" rel="noopener noreferrer">See the failing tests →</a>
+        <a href="demo/2283-dotnet.html#crossexam" target="_blank" rel="noopener noreferrer">See the failing tests</a>
       </article>
       <article class="pr">
         <div class="head"><span class="num">#2234</span><span class="pill grey">bug fix</span><span class="pill red">red</span></div>
         <p>A one-sentence issue: the test also passed before the fix, and the fix changed behaviour <strong>outside</strong> the issue.</p>
-        <a href="demo/2234.html#evidence" target="_blank" rel="noopener noreferrer">See the evidence →</a>
+        <a href="demo/2234.html#evidence" target="_blank" rel="noopener noreferrer">See the evidence</a>
       </article>
       <article class="pr">
         <div class="head"><span class="num">#2297</span><span class="pill grey">feature · 237 files</span><span class="pill amber">refused on 10</span></div>
-        <p>223 low-risk files approved unread, 12 cross-examined, and one <strong>unrequested change</strong> flagged.</p>
-        <a href="demo/2297.html#must-read" target="_blank" rel="noopener noreferrer">See what the human reads →</a>
+        <p>223 low-risk files approved unread, 12 cross-examined, one <strong>unrequested change</strong> flagged and one out-of-scope README to glance at.</p>
+        <a href="demo/2297.html#must-read" target="_blank" rel="noopener noreferrer">See what the human reads</a>
       </article>
       <article class="pr">
         <div class="head"><span class="num">#2129</span><span class="pill grey">feature</span><span class="pill mint">test was wrong</span></div>
         <p>The AI's own test failed. An independent oracle showed the feature worked and <strong>pointed the human at the test</strong>.</p>
-        <a href="demo/2129.html#evidence" target="_blank" rel="noopener noreferrer">See both oracles →</a>
+        <a href="demo/2129.html#evidence" target="_blank" rel="noopener noreferrer">See both oracles</a>
       </article>
     </div>
   </div>
@@ -227,7 +227,7 @@
 
 <section class="scene" id="sign" aria-labelledby="sign-h">
   <div class="media" aria-hidden="true">
-    <video data-src="assets/landing/v2/sign.mp4" poster="assets/landing/v2/sign.jpg" muted loop playsinline preload="none"></video>
+    <video data-src="assets/landing/v2/sign.mp4?v=2" poster="assets/landing/v2/sign.jpg?v=2" muted loop playsinline preload="none"></video>
     <div class="shade left strong"></div>
     <div class="counter"><b id="counter">237</b><span>files a human reads</span></div>
   </div>
@@ -248,26 +248,24 @@
         <li><span class="k">02</span><h3>What was NOT checked, and why</h3></li>
         <li><span class="k">03</span><h3>The residual risk I accept</h3></li>
       </ol>
-      <p class="muted" style="margin-top:16px"><a href="demo/2297.html#signoff" target="_blank" rel="noopener noreferrer">See a real sign-off block →</a></p>
+      <p class="muted signs-more"><a href="demo/2297.html#signoff" target="_blank" rel="noopener noreferrer">See a real sign-off block</a></p>
     </div></div></div>
   </div>
 </section>
 
-<section class="block" id="trust" aria-labelledby="trust-h">
-  <div class="wrap grid2">
-    <figure class="frame-media reveal">
-      <video data-src="assets/landing/v2/escape.mp4" poster="assets/landing/v2/escape.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
-    </figure>
-    <div class="reveal">
-      <div class="eyebrow">Trust is earned, and withdrawn</div>
-      <h2 id="trust-h">Once, our own evidence missed it too.</h2>
-      <p class="lede">One run approved the moved crash. We logged it as an escape, so trust in that area is <strong style="color:var(--amber)">withdrawn</strong>
-        until five clean signed changes earn it back.</p>
-      <ul class="ticks">
-        <li>Humans read a hash-picked sample of green files, so the AI reviewer gets checked too.</li>
-        <li>We measure escapes per approved file, not reviews done.</li>
-      </ul>
-    </div>
+<section class="trust-sec" id="trust" aria-labelledby="trust-h">
+  <figure class="trust-media reveal">
+    <video data-src="assets/landing/v2/escape.mp4" poster="assets/landing/v2/escape.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
+  </figure>
+  <div class="trust-copy reveal">
+    <div class="eyebrow">Trust is earned, and withdrawn</div>
+    <h2 id="trust-h">Once, our own evidence missed it too.</h2>
+    <p class="lede">One run approved the moved crash. We logged it as an escape, so trust in that area is <strong>withdrawn</strong>
+      until five clean signed changes earn it back.</p>
+    <ul class="ticks">
+      <li>Humans read a hash-picked sample of green files, so the AI reviewer gets checked too.</li>
+      <li>We measure escapes per approved file, not reviews done.</li>
+    </ul>
   </div>
 </section>
 
@@ -283,7 +281,7 @@
       <p class="lede">Every test and mutant an AI writes runs in its own disposable, network-less Modal Sandbox. That makes the evidence trustworthy, and lets the review fan out.</p>
     </div>
   </div>
-  <div class="wrap" style="padding-bottom:clamp(80px, 12vw, 150px)">
+  <div class="wrap modal-body">
     <div class="sbx-flow reveal" role="list">
       <div class="sbx-step" role="listitem"><span class="n">1</span><b>Trusted image</b><p>.NET 8 and both sides of every PR, compiled once.</p></div>
       <div class="sbx-arrow" aria-hidden="true">→</div>
@@ -291,7 +289,7 @@
       <div class="sbx-arrow" aria-hidden="true">→</div>
       <div class="sbx-step" role="listitem"><span class="n">3</span><b>Thrown away</b><p>Only the test result comes back.</p></div>
     </div>
-    <div class="grid2 sbx-pair">
+    <div class="sbx-pair">
       <div class="sbx-viz reveal" id="sbx-viz" role="img" aria-label="Capacity test: 60 Modal sandboxes started at once, all 60 passed">
         <div class="sbx-grid" id="sbx-grid"></div>
         <div class="sbx-read">
@@ -301,7 +299,7 @@
         </div>
       </div>
       <div class="reveal">
-        <div class="num-card"><div class="v">&gt;1 h → ~17 <small>min</small></div><p>to cross-examine the 237-file PR in parallel.</p></div>
+        <div class="num-card"><div class="v">&gt;1 h → ~17 <small>min</small></div><p>to cross-examine the 36 objections of the 237-file PR in parallel.</p></div>
         <p class="callout"><strong>Modal was never the limit.</strong> Past a point, speed is the language model's latency, not our code.</p>
       </div>
     </div>
@@ -311,13 +309,13 @@
 <section class="block" id="limits" aria-labelledby="limits-h">
   <div class="wrap">
     <div class="eyebrow">Questions judges will ask</div>
-    <h2 id="limits-h">What would make us not trust our own output?</h2>
+    <h2 id="limits-h">Three questions we had to answer</h2>
     <div class="qa reveal">
       <div class="q"><h3>What would make you not trust it?</h3><p>An open objection, a vague ticket, or an escape. It already happened once, and that area lost its trust.</p></div>
       <div class="q"><h3>Who owns the decision?</h3><p>The named engineer who signs. The AI never approves.</p></div>
       <div class="q"><h3>How would this scale?</h3><p>Human reading follows risk, not diff size. Compute fans out; the model's latency is the ceiling.</p></div>
     </div>
-    <h3 style="margin:48px 0 6px">Honest limits</h3>
+    <h3 class="limits-h">Honest limits</h3>
     <ul class="ticks red limits">
       <li>A badly written ticket gives weak evidence. The system says so; it doesn't fix the ticket.</li>
       <li>It needs a differential oracle, and LLMs differ run to run: 3 to 12 of 36 objections closed across four runs.</li>
@@ -327,8 +325,8 @@
 </section>
 
 <section class="block explore" id="explore" aria-labelledby="explore-h">
-  <div class="media" aria-hidden="true"><img src="assets/landing/v2/archive.jpg" alt="" width="1600" height="900" loading="lazy"><div class="shade full"></div></div>
-  <div class="wrap" style="position:relative">
+  <div class="media" aria-hidden="true"><video data-src="assets/landing/v2/archive.mp4" poster="assets/landing/v2/archive.jpg" muted loop playsinline preload="none"></video><div class="shade full"></div></div>
+  <div class="wrap">
     <div class="eyebrow">Check it yourself</div>
     <h2 id="explore-h">Everything here is in the repo</h2>
     <div class="links">
@@ -353,9 +351,8 @@
       <div><b>Marco García López</b></div>
     </div>
     <p>Junction 2026 · Tieto — Earned Trust in AI Code. Sample changes: agent-written branches of
-      <a href="https://github.com/te-industry-tech-office/junction26-messagepack-csharp" target="_blank" rel="noopener noreferrer">junction26-messagepack-csharp</a>. Public data only.
-      Visuals generated with Nano Banana 2.1 and animated with Gemini Omni.</p>
-    <p style="font:13px var(--mono);color:var(--fg-3)">Trust is built on evidence a person can check and own, not on the AI being confident.</p>
+      <a href="https://github.com/te-industry-tech-office/junction26-messagepack-csharp" target="_blank" rel="noopener noreferrer">junction26-messagepack-csharp</a>. Public data only.</p>
+    <p class="motto">Trust is built on evidence a person can check and own, not on the AI being confident.</p>
   </div>
 </footer>
 

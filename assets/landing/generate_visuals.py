@@ -6,14 +6,19 @@ Motion: Gemini Omni 1.2 Flash (gemini-omni-1.2-flash) via the Interactions API, 
 Usage (from the repo root, GEMINI_API_KEY in .env):
     .venv/Scripts/python.exe assets/landing/generate_visuals.py images [name ...]
     .venv/Scripts/python.exe assets/landing/generate_visuals.py videos [name ...]
+    .venv/Scripts/python.exe assets/landing/generate_visuals.py compress [name ...]
 
-Raw outputs go to assets/landing/v2/raw/; the page uses the compressed files in assets/landing/v2/.
+Raw outputs go to assets/landing/v2/raw/; `compress` writes the files the page uses to assets/landing/v2/
+(1600 px JPEG posters, silent 720p H.264 clips). It needs ffmpeg: on PATH, in $FFMPEG, or the one Remotion ships
+in video/node_modules.
 """
 from __future__ import annotations
 
 import base64
 import json
 import os
+import shutil
+import subprocess
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -103,13 +108,25 @@ SCENES: dict[str, tuple[str, str, str | None]] = {
         "low tense ambience only, no music, no voices.",
     ),
     "sign": (
-        "Keep the left 40% darker for text.",
-        "Top-down view of a dark desk. Hundreds of faint translucent pages fade into the darkness around the edges of "
-        "the frame. In the center, twelve crisp glowing pages are laid out neatly in front of a human hand holding a "
-        "fountain pen, about to sign a single document whose three sections are blank.",
-        "The hundreds of faint pages around the edges slowly fade further into darkness while the twelve central pages "
-        "brighten. The hand lowers the fountain pen towards the document. Very slow top-down push-in, no cuts, "
-        "soft paper and room ambience only, no music, no voices.",
+        "Keep the left 42% of the frame and the bottom-right corner dark and nearly empty for text.",
+        "Top-down three-quarter view of a dark desk. Hundreds of faint translucent pages dissolve into the darkness "
+        "around the far edges of the frame. In the upper right half, exactly twelve crisp glowing sheets are laid out "
+        "in a neat grid of four columns by three rows, mint and cyan, each etched with abstract unreadable diagrams. "
+        "Below the grid, at centre-right, a human hand holding a fountain pen is poised over one separate blank "
+        "document divided into three empty sections.",
+        "The hundreds of faint pages around the edges slowly fade further into darkness while the twelve sheets in the "
+        "grid brighten one by one. The hand lowers the fountain pen towards the blank document. Very slow push-in, "
+        "no cuts, soft paper and room ambience only, no music, no voices.",
+    ),
+    "exhibits": (
+        "Keep the upper third of the frame dark, calm haze for a headline.",
+        "A long dark evidence table seen from a low three-quarter angle, receding to the right. On it stand four "
+        "sealed glass evidence cases in a row, evenly spaced, each holding a small floating crystal made of abstract "
+        "code fragments. The nearest case glows red and its crystal is visibly cracked, the second glows red, the "
+        "third glows amber, the fourth glows mint. A blank paper tag hangs from each case. Everything else is dark.",
+        "Slow lateral tracking shot along the table of four glass evidence cases. The crystals inside turn slowly and "
+        "their red, amber and mint lights breathe gently; dust drifts through the haze. Continuous single shot, "
+        "no cuts, low quiet ambience only, no music, no voices.",
     ),
     "modal": (
         "Keep the left third calm and dark.",
@@ -124,7 +141,9 @@ SCENES: dict[str, tuple[str, str, str | None]] = {
         "Keep the center calm for text overlay.",
         "A long dark archive corridor of open drawers and shelves receding into the distance, each drawer softly lit "
         "from inside with mint light, neat and orderly, inviting inspection.",
-        None,
+        "Very slow forward dolly down the archive corridor. The soft mint lights inside the open drawers brighten and "
+        "dim one after another, as if someone were checking them; fine dust drifts in the haze. Continuous single "
+        "shot, no cuts, quiet room tone only, no music, no voices.",
     ),
 }
 
@@ -216,10 +235,30 @@ def download_uri(uri: str) -> bytes:
     raise RuntimeError(f"video at {uri} never became available")
 
 
+def find_ffmpeg() -> str:
+    bundled = Path(__file__).resolve().parents[2] / "video/node_modules/@remotion/compositor-win32-x64-msvc/ffmpeg.exe"
+    found = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or (str(bundled) if bundled.exists() else None)
+    if not found:
+        raise RuntimeError("ffmpeg not found: put it on PATH or set FFMPEG")
+    return found
+
+
+def compress(name: str) -> Path:
+    """Write the poster and, when the scene has a clip, the silent 720p clip the page serves."""
+    ffmpeg = [find_ffmpeg(), "-y", "-loglevel", "error"]
+    poster = OUT / f"{name}.jpg"
+    subprocess.run([*ffmpeg, "-i", str(find_raw_image(name)), "-vf", "scale=1600:-2", "-q:v", "5", str(poster)], check=True)
+    clip = RAW / f"{name}.mp4"
+    if clip.exists():
+        subprocess.run([*ffmpeg, "-i", str(clip), "-an", "-vf", "scale=1280:-2", "-c:v", "libx264", "-preset", "slow",
+                        "-crf", "27", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(OUT / clip.name)], check=True)
+    return poster
+
+
 def run(kind: str, names: list[str]) -> None:
     RAW.mkdir(parents=True, exist_ok=True)
-    fn = generate_image if kind == "images" else generate_video
-    todo = names or [n for n, s in SCENES.items() if kind == "images" or s[2]]
+    fn = {"images": generate_image, "videos": generate_video, "compress": compress}[kind]
+    todo = names or [n for n, s in SCENES.items() if kind != "videos" or s[2]]
 
     def one(name: str) -> str:
         t0 = time.time()
@@ -234,6 +273,6 @@ def run(kind: str, names: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2 or sys.argv[1] not in ("images", "videos"):
+    if len(sys.argv) < 2 or sys.argv[1] not in ("images", "videos", "compress"):
         sys.exit(__doc__)
     run(sys.argv[1], sys.argv[2:])

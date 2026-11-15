@@ -197,36 +197,36 @@
   // ---------- Try it: replay of the recorded run of issue #2283 (fixtures/report_2283_dotnet.json), ~60x faster ----------
   var TRY_SCRIPT = [ // [ms, step, class, text]; text is plain (set with textContent)
     [300, "t1", "phase", "▶ T1 · Triage  — 4 files in the diff, risk by static rules, scope by Gemini flash"],
-    [1000, null, "", "  README.md                                   OUT · LOW   R-LOW-02 markdown"],
-    [1600, null, "", "  doc/analyzers/MsgPack004.md                 OUT · LOW   R-LOW-02 markdown"],
-    [2300, null, "warn", "  …/CodeAnalysis/TypeCollector.cs             IN  · HIGH  R-HIGH-03 core generator namespace"],
-    [2900, null, "", "  tests/…/GenericsFormatterTests.cs           IN  · LOW   R-LOW-01 tests/"],
-    [3400, "done-t1", "dim", "  1 high-risk file goes to cross-examination; 2 out of scope go to a human"],
-    [3900, "t2", "phase", "▶ T2 · Evidence — Gemini writes LedgerIssue2283 from the issue text only (never the diff)"],
-    [4900, null, "", "  base (before the fix)   2 failed   → red: the test reproduces the bug"],
-    [5900, null, "ok", "  PR   (after the fix)    2 passed   → green"],
-    [6900, null, "", "  invariance  29 cases through the source generator, base run twice"],
-    [7700, null, "ok", "  21/21 general cases identical · base deterministic"],
-    [8100, "done-t2", "dim", "  evidence passed. A reviewer reading only this would approve."],
-    [8700, "t3", "phase", "▶ T3 · Cross-examination — Nemotron (Prosecutor) vs Gemini (Defender) on TypeCollector.cs"],
-    [9500, null, "", "  Q1  Does GetObjectInfo still throw IndexOutOfRange on the other diagnostic branches?"],
-    [10400, null, "ok", "      Defender test: green on PR · red on mutant → objection closed"],
-    [11000, null, "", "  Q2  Does Diagnostic.Create throw when the property location comes from metadata?"],
-    [11900, null, "bad", "      Defender test FAILS on the PR (2 failed) → possible defect"],
-    [12500, null, "", "  Q3  Does it still crash with a closed generic reference type from another assembly?"],
-    [13400, null, "bad", "      Defender test FAILS on the PR (2 failed) → possible defect"],
-    [13900, "done-t3-bad", "dim", "  1 of 3 objections closed. The fix moved the crash: InvalidOperation at line 1013."],
-    [14500, "v", "phase", "▶ Verdicts"],
-    [15000, "tally", "bad", "  TypeCollector.cs              RED     M7 · refuses to decide: 2 open objections"],
-    [15500, null, "warn", "  README.md · MsgPack004.md      YELLOW  M2 · out of scope: read the justification"],
-    [15900, null, "ok", "  GenericsFormatterTests.cs     GREEN   M4 · approved on evidence, unread"],
-    [16500, "done-v", "final", "Decision: MANUAL AUDIT REQUIRED  ·  report → out/report-2283.html  ·  signed by: ______"]
+    [1100, null, "", "  README.md                                   OUT · LOW   R-LOW-02 markdown"],
+    [1800, null, "", "  doc/analyzers/MsgPack004.md                 OUT · LOW   R-LOW-02 markdown"],
+    [2600, null, "warn", "  …/CodeAnalysis/TypeCollector.cs             IN  · HIGH  R-HIGH-03 core generator namespace"],
+    [3200, null, "", "  tests/…/GenericsFormatterTests.cs           IN  · LOW   R-LOW-01 tests/"],
+    [3800, "done-t1", "dim", "  1 high-risk file goes to cross-examination; 2 out of scope go to a human"],
+    [4400, "t2", "phase", "▶ T2 · Evidence — Gemini writes LedgerIssue2283 from the issue text only (never the diff)"],
+    [5500, null, "", "  base (before the fix)   2 failed   → red: the test reproduces the bug"],
+    [6600, null, "ok", "  PR   (after the fix)    2 passed   → green"],
+    [7700, null, "", "  invariance  29 cases through the source generator, base run twice"],
+    [8600, null, "ok", "  21/21 general cases identical · base deterministic"],
+    [9100, "done-t2", "dim", "  evidence passed. A reviewer reading only this would approve."],
+    [9700, "t3", "phase", "▶ T3 · Cross-examination — Nemotron (Prosecutor) vs Gemini (Defender) on TypeCollector.cs"],
+    [10600, null, "", "  Q1  Does GetObjectInfo still throw IndexOutOfRange on the other diagnostic branches?"],
+    [11600, null, "ok", "      Defender test: green on PR · red on mutant → objection closed"],
+    [12300, null, "", "  Q2  Does Diagnostic.Create throw when the property location comes from metadata?"],
+    [13300, null, "bad", "      Defender test FAILS on the PR (2 failed) → possible defect"],
+    [14000, null, "", "  Q3  Does it still crash with a closed generic reference type from another assembly?"],
+    [15000, null, "bad", "      Defender test FAILS on the PR (2 failed) → possible defect"],
+    [15500, "done-t3-bad", "dim", "  1 of 3 objections closed. The fix moved the crash: InvalidOperation at line 1013."],
+    [16200, "v", "phase", "▶ Verdicts"],
+    [16800, "tally", "bad", "  TypeCollector.cs              RED     M7 · refuses to decide: 2 open objections"],
+    [17300, null, "warn", "  README.md · MsgPack004.md      YELLOW  M2 · out of scope: read the justification"],
+    [17800, null, "ok", "  GenericsFormatterTests.cs     GREEN   M4 · approved on evidence, unread"],
+    [18400, "done-v", "final", "Decision: MANUAL AUDIT REQUIRED  ·  report → out/report-2283.html  ·  signed by: ______"]
   ];
 
   function setupTry() {
     var term = $("#term"), body = $("#term-body"), btn = $("#run-btn"), again = $("#again");
     if (!term || !body || !btn) return;
-    var TOTAL_MS = 17000, REAL_S = 1140; // ~19 min of real pipeline time
+    var TOTAL_MS = 19000, REAL_S = 1140; // 19 s for ~19 min of real pipeline time: exactly the ×60 the tracker shows
     var bar = $("#bar"), clock = $("#clock"), tally = $("#tally"), result = $("#result"), frame = $("#report-frame");
     var running = false, timers = [], rafId = 0, start = 0;
 
