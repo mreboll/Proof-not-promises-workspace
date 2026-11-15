@@ -16,3 +16,7 @@ harness/**/bin/
 harness/**/obj/
 # Raw outputs of assets/landing/generate_visuals.py (Nano Banana 2.1 / Gemini Omni); the page uses the compressed copies
 assets/landing/v2/raw/
+
+.vercel
+.env*
+!.env.example

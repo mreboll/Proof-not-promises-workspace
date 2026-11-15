@@ -1,0 +1,8 @@
+# Vercel only serves the landing page: everything else in the repo stays out of the upload.
+/*
+!index.html
+!vercel.json
+!assets
+!demo
+assets/landing/generate_visuals.py
+assets/landing/v2/raw
