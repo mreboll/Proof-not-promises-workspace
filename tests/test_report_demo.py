@@ -36,3 +36,13 @@ def test_index_is_self_contained_and_english(tmp_path):
     demo.build_demo(tmp_path, translate=identity)
     index = (tmp_path / "index.html").read_text(encoding="utf-8")
     assert '<html lang="en">' in index and "<script" not in index and "<link" not in index
+
+
+def test_index_links_open_each_report_in_a_new_tab(tmp_path):
+    """Petición del equipo: cualquier enlace que saca de la página abre en una pestaña nueva."""
+    import re
+
+    demo.build_demo(tmp_path, translate=identity)
+    index = (tmp_path / "index.html").read_text(encoding="utf-8")
+    links = re.findall(r"<a [^>]*>", index)
+    assert links and all('target="_blank"' in a and 'rel="noopener noreferrer"' in a for a in links)

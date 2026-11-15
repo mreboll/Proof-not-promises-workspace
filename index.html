@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#051a22">
 <meta property="og:title" content="Proof, not promises">
 <meta property="og:description" content="AI reviews. Humans stay accountable. Trust built on evidence a person can check and own.">
-<meta property="og:image" content="assets/landing/v2/hero.jpg">
+<meta property="og:image" content="https://mreboll.github.io/Proof-not-promises-workspace/assets/landing/v2/hero.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
@@ -67,11 +67,11 @@
     <div class="eyebrow">The demo</div>
     <h2 id="video-h">Two minutes: where the trust comes from</h2>
     <p class="lede">Four real AI-written pull requests to MessagePack-CSharp, from triage to a named signature.</p>
-    <!-- VIDEO_URL: replace "#video" in the href below with the published video link (YouTube, Vimeo or the submission platform). -->
-    <div class="video reveal">
+    <div class="video reveal" id="yt" data-yt="rfgzA_bwmuQ">
       <img src="assets/landing/parallel.jpg" alt="Frame of the demo video: 36 objections cross-examined in parallel, 12 closed by a valid test, 12 tests failing on the PR, 12 that proved nothing" width="1600" height="775" loading="lazy">
-      <a class="play" href="#video" aria-label="Play the 2-minute demo video"><span>Play the demo</span></a>
+      <button class="play" type="button" aria-label="Play the 2-minute demo video here"><span>Play the demo</span></button>
     </div>
+    <p class="video-alt"><a href="https://youtu.be/rfgzA_bwmuQ" target="_blank" rel="noopener noreferrer">Watch it on YouTube</a></p>
   </div>
 </section>
 
@@ -184,7 +184,7 @@
           <p class="muted">1 file refused to decide (2 Defender tests fail on the PR), 2 out-of-scope files to glance at, 1 file approved on evidence. This is the real report that run produced:</p>
         </div>
         <div class="result-actions">
-          <a class="btn primary" href="demo/2283-dotnet.html#must-read">Open the full report</a>
+          <a class="btn primary" href="demo/2283-dotnet.html#must-read" target="_blank" rel="noopener noreferrer">Open the full report</a>
           <button class="btn" id="again" type="button">Run again</button>
         </div>
       </div>
@@ -204,22 +204,22 @@
       <article class="pr star">
         <div class="head"><span class="num">#2283</span><span class="pill grey">bug fix</span><span class="pill red">defect found</span></div>
         <p>Its own test and the invariance check were green. Cross-examination showed the AI fix <strong>moved the crash</strong> instead of removing it.</p>
-        <a href="demo/2283-dotnet.html#crossexam">See the failing tests →</a>
+        <a href="demo/2283-dotnet.html#crossexam" target="_blank" rel="noopener noreferrer">See the failing tests →</a>
       </article>
       <article class="pr">
         <div class="head"><span class="num">#2234</span><span class="pill grey">bug fix</span><span class="pill red">red</span></div>
         <p>A one-sentence issue: the test also passed before the fix, and the fix changed behaviour <strong>outside</strong> the issue.</p>
-        <a href="demo/2234.html#evidence">See the evidence →</a>
+        <a href="demo/2234.html#evidence" target="_blank" rel="noopener noreferrer">See the evidence →</a>
       </article>
       <article class="pr">
         <div class="head"><span class="num">#2297</span><span class="pill grey">feature · 237 files</span><span class="pill amber">refused on 10</span></div>
         <p>223 low-risk files approved unread, 12 cross-examined, and one <strong>unrequested change</strong> flagged.</p>
-        <a href="demo/2297.html#must-read">See what the human reads →</a>
+        <a href="demo/2297.html#must-read" target="_blank" rel="noopener noreferrer">See what the human reads →</a>
       </article>
       <article class="pr">
         <div class="head"><span class="num">#2129</span><span class="pill grey">feature</span><span class="pill mint">test was wrong</span></div>
         <p>The AI's own test failed. An independent oracle showed the feature worked and <strong>pointed the human at the test</strong>.</p>
-        <a href="demo/2129.html#evidence">See both oracles →</a>
+        <a href="demo/2129.html#evidence" target="_blank" rel="noopener noreferrer">See both oracles →</a>
       </article>
     </div>
   </div>
@@ -248,7 +248,7 @@
         <li><span class="k">02</span><h3>What was NOT checked, and why</h3></li>
         <li><span class="k">03</span><h3>The residual risk I accept</h3></li>
       </ol>
-      <p class="muted" style="margin-top:16px"><a href="demo/2297.html#signoff">See a real sign-off block →</a></p>
+      <p class="muted" style="margin-top:16px"><a href="demo/2297.html#signoff" target="_blank" rel="noopener noreferrer">See a real sign-off block →</a></p>
     </div></div></div>
   </div>
 </section>
@@ -332,7 +332,7 @@
     <div class="eyebrow">Check it yourself</div>
     <h2 id="explore-h">Everything here is in the repo</h2>
     <div class="links">
-      <a class="link reveal" href="demo/index.html"><b>Real sign-off reports →</b><span>Five reports from the four PRs.</span></a>
+      <a class="link reveal" href="demo/index.html" target="_blank" rel="noopener noreferrer"><b>Real sign-off reports →</b><span>Five reports from the four PRs.</span></a>
       <a class="link reveal" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/concept-card.md" target="_blank" rel="noopener noreferrer"><b>Concept Card →</b><span>Principles, trade-offs and limits.</span></a>
       <a class="link reveal" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/lessons-log.md" target="_blank" rel="noopener noreferrer"><b>Lessons log →</b><span>Every real AI failure, and what caught it.</span></a>
       <a class="link reveal" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/decision-log.md" target="_blank" rel="noopener noreferrer"><b>Decision log →</b><span>What we chose, and what we rejected.</span></a>

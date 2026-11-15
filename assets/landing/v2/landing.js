@@ -314,6 +314,41 @@
     term.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); run(); } });
   }
 
+  // ---------- Demo video: the YouTube player loads only when the visitor presses play ----------
+  function setupYouTube() {
+    var box = $("#yt");
+    if (!box) return;
+    var btn = $(".play", box);
+    btn.addEventListener("click", function () {
+      var f = document.createElement("iframe");
+      f.src = "https://www.youtube-nocookie.com/embed/" + box.dataset.yt + "?autoplay=1&rel=0";
+      f.title = "Proof, not promises: 2-minute demo";
+      f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      f.allowFullscreen = true;
+      box.appendChild(f);
+      btn.remove();
+      f.focus();
+    });
+  }
+
+  // ---------- Horizontal track: keyboard focus on a card scrolls the page so the card is on screen ----------
+  function setupTrackFocus() {
+    var hs = $(".hs"), track = $(".hs-track");
+    if (!hs || !track) return;
+    track.addEventListener("focusin", function (e) {
+      if (hs.classList.contains("static")) return;
+      var card = e.target.closest(".pr");
+      if (!card) return;
+      var first = track.firstElementChild;
+      var shift = card.offsetLeft - first.offsetLeft;
+      var max = Math.max(0, hs.offsetHeight - window.innerHeight);
+      var top = hs.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo(0, top + Math.min(max, Math.max(0, shift)));
+    });
+  }
+
+  setupYouTube();
+  setupTrackFocus();
   setupVideos();
   setupReveal();
   setupBeats();

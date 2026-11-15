@@ -322,3 +322,12 @@ footer .team b { display: block; color: var(--fg); font-size: 15.5px; }
   .term-line, .caret, .steps li.active .dot, .scroll-cue::after { animation: none; }
   .quote .w { color: var(--fg); }
 }
+
+/* Horizontal track: a flex container ignores its right padding when it overflows, so the end spacer is an element. */
+.hs-track::after { content: ""; flex: 0 0 max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter))); }
+.hs.static .hs-track::after { flex-basis: var(--gutter); }
+/* YouTube: poster + button; the player is created only on click (no third-party request before that). */
+.video .play { border: 0; background: none; width: 100%; height: 100%; cursor: pointer; padding: 0; }
+.video .play:focus-visible span { outline: 3px solid #fff; outline-offset: 3px; }
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-alt { margin: 12px 0 0; font-size: 14.5px; }

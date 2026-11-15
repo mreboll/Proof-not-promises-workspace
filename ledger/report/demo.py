@@ -128,7 +128,7 @@ def _index(rows: list[tuple[DemoSpec, Report, str]]) -> str:
         counts = Counter(v.verdict for v in report.verdicts)
         tally = " · ".join(f"{counts[k]} {k.value.lower()}" for k in (Verdict.GREEN, Verdict.YELLOW, Verdict.RED))
         items.append(
-            f'<li><a href="{d.slug}.html">{html.escape(title)}</a>'
+            f'<li><a href="{d.slug}.html" target="_blank" rel="noopener noreferrer">{html.escape(title)}</a>'
             f'<span class="tag">{html.escape(d.tag)}</span><p>{html.escape(d.blurb)}</p><p class="tally">{tally}</p></li>'
         )
     return f"""<!doctype html>
