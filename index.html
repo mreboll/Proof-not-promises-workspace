@@ -274,6 +274,11 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
 .sbx-read b.ok { color: var(--green); }
 .sbx-read span { font-size: 12.5px; color: var(--fg-2); }
 .sbx-cap { margin: 12px 0 0; font: 12.5px/1.55 var(--mono); color: var(--fg-3); }
+
+table.axes td:first-child { width: 160px; color: var(--mint); }
+.nums.one { grid-template-columns: 1fr; margin-top: 0; }
+.signs .sign h3 { margin: 0; }
+.pr > a { margin-top: auto; font-size: 14.5px; }
 </style>
 </head>
 <body>
@@ -289,7 +294,6 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
       <li><a href="#found">What it found</a></li>
       <li><a href="#trust">Trust</a></li>
       <li><a href="#modal">Modal</a></li>
-      <li><a href="#scale">At scale</a></li>
       <li><a href="#explore">Check</a></li>
     </ul>
     <a class="btn small" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -302,19 +306,18 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
     <div class="eyebrow">Junction 2026 · Tieto — Earned Trust in AI Code</div>
     <h1>Proof, not <em>promises</em>.</h1>
     <p class="tag"><b>AI reviews.</b> <i>Humans stay accountable.</i></p>
-    <p class="lede">A code review factory for AI-written changes where <strong>no model approves anything</strong>.
-      Trust comes only from executable evidence traced to the requirement. When the evidence is missing,
-      the system <strong>refuses to decide</strong> and tells a named human exactly what to read.</p>
+    <p class="lede">A review factory for AI-written code where <strong>no model approves anything</strong>. Only executable evidence counts,
+      and when it's missing, the system <strong>refuses to decide</strong> and tells a named human exactly what to read.</p>
     <div class="cta">
       <a class="btn primary" href="#video">Watch the 2-minute demo</a>
-      <a class="btn" href="demo/2297.html#signoff">Open a real sign-off report</a>
+      <a class="btn" href="#try">Try it in 20 seconds</a>
       <a class="btn" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer">Source code</a>
     </div>
     <div class="stats" role="list">
-      <div class="stat" role="listitem"><div class="n">237 → 12</div><div class="l">files in an AI-written PR, and the ones a human had to read in one real run</div></div>
-      <div class="stat" role="listitem"><div class="n red">0</div><div class="l">approvals by argument: a test that kills a mutant, or no approval</div></div>
-      <div class="stat" role="listitem"><div class="n cyan">&gt;1 h → ~17 min</div><div class="l">36 objections cross-examined in parallel, each test in its own sandbox</div></div>
-      <div class="stat" role="listitem"><div class="n amber">24</div><div class="l">real AI failures logged, each with the layer that caught it</div></div>
+      <div class="stat" role="listitem"><div class="n">237 → 12</div><div class="l">files changed, and files a human had to read</div></div>
+      <div class="stat" role="listitem"><div class="n red">0</div><div class="l">approvals by argument</div></div>
+      <div class="stat" role="listitem"><div class="n cyan">&gt;1 h → ~17 min</div><div class="l">to cross-examine 36 objections in parallel</div></div>
+      <div class="stat" role="listitem"><div class="n amber">24</div><div class="l">real AI failures logged</div></div>
     </div>
   </div>
 </header>
@@ -337,18 +340,10 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
     <div class="reveal">
       <div class="eyebrow">The problem</div>
       <h2 id="problem-h">Friday afternoon. 237 files. Your name on the approval.</h2>
-      <p class="lede">Agent tokens passed human tokens in February 2026 and reached 7.3 trillion by August.
-        Reviewing every change by hand doesn't scale, and trusting another AI's summary is negligent.</p>
-      <ul class="ticks red">
-        <li><b>Too much to read.</b> Nobody reads 237 files line by line.</li>
-        <li><b>Confident isn't correct.</b> An AI sounds just as sure when it is wrong.</li>
-        <li><b>AI grading AI.</b> Same model family, same blind spots.</li>
-        <li><b>Nobody owns the merge.</b> "The AI said it was fine" is not an owner.</li>
-      </ul>
+      <p class="lede">Reading every line doesn't scale. Trusting another AI's summary is negligent: it sounds just as sure when it's wrong.</p>
     </div>
     <figure class="reveal">
       <div class="shot"><img src="assets/landing/friday.jpg" alt="An AI agent stacks 237 changed files next to the human owner; an AI reviewer shows LGTM, 98% confident" width="1600" height="775" loading="lazy"></div>
-      <figcaption>The question is not "is the code good?" but "what evidence lets a person sign without reading every line?"</figcaption>
     </figure>
   </div>
 </section>
@@ -357,19 +352,17 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
   <div class="wrap">
     <div class="eyebrow">Our recommendation</div>
     <h2 id="concept-h">Stop reviewing line by line. Stop trusting the summary.</h2>
-    <p class="quote reveal">Turn every AI-written change into a ledger of executable evidence traced to its requirement.
-      Spend human attention only where that evidence is missing or contradicted. The named owner signs what was checked,
-      what was not, and the residual risk they accept.</p>
+    <p class="quote reveal">Turn every AI-written change into executable evidence traced to its requirement. Spend human attention only where
+      that evidence is missing. The named owner signs what was checked, what was not, and the risk they accept.</p>
     <div class="tablewrap reveal">
-      <table>
-        <caption class="muted" style="caption-side:top;text-align:left;padding:14px 18px 0;font-size:15px">How it balances the five forces the challenge names</caption>
-        <thead><tr><th scope="col">Axis</th><th scope="col">Mechanism</th><th scope="col">What we refuse</th></tr></thead>
+      <table class="axes">
+        <caption class="muted" style="caption-side:top;text-align:left;padding:14px 18px 0;font-size:15px">The five forces the challenge asks us to balance</caption>
         <tbody>
-          <tr><td>Risk</td><td>Static, auditable rules set the depth of scrutiny per file. High risk triggers cross-examination; out of scope and high risk is always red.</td><td class="no">A risk score from a model that nobody can explain</td></tr>
-          <tr><td>Hallucination</td><td>A model's claim counts only once it is a test that runs. Change tests are written from the issue alone; Defender tests must fail against a mutant; infrastructure failures never count as evidence.</td><td class="no">"I checked it", or a test that would also pass on broken code</td></tr>
-          <tr><td>Transparency</td><td>Every verdict starts with its rule (M1–M7). Every test, hash, mutant and model is in the report; normalizations are declared.</td><td class="no">Hidden reasoning, undeclared filtering</td></tr>
-          <tr><td>Confidence</td><td>No self-reported confidence. Confidence is the state of the evidence: proven, contradicted, or missing.</td><td class="no">A confidence number without evidence behind it</td></tr>
-          <tr><td>Quality</td><td>Generation invariance guards everything outside the issue. Prosecutor and Defender come from different model families.</td><td class="no">One model grading its own homework</td></tr>
+          <tr><td>Risk</td><td>Static rules decide how much scrutiny each file gets. Never a model's score.</td></tr>
+          <tr><td>Hallucination</td><td>A claim only counts as a test that runs, and that fails against a deliberately broken mutant.</td></tr>
+          <tr><td>Transparency</td><td>Every verdict cites its rule; every test, hash and model is in the report.</td></tr>
+          <tr><td>Confidence</td><td>No self-reported confidence. Evidence is proven, contradicted or missing.</td></tr>
+          <tr><td>Quality</td><td>Everything outside the issue must stay identical; Prosecutor and Defender come from different model families.</td></tr>
         </tbody>
       </table>
     </div>
@@ -379,29 +372,16 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
 <section id="how" aria-labelledby="how-h">
   <div class="wrap">
     <div class="eyebrow">How it works</div>
-    <h2 id="how-h">One command. One rule. A funnel that ends in a signature.</h2>
-    <pre class="cmd" aria-label="Command"><span class="c">$</span> LEDGER_RUNNER=modal python -m ledger run --issue 2297</pre>
+    <h2 id="how-h">A funnel that ends in a signature</h2>
     <div class="stages">
-      <div class="stage reveal"><span class="id">T1</span><h3>Triage</h3><p>Every file: in or out of the issue's scope, times a risk level from static rules (public API, memory, security-sensitive APIs, core namespaces).</p><div class="who">rules + Gemini flash for scope</div></div>
-      <div class="stage reveal"><span class="id">T2</span><h3>Evidence</h3><p>A model that never sees the fix writes a test from the issue alone: it must fail before and pass after. Outside the issue, generated code and diagnostics must hash identically.</p><div class="who">Gemini · .NET 8 · Modal sandboxes</div></div>
-      <div class="stage reveal"><span class="id">T3</span><h3>Cross-examination</h3><p>A Prosecutor raises up to 3 objections per high-risk file. The Defender can't argue: it answers with a test that passes on the PR and fails against a mutant.</p><div class="who">Nemotron (Prosecutor) vs Gemini (Defender)</div></div>
-      <div class="stage trust reveal"><span class="id">TRUST</span><h3>Track record</h3><p>Trust is earned per area from signed changes and withdrawn after an escape. A hash-picked sample of green files is read by a human, so the AI reviewer is checked too.</p><div class="who">trust/track_record.json · written by people</div></div>
+      <div class="stage reveal"><span class="id">T1</span><h3>Triage</h3><p>In or out of the issue's scope, and a risk level from static rules.</p><div class="who">rules + Gemini flash</div></div>
+      <div class="stage reveal"><span class="id">T2</span><h3>Evidence</h3><p>A test written from the issue alone must fail before the fix and pass after. Outside the issue, nothing may change.</p><div class="who">Gemini · .NET 8 · Modal</div></div>
+      <div class="stage reveal"><span class="id">T3</span><h3>Cross-examination</h3><p>A Prosecutor attacks high-risk files. The Defender can only answer with a test that kills a mutant.</p><div class="who">Nemotron vs Gemini</div></div>
+      <div class="stage trust reveal"><span class="id">TRUST</span><h3>Track record</h3><p>Trust is earned per area and withdrawn after an escape. Humans spot-check a sample of green files.</p><div class="who">written only by people</div></div>
     </div>
     <div class="rule-card reveal">
       <div class="eyebrow" style="margin-bottom:8px">The one rule</div>
       <div class="big">No model approves anything. <span>Only executable evidence counts.</span></div>
-    </div>
-    <div class="grid2" style="margin-top:44px">
-      <figure class="reveal"><div class="shot"><img src="assets/landing/evidence.jpg" alt="Evidence stage: a test written from issue 2297 alone fails before the fix and passes after, each run in a Modal sandbox" width="1600" height="775" loading="lazy"></div><figcaption>T2 · the change test is written from the issue, never from the diff.</figcaption></figure>
-      <div class="reveal">
-        <h3 style="margin-bottom:10px">Why separate model families?</h3>
-        <p class="muted">If accusation and defence share a model, they share blind spots and their errors are correlated.
-          The Prosecutor is NVIDIA Nemotron; the Defender, the change tests and the mutants are Google Gemini.</p>
-        <h3 style="margin:22px 0 10px">Why mutants?</h3>
-        <p class="muted">A test that also passes on deliberately broken code proves nothing. Every Defender test must
-          <strong>fail</strong> against a mutant that breaks the edge case again, or it doesn't count. AI-written tests are untrusted code,
-          so they run in network-less Modal Sandboxes.</p>
-      </div>
     </div>
   </div>
 </section>
@@ -410,9 +390,7 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
   <div class="wrap">
     <div class="eyebrow">Try it</div>
     <h2 id="try-h">Press Enter. Watch a real review run.</h2>
-    <p class="lede">The command is ready. This replays, about 60 times faster, the recorded run of the AI-written fix for issue #2283
-      (<span class="mono">fixtures/report_2283_dotnet.json</span>): the real pipeline took 18–22 minutes on a laptop.
-      Every line below is what that run actually did.</p>
+    <p class="lede">A 17-second replay of the recorded run for issue #2283; the real one took 18–22 minutes. Every line is what that run actually did.</p>
 
     <div class="try">
       <div class="term" id="term" tabindex="0" role="group" aria-label="Terminal. Press Enter to run the review.">
@@ -462,77 +440,60 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
 
 <section id="found" aria-labelledby="found-h">
   <div class="wrap">
-    <div class="eyebrow">What it found · four real AI-written PRs</div>
-    <h2 id="found-h">What the AI found, what it refused to decide, and why</h2>
-    <p class="lede">The challenge's own sample: agentic implementations of four MessagePack-CSharp issues, each with its requirement ID.</p>
+    <div class="eyebrow">Four real AI-written PRs</div>
+    <h2 id="found-h">What it found, and what it refused to decide</h2>
     <div class="prs">
       <article class="pr star reveal">
-        <div class="head"><span class="num">#2283</span><span class="pill grey">bug fix · 4 files</span><span class="pill red">defect found</span></div>
-        <p>The change test went red on base and green on the PR; invariance was identical in all general cases. A reviewer reading only that would approve.
-          The Prosecutor's questions led to Defender tests that <strong>fail on the PR</strong>: the AI fix moved the crash
-          (<span class="mono">IndexOutOfRange</span> → <span class="mono">InvalidOperation</span>) instead of removing it.</p>
-        <div class="lesson">Green evidence is not the end: cross-examination is what caught it. <a href="demo/2283-dotnet.html#crossexam">See the failing Defender tests in the report →</a></div>
+        <div class="head"><span class="num">#2283</span><span class="pill grey">bug fix</span><span class="pill red">defect found</span></div>
+        <p>Its own test and the invariance check were green. Cross-examination showed the AI fix <strong>moved the crash</strong> instead of removing it.</p>
+        <a href="demo/2283-dotnet.html#crossexam">See the failing tests →</a>
       </article>
       <article class="pr reveal">
-        <div class="head"><span class="num">#2234</span><span class="pill grey">bug fix · 4 files</span><span class="pill red">red · two reasons</span></div>
-        <p>The issue is one sentence, so the independent test also passed on base: no evidence. And the invariance check showed the fix
-          changes behaviour <strong>outside</strong> the issue (duplicate keys without the option).</p>
-        <div class="lesson">A badly written ticket gives weak evidence. The system says so. <a href="demo/2234.html#evidence">See the evidence in the report →</a></div>
+        <div class="head"><span class="num">#2234</span><span class="pill grey">bug fix</span><span class="pill red">red</span></div>
+        <p>A one-sentence issue: the test also passed before the fix, and the fix changed behaviour <strong>outside</strong> the issue.</p>
+        <a href="demo/2234.html#evidence">See the evidence →</a>
       </article>
       <article class="pr reveal">
         <div class="head"><span class="num">#2297</span><span class="pill grey">feature · 237 files</span><span class="pill amber">refused on 10</span></div>
-        <p>Static rules rank 223 in-scope files low risk (222 are generated snapshots) and the evidence approves them unread.
-          12 high-risk files go to cross-examination; the scope check flags <span class="mono">TransformUtilities.cs</span>, an unrequested change.</p>
-        <div class="lesson">At most 14 of 237 files need human eyes, each with its reason. <a href="demo/2297.html#must-read">See what the human must read →</a></div>
+        <p>223 low-risk files approved unread, 12 cross-examined, and one <strong>unrequested change</strong> flagged.</p>
+        <a href="demo/2297.html#must-read">See what the human reads →</a>
       </article>
       <article class="pr reveal">
-        <div class="head"><span class="num">#2129</span><span class="pill grey">feature · 28 files</span><span class="pill mint">test was wrong</span></div>
-        <p>The AI's own change test failed on the PR, so there is no evidence and no approval. The independent invariance oracle showed the feature
-          worked, pointing the human at the test instead of the code.</p>
-        <div class="lesson">Two independent oracles disagree, and the human gets told exactly where. <a href="demo/2129.html#evidence">See the two oracles in the report →</a></div>
+        <div class="head"><span class="num">#2129</span><span class="pill grey">feature</span><span class="pill mint">test was wrong</span></div>
+        <p>The AI's own test failed. An independent oracle showed the feature worked and <strong>pointed the human at the test</strong>.</p>
+        <a href="demo/2129.html#evidence">See both oracles →</a>
       </article>
     </div>
-    <figure class="reveal" style="margin-top:36px"><div class="shot"><img src="assets/landing/moved-crash.jpg" alt="Real finding on PR 2283: the first evidence was all green, but cross-examination showed the AI fix moved the crash from IndexOutOfRange to InvalidOperation at line 1013" width="1600" height="775" loading="lazy"></div><figcaption>#2283 · green evidence, and still wrong: the cross-examination caught it.</figcaption></figure>
-    <div class="reveal" style="margin-top:44px">
-      <div class="eyebrow">Refused to decide</div>
-      <h3 style="margin:8px 0 12px;font:700 26px/1.25 var(--serif)">When evidence is missing, it doesn't guess.</h3>
-      <p class="lede">On #2297, 36 objections ran in parallel: 12 closed by a valid test, 12 Defender tests failed on the PR (possible defects),
-        12 proved nothing against their mutant. Most objections don't close, and that's the point: you see which,
-        and the system refuses to approve those files instead of guessing.</p>
-    </div>
+    <figure class="reveal" style="margin-top:28px"><div class="shot"><img src="assets/landing/moved-crash.jpg" alt="Real finding on PR 2283: the first evidence was all green, but cross-examination showed the AI fix moved the crash from IndexOutOfRange to InvalidOperation at line 1013" width="1600" height="775" loading="lazy"></div></figure>
   </div>
 </section>
 
 <section id="sign" aria-labelledby="sign-h">
   <div class="wrap">
-    <div class="reveal">
-      <div class="eyebrow">Accept without a full read</div>
-      <h2 id="sign-h">What lands on your desk isn't 237 files. It's twelve.</h2>
-      <p class="lede">Each one with the reason it needs your eyes and the exact open question. Everything else is backed by tests you can rerun.</p>
-    </div>
-    <figure class="reveal" style="margin-top:24px"><div class="shot"><img src="assets/landing/refused.jpg" alt="Refused to decide card for CompositeResolverTemplate.cs: open objection, 2 Defender tests fail on the PR, read this file, the rest is backed by evidence" width="1600" height="775" loading="lazy"></div></figure>
+    <div class="eyebrow">Accept without a full read</div>
+    <h2 id="sign-h">What lands on your desk isn't 237 files. It's twelve.</h2>
+    <p class="lede">Each one with the reason it needs your eyes. Everything else is backed by tests you can rerun.</p>
+    <figure class="reveal" style="margin-top:20px"><div class="shot"><img src="assets/landing/refused.jpg" alt="Refused to decide card for CompositeResolverTemplate.cs: open objection, 2 Defender tests fail on the PR, read this file, the rest is backed by evidence" width="1600" height="775" loading="lazy"></div></figure>
     <div class="signs">
-      <div class="sign reveal"><div class="k">01 · Checked</div><h3>What was checked, and by what</h3><p>Rules, models, tests and hashes: each line names what produced it and can be rerun.</p></div>
-      <div class="sign reveal"><div class="k">02 · Not checked</div><h3>What was NOT checked, and why</h3><p>Open objections, refusals to decide, out-of-scope files, and the green files nobody read.</p></div>
-      <div class="sign reveal"><div class="k">03 · Accepted</div><h3>The residual risk I accept</h3><p>The limits of the oracle and every unanswered question, accepted by name, plus the spot-checks to read before signing.</p></div>
+      <div class="sign reveal"><div class="k">01</div><h3>What was checked, and by what</h3></div>
+      <div class="sign reveal"><div class="k">02</div><h3>What was NOT checked, and why</h3></div>
+      <div class="sign reveal"><div class="k">03</div><h3>The residual risk I accept</h3></div>
     </div>
-    <figure class="reveal" style="margin-top:28px"><div class="shot"><img src="assets/landing/signoff.jpg" alt="Approval and accountability record for issue 2297: what was checked, what was not, residual risk, signed by a named owner (example); approved or rejected stays human" width="1600" height="775" loading="lazy"></div><figcaption>The AI review is advice with evidence. The approval is a person's, by name.</figcaption></figure>
+    <p class="muted" style="margin-top:14px">The owner signs these three lists by name. <a href="demo/2297.html#signoff">See a real sign-off block →</a></p>
   </div>
 </section>
 
 <section id="trust" aria-labelledby="trust-h">
   <div class="wrap grid2 flip">
-    <figure class="reveal"><div class="shot"><img src="assets/landing/escape.jpg" alt="Escape on TypeCollector.cs: one of our own runs approved the moved crash; trust in SourceGenerator/CodeAnalysis is withdrawn until 5 clean signed changes earn it back" width="1600" height="775" loading="lazy"></div><figcaption>Our own escape, logged: trust/track_record.json</figcaption></figure>
+    <figure class="reveal"><div class="shot"><img src="assets/landing/escape.jpg" alt="Escape on TypeCollector.cs: one of our own runs approved the moved crash; trust in SourceGenerator/CodeAnalysis is withdrawn until 5 clean signed changes earn it back" width="1600" height="775" loading="lazy"></div></figure>
     <div class="reveal">
       <div class="eyebrow">Trust is earned, and withdrawn</div>
-      <h2 id="trust-h">In one run, our own evidence missed it too.</h2>
-      <p class="muted">All three objections on <span class="mono">TypeCollector.cs</span> closed, and the ledger approved the file with the moved crash inside.
-        We logged it as an escape. Trust in that area is now <strong style="color:var(--amber)">withdrawn</strong>: its green files go back to a human
+      <h2 id="trust-h">Once, our own evidence missed it too.</h2>
+      <p class="muted">One run approved the moved crash. We logged it as an escape, so trust in that area is <strong style="color:var(--amber)">withdrawn</strong>
         until five clean signed changes earn it back.</p>
       <ul class="ticks">
-        <li><b>Humans spot-check the AI reviewer.</b> 20% of each area's green files (5% once trust is earned), 1 to 3 per area, picked by hash: neither the AI nor the signer chooses.</li>
-        <li><b>Areas are a fixed rule</b>, the file's directory, not a model's call.</li>
-        <li><b>Measure outcomes, not activity:</b> escapes per approved file, and how each was found: spot-check, revert, incident or rerun.</li>
+        <li>Humans read a hash-picked sample of green files, so the AI reviewer gets checked too.</li>
+        <li>We measure escapes per approved file, not reviews done.</li>
       </ul>
     </div>
   </div>
@@ -540,19 +501,16 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
 
 <section id="modal" aria-labelledby="modal-h">
   <div class="wrap">
-    <div class="eyebrow">Built on Modal</div>
-    <h2 id="modal-h">AI-written code is untrusted code. So it never runs on our machines.</h2>
-    <p class="lede">Every test and every mutant an AI writes runs in its own disposable Modal Sandbox, with no network.
-      That isolation is what makes the evidence trustworthy, and it is also what lets the review fan out in parallel.</p>
-
+    <div class="eyebrow">Built on Modal · at scale</div>
+    <h2 id="modal-h">AI-written code never runs on our machines</h2>
+    <p class="lede">Every test and mutant an AI writes runs in its own disposable, network-less Modal Sandbox. That makes the evidence trustworthy, and lets the review fan out.</p>
     <div class="sbx-flow reveal" role="list">
-      <div class="sbx-step" role="listitem"><span class="n">1</span><b>Trusted image</b><p>.NET 8 SDK and the base and PR worktrees of all four issues, restored and compiled once (8 builds). Every package the tests need is fetched while building the image.</p></div>
+      <div class="sbx-step" role="listitem"><span class="n">1</span><b>Trusted image</b><p>.NET 8 and both sides of every PR, compiled once.</p></div>
       <div class="sbx-arrow" aria-hidden="true">→</div>
-      <div class="sbx-step" role="listitem"><span class="n">2</span><b>One sandbox per run</b><p><span class="mono">block_network=True</span>. The AI-written test or mutant is applied inside; it cannot exfiltrate anything or pull dependencies.</p></div>
+      <div class="sbx-step" role="listitem"><span class="n">2</span><b>One sandbox per run</b><p>No network: AI code can't exfiltrate or download anything.</p></div>
       <div class="sbx-arrow" aria-hidden="true">→</div>
-      <div class="sbx-step" role="listitem"><span class="n">3</span><b>Thrown away</b><p>Terminated in a <span class="mono">finally</span>. No shared state between base, PR and mutants. Only the test result comes back.</p></div>
+      <div class="sbx-step" role="listitem"><span class="n">3</span><b>Thrown away</b><p>Only the test result comes back.</p></div>
     </div>
-
     <div class="grid2 sbx-pair">
       <div class="sbx-viz reveal" id="sbx-viz" aria-label="Capacity test: 60 Modal sandboxes started at once, all 60 passed">
         <div class="sbx-grid" id="sbx-grid"></div>
@@ -561,74 +519,34 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
           <div><b id="sbx-t">0 s</b><span>wall time</span></div>
           <div><b class="ok">0</b><span>failures</span></div>
         </div>
-        <p class="sbx-cap">Capacity sweep: the real change test of #2283, 60 copies at once. One alone takes 18.7 s; sixty finish in 27.4 s.</p>
       </div>
       <div class="reveal">
-        <h3 style="margin-bottom:10px">Parallel where it is safe, measured where it matters</h3>
-        <ul class="ticks">
-          <li><b>Base, PR and mutant at the same time:</b> 28 s on Modal versus 63 s one after another on a laptop, with identical results.</li>
-          <li><b>Cross-examination fans out:</b> on the 237-file PR, 36 objections ran at once, each test in its own sandbox. 126 sandboxes, peak 16, zero failures; over 1 hour sequentially became about 17 minutes.</li>
-          <li><b>Modal was never the limit:</b> 60 at once scaled almost linearly, 131 runs per minute against 3 for one. The ceiling was the language model's latency.</li>
-          <li><b>Locally, nothing runs in parallel on purpose:</b> two runs on the same worktree would overwrite each other. Parallelism switches on only with <span class="mono">LEDGER_RUNNER=modal</span>.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="nums">
-      <div class="num-card reveal"><div class="v">60 <small>at once</small></div><p>sandboxes in the capacity test, all green; the plan allows 100 and we cap at 60.</p><div class="src">fixtures/capacity_modal.json</div></div>
-      <div class="num-card reveal"><div class="v">28 <small>s vs 63 s</small></div><p>base, PR and mutant in parallel on Modal versus sequentially on a laptop.</p><div class="src">fixtures/bench_2283.json</div></div>
-      <div class="num-card reveal"><div class="v">$2.86</div><p>of Modal compute for everything we ran during the hackathon, $0 in charges, with a usage cap set to the free credits.</p><div class="src">modal billing report</div></div>
-    </div>
-
-    <div class="grid2 sbx-pair" style="margin-top:34px">
-      <div class="reveal">
-        <h3 style="margin-bottom:10px">Guard rails before any sandbox starts</h3>
-        <ul class="ticks">
-          <li>Everything that reaches a shell inside the sandbox is validated first: the issue ID, the test class name, and the mutant patch, which may only touch existing <span class="mono">src/**/*.cs</span> files.</li>
-          <li>An infrastructure failure is recorded as "no evidence", never as a pass.</li>
-        </ul>
-      </div>
-      <div class="reveal">
-        <h3 style="margin-bottom:10px">What isolation caught</h3>
-        <p class="muted">Without network, an AI-written test that downloaded packages at run time failed, and that failure looked exactly like
-          "bug reproduced" on the base branch. Network and package failures are now marked <span class="mono">INFRA</span> and never count as
-          evidence. Running untrusted code in isolation exposed a false positive in our own verifier.</p>
-        <p class="muted" style="margin-top:12px"><b style="color:var(--fg)">Honest limit:</b> the generation-invariance check still runs locally; everything written by an AI runs on Modal.</p>
+        <div class="nums one">
+          <div class="num-card"><div class="v">&gt;1 h → ~17 <small>min</small></div><p>to cross-examine the 237-file PR in parallel.</p></div>
+          <div class="num-card"><div class="v">$2.86</div><p>of Modal compute for the whole hackathon.</p></div>
+        </div>
+        <p class="callout" style="margin-top:14px"><strong>Modal was never the limit.</strong> Past a point, speed is the language model's latency, not our code.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section id="scale" aria-labelledby="scale-h">
-  <div class="wrap">
-    <div class="eyebrow">At scale · measured, not promised</div>
-    <h2 id="scale-h">Human reading grows with risk, not with the diff</h2>
-    <p class="lede">What changes when the PR is 237 files instead of 4. Every figure comes from a real run, with its source in the repo.</p>
-    <div class="nums">
-      <div class="num-card reveal"><div class="v">14 <small>of 237</small></div><p>files that can need human eyes on the 237-file PR; 223 approved by evidence, unread.</p><div class="src">fixtures/triage_2297.json</div></div>
-      <div class="num-card reveal"><div class="v">~17 <small>min</small></div><p>full pipeline on the 237-file PR with cross-examination in parallel (14–20 min over 4 runs); over 1 h sequentially.</p><div class="src">fixtures/measure_2297_par_v*.json</div></div>
-      <div class="num-card reveal"><div class="v">390 <small>tests</small></div><p>pass with no network and no API keys; 18 decisions and 24 AI failures logged.</p><div class="src">docs/decision-log.md · docs/lessons-log.md</div></div>
-    </div>
-    <p class="callout reveal"><strong>Past a point, speed is the model's, not ours.</strong> Raising Gemini's concurrency from 8 to 32 removed the queue
-      (no rate-limit errors up to 48 at once). After that, one slow model call sets the end time, and its run-to-run variance was larger than any further optimisation we measured.</p>
-  </div>
-</section>
+
 
 <section id="limits" aria-labelledby="limits-h">
   <div class="wrap">
     <div class="eyebrow">Questions judges will ask</div>
     <h2 id="limits-h">What would make us not trust our own output?</h2>
     <div class="qa">
-      <div class="q reveal"><h3>What would make you not trust it?</h3><p>An open objection, a missing oracle for that area, or a test written from a vague ticket, like #2234. And an escape: it already happened to us once, and that area lost its trust.</p></div>
-      <div class="q reveal"><h3>Who owns the decision?</h3><p>The named engineer in the sign-off block. They sign what was checked, what was not, and the residual risk. The AI never approves, and an empty owner is rejected.</p></div>
-      <div class="q reveal"><h3>How would this scale?</h3><p>Human reading follows risk: 14 of 237 files. Compute fans out: 60 sandboxes at once with no failures. The model's latency is the real ceiling, and we say so.</p></div>
+      <div class="q reveal"><h3>What would make you not trust it?</h3><p>An open objection, a vague ticket, or an escape. It already happened once, and that area lost its trust.</p></div>
+      <div class="q reveal"><h3>Who owns the decision?</h3><p>The named engineer who signs. The AI never approves.</p></div>
+      <div class="q reveal"><h3>How would this scale?</h3><p>Human reading follows risk, not diff size. Compute fans out; the model's latency is the ceiling.</p></div>
     </div>
-    <h3 style="margin-top:44px">Honest limits</h3>
+    <h3 style="margin-top:36px">Honest limits</h3>
     <ul class="ticks red limits">
-      <li>A badly written ticket gives weak evidence (#2234). The system says so; it doesn't fix the ticket.</li>
-      <li>It needs a differential oracle. Here: generated code and diagnostics. Areas without one get less.</li>
-      <li>LLMs are not reproducible run to run: 3 to 12 of 36 objections closed across four runs. The disk cache makes the demo repeatable, not the models.</li>
-      <li>Implemented and measured on backend code. Frontend (visual and accessibility diffs) is a design, not code.</li>
+      <li>A badly written ticket gives weak evidence. The system says so; it doesn't fix the ticket.</li>
+      <li>It needs a differential oracle, and LLMs differ run to run: 3 to 12 of 36 objections closed across four runs.</li>
+      <li>Built and measured on backend code; frontend is a design, not code.</li>
     </ul>
   </div>
 </section>
@@ -638,17 +556,13 @@ a[target="_blank"]:not(.btn):not(.link)::after { content: " ↗"; font-size: .85
     <div class="eyebrow">Check it yourself</div>
     <h2 id="explore-h">Everything here is in the repo</h2>
     <div class="links">
-      <a class="link" href="demo/index.html"><b>Real sign-off reports →</b><span>Five reports from the four PRs, rebuilt from recorded runs.</span></a>
-      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/concept-card.md" target="_blank" rel="noopener noreferrer"><b>Concept Card →</b><span>Recommendation, principles, trade-offs and limits.</span></a>
-      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/lessons-log.md" target="_blank" rel="noopener noreferrer"><b>Lessons log →</b><span>Every real AI failure we hit, and the layer that caught it.</span></a>
-      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/decision-log.md" target="_blank" rel="noopener noreferrer"><b>Decision log →</b><span>D1–D18: what we chose, what we rejected, and why.</span></a>
-      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/numeros-evidencia.md" target="_blank" rel="noopener noreferrer"><b>Measured numbers →</b><span>Every timing and result, with its source (Spanish).</span></a>
-      <a class="link" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer"><b>Source code →</b><span>Python pipeline, .NET probe, Modal runner, tests.</span></a>
+      <a class="link" href="demo/index.html"><b>Real sign-off reports →</b><span>Five reports from the four PRs.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/concept-card.md" target="_blank" rel="noopener noreferrer"><b>Concept Card →</b><span>Principles, trade-offs and limits.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/lessons-log.md" target="_blank" rel="noopener noreferrer"><b>Lessons log →</b><span>Every real AI failure, and what caught it.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/decision-log.md" target="_blank" rel="noopener noreferrer"><b>Decision log →</b><span>What we chose, and what we rejected.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises/blob/main/docs/numeros-evidencia.md" target="_blank" rel="noopener noreferrer"><b>Measured numbers →</b><span>Every figure, with its source.</span></a>
+      <a class="link" href="https://github.com/mreboll/Proof-not-promises" target="_blank" rel="noopener noreferrer"><b>Source code →</b><span>Pipeline, Modal runner, 390 tests.</span></a>
     </div>
-    <pre class="cmd"><span class="c"># in seconds, no API keys, no .NET — uses the recorded evidence</span>
-python -m ledger run --issue 2283 --fixtures --fake-runner
-<span class="c"># trust per area: escapes per approved file, and how they were found</span>
-python -m ledger.trust status</pre>
   </div>
 </section>
 </main>
